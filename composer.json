@@ -62,6 +62,7 @@
   },
   "autoload": {
     "psr-4": {
+      "Denosys\\": "src/",
       "App\\": "app/",
       "Database\\Factories\\": "database/factories/",
       "Database\\Seeders\\": "database/seeders/"
