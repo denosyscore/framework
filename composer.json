@@ -1,0 +1,28 @@
+{
+  "name": "denosyscore/framework",
+  "description": "Meta-package for all DenoSys Core components",
+  "type": "metapackage",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "denosyscore/contracts": "^0.1",
+    "denosyscore/events": "^0.1",
+    "denosyscore/container": "^0.1",
+    "denosyscore/cache": "^0.1",
+    "denosyscore/rate-limiter": "^0.1",
+    "denosyscore/hashing": "^0.1",
+    "denosyscore/encryption": "^0.1",
+    "denosyscore/database": "^0.1",
+    "denosyscore/validation": "^0.1",
+    "denosyscore/filesystem": "^0.1",
+    "denosyscore/queue": "^0.1",
+    "denosyscore/view": "^0.1",
+    "denosyscore/http": "^0.1",
+    "denosyscore/session": "^0.1",
+    "denosyscore/auth": "^0.1",
+    "denosyscore/console": "^0.1"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
