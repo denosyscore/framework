@@ -24,8 +24,8 @@ jobs:
 
       - name: PHP syntax check
         run: |
-          if [ -d src ]; then
-            find src -type f -name '*.php' -print0 | xargs -0 -n1 php -l
-          else
-            echo "No src/ directory to lint."
-          fi
+          for dir in app bootstrap config public routes support; do
+            if [ -d "$dir" ]; then
+              find "$dir" -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+            fi
+          done

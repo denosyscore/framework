@@ -1,10 +1,12 @@
 {
   "name": "denosyscore/framework",
-  "description": "Meta-package for all DenoSys Core components",
-  "type": "metapackage",
+  "description": "DenoSys Framework application skeleton",
+  "type": "project",
   "license": "MIT",
   "require": {
     "php": "^8.2",
+    "ext-fileinfo": "*",
+    "ext-pdo": "*",
     "denosyscore/contracts": "^0.1",
     "denosyscore/events": "^0.1",
     "denosyscore/container": "^0.1",
@@ -20,9 +22,70 @@
     "denosyscore/http": "^0.1",
     "denosyscore/session": "^0.1",
     "denosyscore/auth": "^0.1",
-    "denosyscore/console": "^0.1"
+    "denosyscore/console": "^0.1",
+    "denosyscore/routing": "0.6.0-alpha.1",
+    "doctrine/inflector": "^2.1",
+    "geoip2/geoip2": "^2.13",
+    "graham-campbell/result-type": "^1.1",
+    "html2text/html2text": "^4.3",
+    "laminas/laminas-diactoros": "^3.6",
+    "laminas/laminas-httphandlerrunner": "^2.12",
+    "league/flysystem": "^3.30",
+    "league/flysystem-aws-s3-v3": "^3.30",
+    "mailgun/mailgun-php": "^4.3",
+    "monolog/monolog": "^3.9",
+    "nesbot/carbon": "^3.10",
+    "nyholm/psr7": "^1.8",
+    "psr/container": "^2.0",
+    "psr/event-dispatcher": "^1.0",
+    "psr/log": "^3.0",
+    "psr/simple-cache": "^3.0",
+    "symfony/console": "^7.4",
+    "symfony/filesystem": "^7.3",
+    "symfony/http-client": "^5.4",
+    "symfony/mailer": "^8.0",
+    "vlucas/phpdotenv": "^5.5"
+  },
+  "require-dev": {
+    "fakerphp/faker": "^1.24",
+    "filp/whoops": "^2.18",
+    "friendsofphp/php-cs-fixer": "^3.89",
+    "mockery/mockery": "^1.6",
+    "pestphp/pest": "^4.1",
+    "pestphp/pest-plugin-stressless": "^4.0",
+    "pestphp/pest-plugin-type-coverage": "^4.0",
+    "phpmd/phpmd": "^2.15",
+    "phpstan/extension-installer": "^1.4",
+    "phpstan/phpstan": "^2.1",
+    "squizlabs/php_codesniffer": "^4.0",
+    "symfony/var-dumper": "^8.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/",
+      "Database\\Factories\\": "database/factories/",
+      "Database\\Seeders\\": "database/seeders/"
+    },
+    "files": [
+      "support/helpers.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "post-create-project-cmd": [
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+    ]
   },
   "config": {
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true,
+      "php-http/discovery": true,
+      "phpstan/extension-installer": true
+    }
   }
 }

@@ -1,0 +1,4 @@
+/core/cache/*.php
+/framework/sessions/*
+!/core/cache/.gitkeep
+!/framework/sessions/.gitkeep

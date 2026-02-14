@@ -1,26 +1,32 @@
 # denosyscore/framework
 
-Meta-package for all DenoSys Core components
+DenoSys Framework application skeleton for bootstrapping new apps with Composer.
 
-## Status
+## Create a New Project
 
-Initial extraction snapshot from cfxprimes-core as of 2026-02-14.
+```bash
+composer create-project denosyscore/framework my-app
+```
 
-## Installation
+## After Install
 
-composer require denosyscore/framework
+```bash
+cd my-app
+php cfxp optimize
+php -S 127.0.0.1:8000 -t public
+```
 
-## Included Modules
+## What You Get
 
-- Composer metapackage only (no source files)
+- HTTP and CLI entry points (`public/index.php`, `cfxp`)
+- Application bootstrap (`bootstrap/app.php`)
+- Base app provider, controller, and user model
+- Starter configuration in `config/`
+- Starter routes in `routes/web.php`
+- Global helper loading via `support/helpers.php`
 
-## Development
+## Repository Workflows
 
-composer validate --strict
-find src -type f -name '*.php' -print0 | xargs -0 -n1 php -l
-
-## CI Workflows
-
-- CI: composer validation + PHP syntax lint on push and pull requests.
-- Release: GitHub release publication on semantic version tags.
-- Dependabot: weekly Composer dependency update checks.
+- `CI`: composer validation + PHP syntax checks on push/PR
+- `Release`: publish GitHub release on semantic tags
+- `Dependabot`: weekly Composer dependency checks

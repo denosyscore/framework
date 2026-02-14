@@ -1,4 +1,8 @@
 /vendor/
 /.idea/
 /.vscode/
+.env
 composer.lock
+/storage/core/cache/*.php
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitkeep
