@@ -1,34 +1,27 @@
 # denosyscore/framework
 
-DenoSys Framework application skeleton for bootstrapping new apps with Composer.
+DenoSys framework runtime core package.
 
-## Create a New Project
-
-```bash
-composer create-project denosyscore/framework my-app
-```
-
-## After Install
+## Installation
 
 ```bash
-cd my-app
-php cfxp optimize
-php -S 127.0.0.1:8000 -t public
+composer require denosyscore/framework
 ```
 
-## What You Get
+## Recommended App Skeleton
 
-- HTTP and CLI entry points (`public/index.php`, `cfxp`)
-- Application bootstrap (`bootstrap/app.php`)
-- Base app provider, controller, and user model
-- Starter configuration in `config/`
-- Starter routes in `routes/web.php`
-- Global helper loading via `support/helpers.php`
-- Runtime core classes under `src/` (`Denosys\\Application`, bootstrap/config/environment/routing glue)
+Use the official app skeleton for new projects:
 
-## Dependency Model
+```bash
+composer create-project denosyscore/app my-app
+```
 
-This package is a project skeleton composed of modular `denosyscore/*` packages, so its `composer.json` lists those component dependencies explicitly.
+## What This Package Provides
+
+- `Denosys\Application` runtime core
+- Bootstrap/config/environment/routing glue under `src/`
+- Global framework helpers via `support/helpers.php`
+- Transitive installation of all modular `denosyscore/*` runtime packages
 
 ## Repository Workflows
 
