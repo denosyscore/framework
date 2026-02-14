@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use CFXP\Core\Container\ContainerInterface;
-use CFXP\Core\ServiceProviderInterface;
+use Denosys\Container\ContainerInterface;
+use Denosys\Contracts\ServiceProviderInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class AppServiceProvider implements ServiceProviderInterface

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use CFXP\Core\Auth\Identity\Authenticatable;
-use CFXP\Core\Auth\Identity\AuthenticatableInterface;
-use CFXP\Core\Database\Model;
+use Denosys\Auth\Identity\Authenticatable;
+use Denosys\Auth\Identity\AuthenticatableInterface;
+use Denosys\Database\Model;
 
 class User extends Model implements AuthenticatableInterface
 {

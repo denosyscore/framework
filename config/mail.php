@@ -29,7 +29,7 @@ return [
     */
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'noreply@example.com'),
-        'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'CFXPrimes')),
+        'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Denosys')),
     ],
 
     /*

@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Mailgun\Mailgun;
-use CFXP\Core\Application;
-use CFXP\Core\Config\ConfigurationInterface;
+use Denosys\Application;
+use Denosys\Config\ConfigurationInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Container\ContainerExceptionInterface;
 
@@ -162,7 +162,7 @@ if (!function_exists('send_email')) {
         $domain = config('mail.mailgun.domain', '');
         $apiKey = config('mail.mailgun.api_key', '');
         $fromAddress = config('mail.from.address', 'noreply@localhost');
-        $fromName = config('mail.from.name', config('app.name', 'CFXPrimes Core'));
+        $fromName = config('mail.from.name', config('app.name', 'Denosys Framework'));
 
         if (empty($apiKey) || empty($domain)) {
             error_log('Mailgun API key or domain is not configured.');
@@ -361,12 +361,12 @@ if (!function_exists('storage')) {
      * Get a filesystem disk instance.
      *
      * @param string|null $disk The disk name, or null for default
-     * @return \CFXP\Core\Filesystem\FilesystemInterface|\CFXP\Core\Filesystem\FilesystemManager
+     * @return \Denosys\Filesystem\FilesystemInterface|\Denosys\Filesystem\FilesystemManager
      */
-    function storage(?string $disk = null): \CFXP\Core\Filesystem\FilesystemInterface|\CFXP\Core\Filesystem\FilesystemManager
+    function storage(?string $disk = null): \Denosys\Filesystem\FilesystemInterface|\Denosys\Filesystem\FilesystemManager
     {
-        /** @var \CFXP\Core\Filesystem\FilesystemManager $manager */
-        $manager = container(\CFXP\Core\Filesystem\FilesystemManager::class);
+        /** @var \Denosys\Filesystem\FilesystemManager $manager */
+        $manager = container(\Denosys\Filesystem\FilesystemManager::class);
 
         if ($disk !== null) {
             return $manager->disk($disk);
@@ -386,8 +386,8 @@ if (!function_exists('session')) {
      */
     function session(string|array|null $key = null, mixed $default = null): mixed
     {
-        /** @var \CFXP\Core\Session\SessionInterface $session */
-        $session = container(\CFXP\Core\Session\SessionInterface::class);
+        /** @var \Denosys\Session\SessionInterface $session */
+        $session = container(\Denosys\Session\SessionInterface::class);
 
         if (null === $key) {
             return $session;
@@ -426,11 +426,11 @@ if (!function_exists('auth')) {
     /**
      * Get the authenticator instance.
      *
-     * @return \CFXP\Core\Auth\Authentication\Authenticator
+     * @return \Denosys\Auth\Authentication\Authenticator
      */
-    function auth(): \CFXP\Core\Auth\Authentication\Authenticator
+    function auth(): \Denosys\Auth\Authentication\Authenticator
     {
-        return container(\CFXP\Core\Auth\Authentication\Authenticator::class);
+        return container(\Denosys\Auth\Authentication\Authenticator::class);
     }
 }
 
@@ -456,8 +456,8 @@ if (!function_exists('session_driver')) {
     function session_driver(): ?string
     {
         try {
-            /** @var \CFXP\Core\Session\SessionManager $manager */
-            $manager = container(\CFXP\Core\Session\SessionManager::class);
+            /** @var \Denosys\Session\SessionManager $manager */
+            $manager = container(\Denosys\Session\SessionManager::class);
             return $manager->getDriver();
         } catch (Throwable) {
             return null;
@@ -530,8 +530,8 @@ if (!function_exists('flash')) {
      */
     function flash(?string $key = null, ?string $message = null): mixed
     {
-        /** @var \CFXP\Core\Session\SessionInterface $session */
-        $session = container(\CFXP\Core\Session\SessionInterface::class);
+        /** @var \Denosys\Session\SessionInterface $session */
+        $session = container(\Denosys\Session\SessionInterface::class);
 
         if (null !== $key && null !== $message) {
             $session->flash($key, $message);
@@ -641,12 +641,12 @@ if (!function_exists('encrypt')) {
      *
      * @return string The encrypted string
      *
-     * @throws \CFXP\Core\Encryption\EncryptException
+     * @throws \Denosys\Encryption\EncryptException
      */
     function encrypt(mixed $value, bool $serialize = true): string
     {
-        /** @var \CFXP\Core\Encryption\EncrypterInterface $encrypter */
-        $encrypter = container(\CFXP\Core\Encryption\EncrypterInterface::class);
+        /** @var \Denosys\Encryption\EncrypterInterface $encrypter */
+        $encrypter = container(\Denosys\Encryption\EncrypterInterface::class);
 
         return $encrypter->encrypt($value, $serialize);
     }
@@ -661,12 +661,12 @@ if (!function_exists('decrypt')) {
      *
      * @return mixed The decrypted value
      *
-     * @throws \CFXP\Core\Encryption\DecryptException
+     * @throws \Denosys\Encryption\DecryptException
      */
     function decrypt(string $payload, bool $unserialize = true): mixed
     {
-        /** @var \CFXP\Core\Encryption\EncrypterInterface $encrypter */
-        $encrypter = container(\CFXP\Core\Encryption\EncrypterInterface::class);
+        /** @var \Denosys\Encryption\EncrypterInterface $encrypter */
+        $encrypter = container(\Denosys\Encryption\EncrypterInterface::class);
 
         return $encrypter->decrypt($payload, $unserialize);
     }
@@ -676,11 +676,11 @@ if (!function_exists('encrypter')) {
     /**
      * Get the encrypter instance.
      *
-     * @return \CFXP\Core\Encryption\EncrypterInterface
+     * @return \Denosys\Encryption\EncrypterInterface
      */
-    function encrypter(): \CFXP\Core\Encryption\EncrypterInterface
+    function encrypter(): \Denosys\Encryption\EncrypterInterface
     {
-        return container(\CFXP\Core\Encryption\EncrypterInterface::class);
+        return container(\Denosys\Encryption\EncrypterInterface::class);
     }
 }
 
@@ -688,11 +688,11 @@ if (!function_exists('mailer')) {
     /**
      * Get the mailer instance.
      *
-     * @return \CFXP\Core\Mail\Mailer
+     * @return \Denosys\Mail\Mailer
      */
-    function mailer(): \CFXP\Core\Mail\Mailer
+    function mailer(): \Denosys\Mail\Mailer
     {
-        return container(\CFXP\Core\Mail\Mailer::class);
+        return container(\Denosys\Mail\Mailer::class);
     }
 }
 
@@ -702,8 +702,8 @@ if (!function_exists('dispatch')) {
      *
      * @return string The job UUID
      */
-    function dispatch(\CFXP\Core\Queue\Job $job): string
+    function dispatch(\Denosys\Queue\Job $job): string
     {
-        return container(\CFXP\Core\Queue\QueueManager::class)->dispatch($job);
+        return container(\Denosys\Queue\QueueManager::class)->dispatch($job);
     }
 }

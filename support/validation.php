@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use CFXP\Core\Validation\Validator;
-use CFXP\Core\Validation\ErrorBag;
+use Denosys\Validation\Validator;
+use Denosys\Validation\ErrorBag;
 
 if (!function_exists('validate')) {
     /**
@@ -14,7 +14,7 @@ if (!function_exists('validate')) {
      * @param array<string, string> $messages
      * @param array<string, string> $attributes
      * @return array<string, mixed>
-     * @throws \CFXP\Core\Validation\ValidationException
+     * @throws \Denosys\Validation\ValidationException
      */
     function validate(array $data, array $rules, array $messages = [], array $attributes = []): array
     {
