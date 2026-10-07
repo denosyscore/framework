@@ -26,16 +26,22 @@ class EnvironmentManager
         $this->repository = $repository ?? $this->createDefaultRepository();
     }
 
-    /**
-     * @param array<string, mixed> $files
-     */
+    /** @param list<string> $files */
     public function load(string $dir, array $files = ['.env']): void
     {
         if (!is_dir($dir)) {
             throw new InvalidArgumentException("Env directory not found: {$dir}");
         }
 
-        Dotenv::create($this->repository, $dir, $files)->safeLoad();
+        $availableFiles = array_values(array_filter(
+            $files,
+            static fn (string $file): bool => is_file($dir . DIRECTORY_SEPARATOR . $file),
+        ));
+
+        if ($availableFiles !== []) {
+            Dotenv::create($this->repository, $dir, $availableFiles)->safeLoad();
+        }
+
         $this->cache = [];
     }
 
