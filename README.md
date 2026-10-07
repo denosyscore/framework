@@ -44,6 +44,17 @@ Form-request subclasses should retain the package's `Request` constructor
 contract. This behavior is provided by the framework bridge; the standalone
 routing package remains independent of HTTP form requests.
 
+## Mail provider
+
+Register `Denosys\Mail\MailServiceProvider` with `Application::withProviders()`
+when an application needs `Symfony\Component\Mailer\MailerInterface`. The
+provider binds a lazy `TransportInterface` and mailer. Set `mail.dsn` for a
+Symfony-supported transport, or configure `mail.default` as `smtp` or
+`sendmail` with `mail.mailers.smtp.*` or `mail.mailers.sendmail.path`.
+Unsupported drivers throw when the mailer is resolved; they never silently
+discard messages. A working transport and sender address are required before
+sending account or other transactional mail.
+
 ## Repository Workflows
 
 - `CI`: composer validation + PHP syntax checks on push/PR
