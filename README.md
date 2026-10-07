@@ -23,6 +23,14 @@ composer create-project denosyscore/app my-app
 - Global framework helpers via `support/helpers.php`
 - Transitive installation of all modular `denosyscore/*` runtime packages
 
+## Environment files
+
+`EnvironmentManager::load($directory, $files)` treats missing files in the
+ordered filename list as optional. It loads the first present file according
+to dotenv's normal precedence and emits no PHP warning when none are present.
+The directory itself must exist. Run `composer test` to verify this contract
+locally.
+
 ## Repository Workflows
 
 - `CI`: composer validation + PHP syntax checks on push/PR

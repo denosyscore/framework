@@ -3,6 +3,7 @@
 /.vscode/
 .env
 composer.lock
+.phpunit.result.cache
 /storage/core/cache/*.php
 /storage/framework/sessions/*
 !/storage/framework/sessions/.gitkeep
