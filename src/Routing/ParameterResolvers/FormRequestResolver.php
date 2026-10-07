@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Denosys\Routing\ParameterResolvers;
 
 use Denosys\Container\ContainerInterface;
+use Denosys\Http\Exceptions\AuthorizationException;
 use Denosys\Http\FormRequest;
 use Denosys\Http\Request;
+use Denosys\Validation\ValidationException;
 use Psr\Http\Message\ServerRequestInterface;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -29,6 +31,7 @@ final readonly class FormRequestResolver implements ParameterResolverInterface
             && is_subclass_of($type->getName(), FormRequest::class);
     }
 
+    /** @throws AuthorizationException|ValidationException */
     public function resolve(
         ReflectionParameter $parameter,
         ServerRequestInterface $request,

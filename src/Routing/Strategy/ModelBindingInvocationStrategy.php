@@ -18,6 +18,8 @@ use Denosys\Routing\ResponseConverters\ResponseConverterInterface;
 use Denosys\Routing\ResponseConverters\StringResponseConverter;
 use Denosys\Routing\Strategy\InvocationStrategyInterface;
 use Denosys\Routing\Exceptions\InvalidHandlerException;
+use Denosys\Http\Exceptions\AuthorizationException;
+use Denosys\Validation\ValidationException;
 use Closure;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -82,6 +84,8 @@ final class ModelBindingInvocationStrategy implements InvocationStrategyInterfac
 
     /**
      * @throws ReflectionException
+     * @throws AuthorizationException
+     * @throws ValidationException
      */
     public function invoke(
         callable $handler,
