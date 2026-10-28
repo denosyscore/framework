@@ -23,6 +23,10 @@ composer create-project denosyscore/app my-app
 - Global framework helpers via `support/helpers.php`
 - Transitive installation of all modular `denosyscore/*` runtime packages
 
+The framework accepts the compatible 0.2 and 0.3 release lines of the queue
+and console packages. The 0.3 lines add runtime services for queued jobs and
+worker support while preserving existing job and command contracts.
+
 ## Environment files
 
 `EnvironmentManager::load($directory, $files)` treats missing files in the
@@ -35,8 +39,8 @@ locally.
 
 The framework's registered route invocation strategy constructs a type-hinted
 `Denosys\Http\FormRequest` subclass from the current PSR-7 request, supplies
-the current authenticated user and route arguments, supplies the framework
-container, and calls `validate()` before the handler. A denied
+the current authenticated user, route arguments, and framework container,
+then calls `validate()` before the handler. A denied
 `authorize()` or invalid field rule prevents handler invocation and propagates
 through the configured exception pipeline. Each invocation uses its own
 request, including when the strategy and handler are reused.
