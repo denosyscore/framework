@@ -304,13 +304,13 @@ if (!function_exists('env')) {
      */
     function env(string $key, $default = null): mixed
     {
-        $value = $_ENV[$key] ?? null;
+        $value = $_ENV[$key] ?? getenv($key);
 
-        if ($value === null) {
+        if ($value === null || $value === false) {
             return $default;
         }
 
-        return match (strtolower($value)) {
+        return match (strtolower((string) $value)) {
             'true', '(true)' => true,
             'false', '(false)' => false,
             'empty', '(empty)' => '',
