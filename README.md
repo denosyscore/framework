@@ -23,6 +23,10 @@ composer create-project denosyscore/app my-app
 - Global framework helpers via `support/helpers.php`
 - Transitive installation of all modular `denosyscore/*` runtime packages
 
+The framework accepts the compatible 0.2 and 0.3 release lines of the queue
+and console packages. The 0.3 lines add runtime services for queued jobs and
+worker support while preserving existing job and command contracts.
+
 ## Environment files
 
 `EnvironmentManager::load($directory, $files)` treats missing files in the
