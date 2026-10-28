@@ -31,6 +31,11 @@ to dotenv's normal precedence and emits no PHP warning when none are present.
 The directory itself must exist. Run `composer test` to verify this contract
 locally.
 
+The global `env()` helper reads an explicit `$_ENV` value first and falls back
+to the process environment through `getenv()`. Process overrides therefore work
+in CLI configurations that do not populate `$_ENV`. Missing keys return the
+provided default; the usual boolean and null string values are cast.
+
 ## Repository Workflows
 
 - `CI`: composer validation + PHP syntax checks on push/PR
