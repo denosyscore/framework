@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Denosys\Routing\Strategy;
 
 use Denosys\Routing\ParameterResolvers\RouteModelBindingResolver;
+use Denosys\Routing\ParameterResolvers\FormRequestResolver;
 use Denosys\Routing\ParameterResolvers\DefaultValueResolver;
 use Denosys\Routing\ParameterResolvers\ParameterResolverInterface;
 use Denosys\Routing\ParameterResolvers\ResolverDependencySorter;
@@ -17,6 +18,8 @@ use Denosys\Routing\ResponseConverters\ResponseConverterInterface;
 use Denosys\Routing\ResponseConverters\StringResponseConverter;
 use Denosys\Routing\Strategy\InvocationStrategyInterface;
 use Denosys\Routing\Exceptions\InvalidHandlerException;
+use Denosys\Http\Exceptions\AuthorizationException;
+use Denosys\Validation\ValidationException;
 use Closure;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -28,11 +31,9 @@ use ReflectionMethod;
 use ReflectionParameter;
 
 /**
- * Custom invocation strategy that adds Route Model Binding support.
+ * Framework invocation strategy for model binding and HTTP form requests.
  * 
- * This strategy extends the default behavior by injecting a 
- * RouteModelBindingResolver with highest priority, enabling automatic
- * model resolution from route parameters in controller methods.
+ * Model and form-request resolvers run before generic container resolution.
  */
 final class ModelBindingInvocationStrategy implements InvocationStrategyInterface
 {
@@ -54,14 +55,18 @@ final class ModelBindingInvocationStrategy implements InvocationStrategyInterfac
 
     private function initializeResolvers(): void
     {
-        // Initialize parameter resolvers with RouteModelBindingResolver
         $resolvers = [
-            new RouteModelBindingResolver(),  // Model binding - runs before TypeBasedResolver
-            new TypeBasedResolver($this->container, $this->responseFactory),
-            new RouteParameterResolver(),
-            new UntypedRequestResolver(),
-            new DefaultValueResolver(),
+            new RouteModelBindingResolver(),
         ];
+
+        if ($this->container instanceof \Denosys\Container\ContainerInterface) {
+            $resolvers[] = new FormRequestResolver($this->container);
+        }
+
+        $resolvers[] = new TypeBasedResolver($this->container, $this->responseFactory);
+        $resolvers[] = new RouteParameterResolver();
+        $resolvers[] = new UntypedRequestResolver();
+        $resolvers[] = new DefaultValueResolver();
 
         // Sort by dependency declarations (topological sort)
         $sorter = new ResolverDependencySorter();
@@ -79,6 +84,8 @@ final class ModelBindingInvocationStrategy implements InvocationStrategyInterfac
 
     /**
      * @throws ReflectionException
+     * @throws AuthorizationException
+     * @throws ValidationException
      */
     public function invoke(
         callable $handler,
