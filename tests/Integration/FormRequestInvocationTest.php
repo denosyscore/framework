@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Denosys\Container\Container;
 use Denosys\Http\Exceptions\AuthorizationException;
 use Denosys\Http\FormRequest;
+use Denosys\Http\Request;
 use Denosys\Routing\Strategy\ModelBindingInvocationStrategy;
 use Denosys\Validation\Rules\Required;
 use Denosys\Validation\ValidationException;
@@ -30,6 +31,20 @@ final class RequiredInvocationFormRequest extends FormRequest
     public function rules(): array
     {
         return ['email' => 'required'];
+    }
+}
+
+final class RouteScopedInvocationFormRequest extends FormRequest
+{
+    public function rules(): array
+    {
+        return [];
+    }
+
+    public function authorize(): bool
+    {
+        return $this->user() === 'account-owner'
+            && $this->route('account') === 'account-7';
     }
 }
 
@@ -102,4 +117,18 @@ it('uses the current request on repeated handler invocations', function (): void
     } finally {
         Validator::reset();
     }
+});
+
+it('preserves the authenticated user and route arguments during authorization', function (): void {
+    $strategy = new ModelBindingInvocationStrategy(new Container());
+    $request = Request::createFromPsr7(new ServerRequest([], [], 'https://example.test/accounts/account-7', 'POST'))
+        ->withUser('account-owner');
+
+    $response = $strategy->invoke(
+        static fn (RouteScopedInvocationFormRequest $form): HtmlResponse => new HtmlResponse('allowed'),
+        $request,
+        ['account' => 'account-7'],
+    );
+
+    expect((string) $response->getBody())->toBe('allowed');
 });
