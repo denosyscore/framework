@@ -35,7 +35,8 @@ locally.
 
 The framework's registered route invocation strategy constructs a type-hinted
 `Denosys\Http\FormRequest` subclass from the current PSR-7 request, supplies
-the framework container, and calls `validate()` before the handler. A denied
+the current authenticated user and route arguments, supplies the framework
+container, and calls `validate()` before the handler. A denied
 `authorize()` or invalid field rule prevents handler invocation and propagates
 through the configured exception pipeline. Each invocation uses its own
 request, including when the strategy and handler are reused.

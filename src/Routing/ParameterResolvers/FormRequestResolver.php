@@ -44,7 +44,8 @@ final readonly class FormRequestResolver implements ParameterResolverInterface
 
         /** @var class-string<FormRequest> $requestClass */
         $requestClass = $type->getName();
-        $formRequest = new $requestClass(Request::createFromPsr7($request));
+        $currentRequest = $request instanceof Request ? $request : Request::createFromPsr7($request);
+        $formRequest = new $requestClass($currentRequest->withRouteParams($routeArguments));
         $formRequest->setContainer($this->container);
         $formRequest->validate();
 
