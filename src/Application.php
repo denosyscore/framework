@@ -225,6 +225,10 @@ class Application
     public function setContainer(Container $container): void
     {
         $this->container = $container;
+
+        if (!$container->has(ConfigurationReaderInterface::class)) {
+            $this->bindConfigurationReader($container);
+        }
     }
 
     public static function getContainer(): ContainerInterface
@@ -605,13 +609,21 @@ class Application
         $this->container->instance(Container::class, $this->container);
 
         $this->container->instance(ConfigurationInterface::class, $this->config);
-        $this->container->instance(ConfigurationReaderInterface::class, $this->config);
+        $this->bindConfigurationReader($this->container);
         $this->container->alias('config', ConfigurationInterface::class);
 
         $this->container->instance(EnvironmentManager::class, $this->environment);
         $this->container->alias('environment', EnvironmentManager::class);
 
         $this->registerPathBindings();
+    }
+
+    private function bindConfigurationReader(ContainerInterface $container): void
+    {
+        $container->bind(
+            ConfigurationReaderInterface::class,
+            static fn (ContainerInterface $container): ConfigurationReaderInterface => $container->get(ConfigurationInterface::class)
+        );
     }
 
     /**
