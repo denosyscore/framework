@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased (proposed 0.5.0)
+
+- Resolve the shared configuration read contract through the current framework configuration binding, including when the application container is replaced.
+- Require filesystem 0.3.1 and contracts 0.2.4; filesystem 0.3 changes the manager constructor contract for direct callers.
+
 ## Unreleased (proposed 0.4.2)
 
 - Accept database 0.4 while retaining the supported 0.2 and 0.3 lines.
