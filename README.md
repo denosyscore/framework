@@ -82,3 +82,10 @@ composer test
 - CI: Composer validation, isolated dependency installation, HTTP tests, and PHP syntax lint on push and pull requests.
 - Release: GitHub release publication on semantic version tags.
 - Dependabot: weekly Composer dependency update checks.
+
+## Releases
+
+CI tests against validation v0.2.2 and v0.3.0. After CI passes on `main`,
+create an annotated semantic version tag from that reviewed commit and push
+it. The Release workflow publishes a GitHub Release. Confirm the matching
+version is available in the Composer package index before updating consumers.

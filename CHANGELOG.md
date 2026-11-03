@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## Unreleased (proposed 0.3.0)
+
+- Accept validation 0.3 while retaining the supported 0.2 line.
 
 - Register the JSON Whoops handler for XHR and JSON requests in local debug
   mode, and set page titles only for HTML debug responses. This prevents a
@@ -11,5 +13,5 @@
   by the HTTP kernel across SAPIs, without replacing explicit headers.
 - Declare the PSR HTTP message and server interface dependencies used by the
   package directly.
-- Add package-level HTTP tests and run them in CI. These corrections make no
-  public API change and are intended for the next patch release.
+- Add package-level HTTP tests and run them in CI. The opt-in XSRF middleware
+  is an additive API proposed for the next 0.3 release.

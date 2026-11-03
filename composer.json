@@ -15,7 +15,7 @@
     "denosyscore/contracts": "^0.2",
     "denosyscore/container": "^0.2",
     "denosyscore/events": "^0.2",
-    "denosyscore/validation": "^0.2"
+    "denosyscore/validation": "^0.2 || ^0.3"
   },
   "require-dev": {
     "filp/whoops": "^2.18",
