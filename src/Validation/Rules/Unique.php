@@ -37,7 +37,7 @@ class Unique implements RuleInterface
 
         $table = $parameters['table'];
         $column = $parameters['column'] ?? $field;
-        $ignoreId = $parameters['ignored_id'] ?? null;
+        $ignoreId = $parameters['ignore_id'] ?? null;
 
         $query = $this->connection->table($table)
             ->where($column, '=', $value);
