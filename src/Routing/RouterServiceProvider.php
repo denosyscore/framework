@@ -15,6 +15,8 @@ use Denosys\Container\Exceptions\NotFoundException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Denosys\Routing\UrlGeneratorInterface;
 use Denosys\Container\Exceptions\ContainerResolutionException;
+use Laminas\Diactoros\ResponseFactory as DiactorosResponseFactory;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Throwable;
 
 class RouterServiceProvider implements ServiceProviderInterface
@@ -27,6 +29,7 @@ class RouterServiceProvider implements ServiceProviderInterface
      */
     protected array $globalMiddleware = [
         \Denosys\Http\Middleware\CorsMiddleware::class,
+        \Denosys\Http\Middleware\HttpExceptionMiddleware::class,
     ];
 
     /**
@@ -52,6 +55,10 @@ class RouterServiceProvider implements ServiceProviderInterface
      */
     public function register(ContainerInterface $container): void
     {
+        if (!$container->has(ResponseFactoryInterface::class)) {
+            $container->singleton(ResponseFactoryInterface::class, DiactorosResponseFactory::class);
+        }
+
         $this->registerMiddlewareRegistry($container);
         $this->registerRouter($container);
         $this->registerUrlGenerator($container);
