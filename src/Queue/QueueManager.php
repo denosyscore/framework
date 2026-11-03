@@ -122,7 +122,7 @@ protected array $config = [];
 
     protected function createSyncDriver(): SyncQueue
     {
-        return new SyncQueue();
+        return new SyncQueue(new JobRunner($this->container));
     }
 
     /**
@@ -135,7 +135,8 @@ protected array $config = [];
         return new DatabaseQueue(
             $connection,
             $config['table'] ?? 'jobs',
-            $config['failed_table'] ?? 'failed_jobs'
+            $config['failed_table'] ?? 'failed_jobs',
+            (int) ($config['retry_after'] ?? 90),
         );
     }
 
