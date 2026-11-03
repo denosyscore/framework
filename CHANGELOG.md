@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased (proposed 0.3.2)
+
+- Accept database 0.4 while retaining the supported 0.2 and 0.3 lines.
+
 ## 0.3.1 - 2026-11-03
 
 - Correct rule parameter PHPDoc to describe named keys and mixed values from
