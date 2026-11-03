@@ -77,14 +77,14 @@ analysis fixture checks this public parameter contract.
 ## CI Workflows
 
 - CI: Composer validation, isolated installation, PHP 8.2/8.5 tests against
-  Carbon 2/3 and database 0.2/0.3, static analysis of rule parameter consumers,
+  Carbon 2/3 and database 0.2/0.3/0.4, static analysis of rule parameter consumers,
   and syntax lint on push and pull requests.
 - Release: GitHub release publication on semantic version tags.
 - Dependabot: weekly Composer dependency update checks.
 
 ## Releases
 
-CI tests against database v0.2.3 and v0.3.0. After CI passes on `main`, create
+CI tests against database v0.2.3, v0.3.0, and v0.4.0. After CI passes on `main`, create
 an annotated semantic version tag from that reviewed commit and push it. The
 Release workflow publishes a GitHub Release. Confirm the matching version is
 available in the Composer package index before updating consumers.
