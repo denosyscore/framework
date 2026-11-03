@@ -71,6 +71,13 @@ adds a host-only, browser-readable `XSRF-TOKEN` cookie with `Path=/` and
 token callback keeps this HTTP package independent of any particular session
 implementation. The cookie lifetime, name, and secure policy are configurable.
 
+## Routing HTTP errors
+
+When `denosyscore/routing` is installed, `HttpExceptionMiddleware` turns its
+typed routing exceptions into PSR responses. Method-not-allowed responses
+include `Allow` with the methods reported by the router. The routing package
+is an optional integration for standalone HTTP consumers.
+
 ## Development
 
 composer validate --strict
