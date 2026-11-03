@@ -22,6 +22,10 @@ runs. The legacy `db` binding remains a fallback. When both bindings are
 present, the typed connection takes precedence. Register the database provider
 before validating with these rules.
 
+The `unique:accounts,email,1` rule checks the `email` column in `accounts`
+while excluding the row with `id = 1`. Its third positional parameter is
+named `ignore_id` by `Unique::parameterNames()`.
+
 ## Development
 
 composer validate --strict
