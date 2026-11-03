@@ -6,7 +6,8 @@
   "require": {
     "php": "^8.2",
     "denosyscore/contracts": "^0.2",
-    "denosyscore/database": "^0.2"
+    "denosyscore/database": "^0.2",
+    "psr/http-message": "^2.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^10.5"
