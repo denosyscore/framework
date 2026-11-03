@@ -37,5 +37,5 @@ jobs:
             echo "No src/ directory to lint."
           fi
 
-      - name: Rule contract regression tests
+      - name: Validation regression tests
         run: composer test

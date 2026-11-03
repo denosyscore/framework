@@ -327,9 +327,10 @@ class ValidationException extends Exception
     /**
      * @return array<array<string>>
      */
+    /** @return array<string, array<string>> */
     public function getErrors(): array
     {
-        return $this->validator->errors()->all();
+        return $this->validator->getErrors();
     }
 
     /**
@@ -338,13 +339,7 @@ class ValidationException extends Exception
     public function getFirstError(?string $field = null): ?string
     {
         if ($field === null) {
-            foreach ($this->getErrors() as $errors) {
-                if (is_array($errors) && count($errors) > 0) {
-                    return $errors[0];
-                }
-            }
-
-            return null;
+            return $this->validator->errors()->all()[0] ?? null;
         }
 
         return $this->validator->first($field);
