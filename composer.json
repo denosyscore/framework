@@ -18,8 +18,12 @@
     "denosyscore/validation": "^0.2 || ^0.3"
   },
   "require-dev": {
+    "denosyscore/routing": "0.6.0-alpha.1",
     "filp/whoops": "^2.18",
     "phpunit/phpunit": "^10.5"
+  },
+  "suggest": {
+    "denosyscore/routing": "Provides typed routing HTTP exceptions for HttpExceptionMiddleware"
   },
   "autoload": {
     "psr-4": {

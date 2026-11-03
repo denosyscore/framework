@@ -10,6 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Denosys\Routing\Exceptions\HttpExceptionInterface;
+use Denosys\Routing\Exceptions\MethodNotAllowedException;
 
 class HttpExceptionMiddleware implements MiddlewareInterface
 {
@@ -34,6 +35,12 @@ class HttpExceptionMiddleware implements MiddlewareInterface
             ? $exception->getMessage() 
             : $exception->getReasonPhrase();
         $response->getBody()->write($message);
-        return $response->withHeader('Content-Type', 'text/plain');
+        $response = $response->withHeader('Content-Type', 'text/plain');
+
+        if ($exception instanceof MethodNotAllowedException) {
+            $response = $response->withHeader('Allow', implode(', ', $exception->getAllowedMethods()));
+        }
+
+        return $response;
     }
 }

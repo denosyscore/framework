@@ -1,6 +1,12 @@
 # Changelog
 
-## Unreleased (proposed 0.3.0)
+## Unreleased (proposed 0.3.1)
+
+- Include the required `Allow` header when routing method-not-allowed
+  exceptions become HTTP 405 responses. Add standalone integration coverage
+  with the optional routing package.
+
+## 0.3.0
 
 - Accept validation 0.3 while retaining the supported 0.2 line.
 
