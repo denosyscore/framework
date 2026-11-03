@@ -5,7 +5,7 @@
   "license": "MIT",
   "require": {
     "php": "^8.2",
-    "denosyscore/database": "^0.2 || ^0.3",
+    "denosyscore/database": "^0.2 || ^0.3 || ^0.4",
     "denosyscore/encryption": "^0.2",
     "denosyscore/http": "^0.2 || ^0.3"
   },
