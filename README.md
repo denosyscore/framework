@@ -44,6 +44,14 @@ The `unique:accounts,email,1` rule checks the `email` column in `accounts`
 while excluding the row with `id = 1`. Its third positional parameter is
 named `ignore_id` by `Unique::parameterNames()`.
 
+## HTTP exception responses
+
+Validation itself does not depend on HTTP. Install `denosyscore/http` v0.3.2
+or later for `Denosys\Http\Exceptions\ValidationExceptionHandler`. HTTP also
+provides the former `Denosys\Validation\Handlers\ValidationExceptionHandler`
+name as an alias for existing integrations. Composer prevents pairing this
+validation release with an older HTTP version that lacks the alias.
+
 ## HTTP-uploaded files
 
 The `file` rule accepts valid PSR-7 uploads from any source. Add

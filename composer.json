@@ -14,6 +14,9 @@
     "phpstan/phpstan": "^2.2",
     "phpunit/phpunit": "^10.5"
   },
+  "conflict": {
+    "denosyscore/http": "<0.3.2"
+  },
   "autoload": {
     "psr-4": {
       "Denosys\\Validation\\": "src/Validation/"

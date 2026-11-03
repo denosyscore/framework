@@ -1,6 +1,13 @@
 # Changelog
 
-## Unreleased (proposed 0.3.2)
+## Unreleased (proposed 0.3.3)
+
+- Remove the HTTP exception response adapter from validation. HTTP v0.3.2
+  owns it and preserves the former class name as an alias when both packages
+  are installed. Declare a conflict with older HTTP versions to prevent an
+  incompatible mixed installation.
+
+## 0.3.2
 
 - Accept database 0.4 while retaining the supported 0.2 and 0.3 lines.
 

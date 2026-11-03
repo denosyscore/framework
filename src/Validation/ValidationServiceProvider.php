@@ -7,10 +7,7 @@ namespace Denosys\Validation;
 use Denosys\Container\ContainerInterface;
 use Denosys\Database\Connection\Connection;
 use Denosys\Contracts\ServiceProviderInterface;
-use Denosys\Exceptions\ExceptionHandlerChain;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Denosys\Container\Exceptions\ContainerResolutionException;
-use Denosys\Validation\Handlers\ValidationExceptionHandler;
 use Throwable;
 
 /**
@@ -25,19 +22,6 @@ class ValidationServiceProvider implements ServiceProviderInterface
         );
         $ruleRegistrar->register();
 
-        // Register validation exception handler
-//        if ($container->has(ExceptionHandlerChain::class)) {
-//            /** @var ExceptionHandlerChain $exceptionHandler */
-//            $exceptionHandler = $container->get(ExceptionHandlerChain::class);
-//
-//            $logger = $container->has('logger') ? $container->get('logger') : null;
-//            $debug = $container->has('config') ? $container->get('config')->get('app.debug', false) : false;
-//            $environment = $container->has('config') ? $container->get('config')->get('app.env', 'production') : 'production';
-//
-//            $exceptionHandler->addHandler(
-//                new ValidationExceptionHandler($logger, $debug, $environment)
-//            );
-//        }
     }
 
     public function boot(ContainerInterface $container, ?EventDispatcherInterface $dispatcher = null): void
