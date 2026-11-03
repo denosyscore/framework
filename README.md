@@ -51,7 +51,7 @@ idempotent: a worker can finish side effects but stop before deleting its row.
 ],
 ```
 
-The Composer requirement accepts database 0.2 and 0.3.
+The Composer requirement accepts database 0.2, 0.3, and 0.4.
 
 ## Development
 
