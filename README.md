@@ -22,6 +22,22 @@ runs. The legacy `db` binding remains a fallback. When both bindings are
 present, the typed connection takes precedence. Register the database provider
 before validating with these rules.
 
+## HTTP-uploaded files
+
+The `file` rule accepts valid PSR-7 uploads from any source. Add
+`http_uploaded` when a browser-facing form must require a file received by
+PHP's HTTP upload handling:
+
+```php
+$validator = Validator::make(
+    ['document' => $uploadedFile],
+    ['document' => 'required|file|http_uploaded|mimes:jpg,png,pdf'],
+);
+```
+
+The rule checks a successful, nonempty upload and calls `is_uploaded_file()`
+on its stream path. It is intended for validation before moving the upload.
+
 ## Development
 
 composer validate --strict
