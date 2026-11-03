@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased (proposed 0.4.1)
+## Unreleased (proposed 0.4.2)
+
+- Accept database 0.4 while retaining the supported 0.2 and 0.3 lines.
+- Exercise the published 0.4 dependency combination in CI.
+
+## 0.4.1
 
 - Convert routing HTTP exceptions to their declared response status in the
   default global middleware stack, retaining CORS and non-HTTP failures.

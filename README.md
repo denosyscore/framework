@@ -73,6 +73,9 @@ The default router returns PSR responses for routing HTTP exceptions, including
 exception middleware runs inside CORS so those responses retain CORS headers.
 Unexpected exceptions continue through the configured exception pipeline.
 
+The Composer requirement accepts database 0.2, 0.3, and 0.4; CI verifies
+published combinations of the framework dependencies.
+
 ## Repository Workflows
 
 - `CI`: composer validation, published dependency installs, tests, and PHP

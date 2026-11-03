@@ -14,7 +14,7 @@
     "denosyscore/rate-limiter": "^0.2",
     "denosyscore/hashing": "^0.2",
     "denosyscore/encryption": "^0.2",
-    "denosyscore/database": "^0.2 || ^0.3",
+    "denosyscore/database": "^0.2 || ^0.3 || ^0.4",
     "denosyscore/validation": "^0.2 || ^0.3",
     "denosyscore/filesystem": "^0.2",
     "denosyscore/queue": "^0.2 || ^0.3",
