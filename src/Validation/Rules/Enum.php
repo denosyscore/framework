@@ -30,7 +30,7 @@ class Enum implements RuleInterface
     ) {}
 
     /**
-     * @param array<int|string, string> $parameters
+     * @param array<int|string, mixed> $parameters
      * @param array<string, mixed> $data
      */
     public function validate(string $field, mixed $value, array $parameters = [], array $data = []): bool
@@ -58,7 +58,7 @@ class Enum implements RuleInterface
     }
 
     /**
-     * @param array<int|string, string> $parameters
+     * @param array<int|string, mixed> $parameters
      */
     public function message(string $field, array $parameters = []): string
     {

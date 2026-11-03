@@ -10,11 +10,13 @@ namespace Denosys\Validation\Rules;
 interface RuleInterface
 {
     /**
-     * Validate a value against this rule
+     * Validate a value against this rule. The validator binds rule arguments
+     * by name; direct callers may also supply positional arguments where a
+     * rule supports them. Values can be nested lists, numbers, or null.
      *
      * @param string $field
      * @param mixed $value
-     * @param array<int, string> $parameters
+     * @param array<int|string, mixed> $parameters
      * @param array<string, mixed> $data
      *
      * @return bool
@@ -22,10 +24,10 @@ interface RuleInterface
     public function validate(string $field, mixed $value, array $parameters = [], array $data = []): bool;
 
     /**
-     * Get the validation error message
+     * Get the validation error message using the same bound parameters.
      *
      * @param string $field
-     * @param array<int, string> $parameters
+     * @param array<int|string, mixed> $parameters
      *
      * @return string
      */

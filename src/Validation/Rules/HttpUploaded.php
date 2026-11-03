@@ -9,7 +9,7 @@ use Psr\Http\Message\UploadedFileInterface;
 /** Require a successful upload supplied by PHP's HTTP upload handling. */
 class HttpUploaded implements RuleInterface
 {
-    /** @param array<int, string> $parameters @param array<string, mixed> $data */
+    /** @param array<int|string, mixed> $parameters @param array<string, mixed> $data */
     public function validate(string $field, mixed $value, array $parameters = [], array $data = []): bool
     {
         if (!$value instanceof UploadedFileInterface
@@ -29,7 +29,7 @@ class HttpUploaded implements RuleInterface
         return is_uploaded_file($path);
     }
 
-    /** @param array<int, string> $parameters */
+    /** @param array<int|string, mixed> $parameters */
     public function message(string $field, array $parameters = []): string
     {
         return 'The :attribute must be an HTTP-uploaded file.';

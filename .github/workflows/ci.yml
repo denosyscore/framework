@@ -42,3 +42,6 @@ jobs:
 
       - name: Validation regression tests
         run: composer test
+
+      - name: Rule parameter static analysis
+        run: composer analyse
