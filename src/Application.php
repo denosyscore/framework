@@ -16,6 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use Denosys\Container\ContainerInterface;
 use Denosys\Container\Exceptions\NotFoundException;
 use Denosys\Config\ConfigurationInterface;
+use Denosys\Contracts\Config\ConfigurationReaderInterface;
 use Denosys\Container\Exceptions\ContainerException;
 use Psr\Http\Message\ServerRequestInterface;
 use Denosys\Environment\EnvironmentManager;
@@ -604,6 +605,7 @@ class Application
         $this->container->instance(Container::class, $this->container);
 
         $this->container->instance(ConfigurationInterface::class, $this->config);
+        $this->container->instance(ConfigurationReaderInterface::class, $this->config);
         $this->container->alias('config', ConfigurationInterface::class);
 
         $this->container->instance(EnvironmentManager::class, $this->environment);

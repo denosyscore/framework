@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Denosys\Config;
 
-interface ConfigurationInterface
+use Denosys\Contracts\Config\ConfigurationReaderInterface;
+
+interface ConfigurationInterface extends ConfigurationReaderInterface
 {
     /**
      * Retrieves the value associated with the given key

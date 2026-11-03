@@ -76,6 +76,17 @@ Unexpected exceptions continue through the configured exception pipeline.
 The Composer requirement accepts database 0.2, 0.3, and 0.4; CI verifies
 published combinations of the framework dependencies.
 
+## Filesystem configuration
+
+The framework's `ConfigurationInterface` extends the shared
+`Denosys\Contracts\Config\ConfigurationReaderInterface`. During application
+bootstrap, the same configuration object is bound under both interfaces.
+`FilesystemServiceProvider` reads the shared interface and uses the existing
+`path.storage` binding, keeping default local files in the storage `app`
+directory. Framework 0.5 requires filesystem 0.3 and contracts 0.2.4 or newer
+within their respective release lines. Release contracts before filesystem,
+then framework, before updating a consumer's Composer lockfile.
+
 ## Repository Workflows
 
 - `CI`: composer validation, published dependency installs, tests, and PHP
