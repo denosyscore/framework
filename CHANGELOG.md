@@ -5,6 +5,8 @@
 - Correct rule parameter PHPDoc to describe named keys and mixed values from
   the validator's binder, including integer IDs and list values. Add a
   consumer static-analysis check to CI. Runtime validation behavior is unchanged.
+- Declare the Carbon runtime dependency used by the date, before, and after
+  rules. Both Carbon 2.72+ and 3.x are supported.
 
 ## 0.3.0 - 2026-11-03
 

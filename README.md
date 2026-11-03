@@ -22,6 +22,10 @@ runs. The legacy `db` binding remains a fallback. When both bindings are
 present, the typed connection takes precedence. Register the database provider
 before validating with these rules.
 
+The `date`, `before`, and `after` rules use Carbon. Composer installs the
+declared Carbon runtime dependency with validation; consumers do not need to
+install it separately.
+
 ## Direct field errors
 
 When a field-specific failure is discovered after ordinary rule validation,
@@ -72,9 +76,9 @@ analysis fixture checks this public parameter contract.
 
 ## CI Workflows
 
-- CI: Composer validation, isolated installation, PHP 8.2/8.5 tests, static
-  analysis of rule parameter consumers, and syntax lint on push and pull
-  requests.
+- CI: Composer validation, isolated installation, PHP 8.2/8.5 tests against
+  Carbon 2/3 and database 0.2/0.3, static analysis of rule parameter consumers,
+  and syntax lint on push and pull requests.
 - Release: GitHub release publication on semantic version tags.
 - Dependabot: weekly Composer dependency update checks.
 
