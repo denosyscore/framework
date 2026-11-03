@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased (proposed 0.3.0)
+## Unreleased (proposed 0.3.1)
+
+- Accept database 0.3 while retaining the supported 0.2 line.
+
+## v0.3.0
 
 - Claim database jobs conditionally across workers and reclaim reservations
   after the configured positive `retry_after` lease.
@@ -11,8 +15,6 @@
   workers must invoke the runner after popping jobs.
 - Add regression coverage for payload serialization, database retry, sync
   dispatch, and legacy job execution.
-
-## Unreleased (proposed 0.2.3)
 
 - Declare the UUID dependency used by `Job` so jobs can be constructed after
   a clean Composer install.
