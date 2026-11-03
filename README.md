@@ -22,3 +22,11 @@ Requires PHP 8.2 or later. Install with `composer require denosyscore/support`.
 ## Quality checks
 
 Run `composer test` and `composer analyse` after `composer install`.
+
+## Releases
+
+The initial collection contract is proposed for `v0.1.0`. A maintainer should
+verify CI on `main`, create the annotated semantic version tag from that exact
+commit, and push the tag. The Release workflow publishes GitHub release notes
+for tags matching `v*.*.*`. Confirm the package index exposes the new version
+before updating consumers from development branches to `^0.1`.
