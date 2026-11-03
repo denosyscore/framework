@@ -16,7 +16,7 @@
     "denosyscore/encryption": "^0.2",
     "denosyscore/database": "^0.2 || ^0.3 || ^0.4",
     "denosyscore/validation": "^0.2 || ^0.3",
-    "denosyscore/filesystem": "^0.3.1",
+    "denosyscore/filesystem": "^0.3.2",
     "denosyscore/queue": "^0.2 || ^0.3",
     "denosyscore/view": "^0.2",
     "denosyscore/http": "^0.2 || ^0.3",

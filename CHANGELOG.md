@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased (proposed 0.5.1)
+
+- Require filesystem 0.3.2 or newer so fresh installs use its corrected third-party dependency floors.
+- Exercise the filesystem 0.3.2 floor in the published dependency CI matrix.
+
 ## Unreleased (proposed 0.5.0)
 
 - Resolve the shared configuration read contract through the current framework configuration binding, including when the application container is replaced.
