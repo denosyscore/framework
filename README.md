@@ -23,9 +23,10 @@ composer create-project denosyscore/app my-app
 - Global framework helpers via `support/helpers.php`
 - Transitive installation of all modular `denosyscore/*` runtime packages
 
-The framework accepts the compatible 0.2 and 0.3 release lines of the queue
-and console packages. The 0.3 lines add runtime services for queued jobs and
-worker support while preserving existing job and command contracts.
+The framework accepts compatible 0.2 and 0.3 release lines of database,
+validation, HTTP, auth, queue, and console. The 0.3 lines add runtime services
+for queued jobs, worker support, pagination, and HTTP integration while
+preserving existing contracts. PHP 8.4.1 or newer is required by the mailer.
 
 ## Environment files
 
@@ -67,6 +68,14 @@ routing package remains independent of HTTP form requests.
 
 ## Repository Workflows
 
-- `CI`: composer validation + PHP syntax checks on push/PR
+- `CI`: composer validation, published dependency installs, tests, and PHP
+  syntax checks on PHP 8.4 and 8.5
 - `Release`: publish GitHub release on semantic tags
 - `Dependabot`: weekly Composer dependency checks
+
+## Releases
+
+After CI passes on `main`, create an annotated semantic version tag from that
+reviewed commit and push it. The Release workflow publishes a GitHub Release.
+Confirm the matching version is available in the Composer package index before
+updating consumers.

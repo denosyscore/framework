@@ -1,12 +1,15 @@
 # Changelog
 
-## Unreleased (proposed 0.4.0 lifecycle change)
+## Unreleased (proposed 0.4.0)
+
+- Accept published database, validation, HTTP, and auth 0.3 releases alongside
+  their existing 0.2 lines; exercise both supported dependency combinations.
+- Declare PHP 8.4.1 as the minimum, matching the existing Symfony Mailer 8
+  runtime requirement, and run framework tests in CI on PHP 8.4 and 8.5.
 
 - Authorize and validate type-hinted HTTP FormRequests before route handlers
   run, retaining authenticated users and current route arguments. Handlers
   that previously bypassed validation may now fail early.
-
-## Unreleased (proposed 0.3.1)
 
 - Honor process environment values in the global `env()` helper when PHP does
   not populate `$_ENV`, preserving explicit `$_ENV` precedence and value casts.
