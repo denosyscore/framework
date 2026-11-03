@@ -22,6 +22,20 @@ runs. The legacy `db` binding remains a fallback. When both bindings are
 present, the typed connection takes precedence. Register the database provider
 before validating with these rules.
 
+## Direct field errors
+
+When a field-specific failure is discovered after ordinary rule validation,
+raise it without constructing an empty validator in the caller:
+
+```php
+throw \Denosys\Validation\ValidationException::withMessages([
+    'email' => 'The email address is unavailable.',
+]);
+```
+
+Values may be a string or a non-empty list of strings. The existing
+`ValidationException(Validator $validator)` constructor remains supported.
+
 The `unique:accounts,email,1` rule checks the `email` column in `accounts`
 while excluding the row with `id = 1`. Its third positional parameter is
 named `ignore_id` by `Unique::parameterNames()`.

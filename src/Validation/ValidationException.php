@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Denosys\Validation;
 
 use Exception;
+use InvalidArgumentException;
 use Throwable;
 
 /**
@@ -22,6 +23,45 @@ class ValidationException extends Exception
             $code,
             $previous
         );
+    }
+
+    /**
+     * Create an exception for field errors discovered outside rule validation.
+     *
+     * @param array<string, string|list<string>> $messages
+     */
+    public static function withMessages(array $messages): self
+    {
+        if ($messages === []) {
+            throw new InvalidArgumentException('Validation messages must not be empty.');
+        }
+
+        $validator = Validator::make([], []);
+        $validator->validate();
+
+        foreach ($messages as $field => $fieldMessages) {
+            if (!is_string($field) || $field === '') {
+                throw new InvalidArgumentException('Validation message fields must be non-empty strings.');
+            }
+
+            if (is_string($fieldMessages)) {
+                $fieldMessages = [$fieldMessages];
+            }
+
+            if (!is_array($fieldMessages) || !array_is_list($fieldMessages) || $fieldMessages === []) {
+                throw new InvalidArgumentException('Validation field messages must be strings or non-empty lists of strings.');
+            }
+
+            foreach ($fieldMessages as $message) {
+                if (!is_string($message) || $message === '') {
+                    throw new InvalidArgumentException('Validation messages must be non-empty strings.');
+                }
+
+                $validator->errors()->add($field, $message);
+            }
+        }
+
+        return new self($validator);
     }
 
     /**
