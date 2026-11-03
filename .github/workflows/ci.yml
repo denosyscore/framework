@@ -34,7 +34,7 @@ jobs:
 
       - name: Install published dependency combination
         run: |
-          composer require --no-update --no-interaction 'denosyscore/database:${{ matrix.database }}' 'denosyscore/validation:${{ matrix.validation }}' 'denosyscore/http:${{ matrix.http }}' 'denosyscore/auth:${{ matrix.auth }}' 'denosyscore/console:${{ matrix.console }}' 'denosyscore/queue:${{ matrix.queue }}' 'denosyscore/session:${{ matrix.session }}'
+          composer require --no-update --no-interaction 'denosyscore/database:${{ matrix.database }}' 'denosyscore/validation:${{ matrix.validation }}' 'denosyscore/http:${{ matrix.http }}' 'denosyscore/auth:${{ matrix.auth }}' 'denosyscore/console:${{ matrix.console }}' 'denosyscore/queue:${{ matrix.queue }}' 'denosyscore/session:${{ matrix.session }}' 'denosyscore/filesystem:0.3.2'
           composer install --no-interaction --prefer-dist --no-progress
 
       - name: PHP syntax check
