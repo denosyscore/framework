@@ -24,3 +24,11 @@ find src -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 - CI: composer validation + PHP syntax lint on push and pull requests.
 - Release: GitHub release publication on semantic version tags.
 - Dependabot: weekly Composer dependency update checks.
+
+## Compatibility and releases
+
+The Composer requirements accept database and HTTP 0.2 and 0.3. CI installs
+both supported combinations on PHP 8.2 and 8.5. After CI passes on `main`,
+create an annotated semantic version tag from that reviewed commit and push
+it. The Release workflow publishes a GitHub Release. Confirm the matching
+version is available in the Composer package index before updating consumers.
