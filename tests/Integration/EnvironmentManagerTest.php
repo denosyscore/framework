@@ -62,3 +62,51 @@ it('rejects a nonexistent environment directory', function (): void {
     expect(fn () => (new EnvironmentManager())->load($directory))
         ->toThrow(InvalidArgumentException::class, 'Env directory not found');
 });
+
+it('resolves process environment values when PHP does not populate $_ENV', function (): void {
+    $key = 'DENOSYS_PROCESS_ENV_TEST';
+    $previous = getenv($key);
+    $previousArrayValue = $_ENV[$key] ?? null;
+    unset($_ENV[$key]);
+    putenv($key . '=process-value');
+
+    try {
+        expect(env($key, 'fallback'))->toBe('process-value');
+        putenv($key . '=false');
+        expect(env($key, true))->toBeFalse();
+    } finally {
+        if ($previous === false) {
+            putenv($key);
+        } else {
+            putenv($key . '=' . $previous);
+        }
+        if ($previousArrayValue === null) {
+            unset($_ENV[$key]);
+        } else {
+            $_ENV[$key] = $previousArrayValue;
+        }
+    }
+});
+
+it('keeps an explicit $_ENV value ahead of the process fallback', function (): void {
+    $key = 'DENOSYS_PROCESS_PRECEDENCE_TEST';
+    $previous = getenv($key);
+    $previousArrayValue = $_ENV[$key] ?? null;
+    putenv($key . '=process-value');
+    $_ENV[$key] = 'array-value';
+
+    try {
+        expect(env($key))->toBe('array-value');
+    } finally {
+        if ($previous === false) {
+            putenv($key);
+        } else {
+            putenv($key . '=' . $previous);
+        }
+        if ($previousArrayValue === null) {
+            unset($_ENV[$key]);
+        } else {
+            $_ENV[$key] = $previousArrayValue;
+        }
+    }
+});

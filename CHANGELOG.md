@@ -8,6 +8,8 @@
 
 ## Unreleased (proposed 0.3.1)
 
+- Honor process environment values in the global `env()` helper when PHP does
+  not populate `$_ENV`, preserving explicit `$_ENV` precedence and value casts.
 - Add an opt-in Symfony mail provider for explicit DSNs, SMTP, and sendmail.
 - Allow compatible queue and console 0.3 releases alongside their 0.2 lines.
 - Skip missing optional environment files before invoking dotenv, preventing
