@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased (proposed 0.4.1)
+
+- Convert routing HTTP exceptions to their declared response status in the
+  default global middleware stack, retaining CORS and non-HTTP failures.
+- Bind a PSR response factory for that middleware unless an application has
+  already provided one.
+
 ## Unreleased (proposed 0.4.0)
 
 - Accept published database, validation, HTTP, and auth 0.3 releases alongside

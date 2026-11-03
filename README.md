@@ -66,6 +66,13 @@ Form-request subclasses should retain the package's `Request` constructor
 contract. This behavior is provided by the framework bridge; the standalone
 routing package remains independent of HTTP form requests.
 
+## HTTP routing errors
+
+The default router returns PSR responses for routing HTTP exceptions, including
+404 for unknown paths and 405 for unsupported methods. Its global HTTP
+exception middleware runs inside CORS so those responses retain CORS headers.
+Unexpected exceptions continue through the configured exception pipeline.
+
 ## Repository Workflows
 
 - `CI`: composer validation, published dependency installs, tests, and PHP
