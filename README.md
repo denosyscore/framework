@@ -35,6 +35,17 @@ to dotenv's normal precedence and emits no PHP warning when none are present.
 The directory itself must exist. Run `composer test` to verify this contract
 locally.
 
+## Mail provider
+
+Register `Denosys\Mail\MailServiceProvider` with `Application::withProviders()`
+when an application needs `Symfony\Component\Mailer\MailerInterface`. The
+provider binds a lazy `TransportInterface` and mailer. Set `mail.dsn` for a
+Symfony-supported transport, or configure `mail.default` as `smtp` or
+`sendmail` with `mail.mailers.smtp.*` or `mail.mailers.sendmail.path`.
+Unsupported drivers throw when the mailer is resolved; they never silently
+discard messages. A working transport and sender address are required before
+sending account or other transactional mail.
+
 ## Form requests in route handlers
 
 The framework's registered route invocation strategy constructs a type-hinted
