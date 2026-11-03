@@ -9,6 +9,14 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { php: '8.2', database: '0.2.3', http: '0.2.2' }
+          - { php: '8.5', database: '0.2.3', http: '0.2.2' }
+          - { php: '8.2', database: '0.3.0', http: '0.3.0' }
+          - { php: '8.5', database: '0.3.0', http: '0.3.0' }
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,11 +24,20 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: ${{ matrix.php }}
           coverage: none
 
       - name: Validate composer.json
         run: composer validate --strict
+
+      - name: Install supported dependency versions
+        run: |
+          composer require --no-update --no-interaction 'denosyscore/database:${{ matrix.database }}' 'denosyscore/http:${{ matrix.http }}'
+          composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Load session store
+        run: |
+          php -r 'require "vendor/autoload.php"; exit(class_exists(\Denosys\Session\Store::class) ? 0 : 1);'
 
       - name: PHP syntax check
         run: |
