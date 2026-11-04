@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased (proposed 0.6.0)
+
+- Define the framework as a tested distribution of current component APIs and
+  their minimum published versions, including Support. Consumers can require
+  the framework without repeating its component constraints.
+- Test minimum and current component resolutions on supported PHP versions.
+  Older component release lines are outside this distribution contract.
+
 ## Unreleased (proposed 0.5.2)
 
 - Require filesystem 0.3.3 and patched Symfony Filesystem 7.4.23 and HTTP
