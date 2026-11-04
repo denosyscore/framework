@@ -50,6 +50,9 @@ when an application needs `Symfony\Component\Mailer\MailerInterface`. The
 provider binds a lazy `TransportInterface` and mailer. Set `mail.dsn` for a
 Symfony-supported transport, or configure `mail.default` as `smtp` or
 `sendmail` with `mail.mailers.smtp.*` or `mail.mailers.sendmail.path`.
+The global `mailer()` helper resolves the provider's `MailerInterface` binding;
+it is available after registering the provider. Call `send()` with a Symfony
+`Email` instance or inject `MailerInterface` into an application service.
 Unsupported drivers throw when the mailer is resolved; they never silently
 discard messages. A working transport and sender address are required before
 sending account or other transactional mail.

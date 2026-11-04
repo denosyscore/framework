@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Denosys\Config\ConfigurationInterface;
 use Denosys\Container\Container;
 use Denosys\Container\Exceptions\ContainerResolutionException;
+use Denosys\Application;
 use Denosys\Mail\MailServiceProvider;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Transport\SendmailTransport;
@@ -49,4 +50,26 @@ it('rejects unsupported drivers rather than discarding messages', function (): v
 
     expect(fn() => $container->get(MailerInterface::class))
         ->toThrow(ContainerResolutionException::class);
+});
+
+it('resolves the registered Symfony mailer through the global helper', function (): void {
+    $previousApplication = Application::getInstance();
+    $base = sys_get_temp_dir() . '/denosys-mail-helper-' . bin2hex(random_bytes(6));
+    mkdir($base . '/config', 0700, true);
+
+    try {
+        $application = new Application($base);
+        $container = mailContainer(['mail.dsn' => 'null://null']);
+        $application->setContainer($container);
+
+        expect(mailer())->toBe($container->get(MailerInterface::class));
+    } finally {
+        if ($previousApplication === null) {
+            Application::resetInstance();
+        } else {
+            Application::setInstance($previousApplication);
+        }
+        rmdir($base . '/config');
+        rmdir($base);
+    }
 });
