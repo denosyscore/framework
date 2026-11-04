@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased (proposed 0.5.2)
+
+- Require filesystem 0.3.3 and patched Symfony Filesystem 7.4.23 and HTTP
+  Client 5.4.56 to exclude GHSA-6prc-h956-hxjq, GHSA-gq53-v8w2-gjhj, and
+  GHSA-c7hm-wqwp-f9v8 from supported installations. The framework API is
+  unchanged.
+- Exercise the filesystem 0.3.3 floor in the published dependency CI matrix.
+- Audit every published dependency combination in CI.
+
 ## Unreleased (proposed 0.5.1)
 
 - Require filesystem 0.3.2 or newer so fresh installs use its corrected third-party dependency floors.
