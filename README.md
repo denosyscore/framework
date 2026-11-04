@@ -23,10 +23,12 @@ composer create-project denosyscore/app my-app
 - Global framework helpers via `support/helpers.php`
 - Transitive installation of all modular `denosyscore/*` runtime packages
 
-The framework accepts compatible 0.2 and 0.3 release lines of database,
-validation, HTTP, auth, queue, and console. The 0.3 lines add runtime services
-for queued jobs, worker support, pagination, and HTTP integration while
-preserving existing contracts. PHP 8.4.1 or newer is required by the mailer.
+Starting with framework 0.6.0, its Composer requirements define a tested
+distribution of the modular runtime packages. An application can require the
+framework without repeating its component requirements. Framework code and
+public component APIs are still available under their `Denosys\` namespaces.
+If an application imports a third-party library directly, declare that library
+in the application's own Composer requirements. PHP 8.4.1 or newer is required.
 
 ## Environment files
 
@@ -93,8 +95,8 @@ minimums to patched releases without changing the framework API.
 
 ## Repository Workflows
 
-- `CI`: composer validation, published dependency installs, tests, and PHP
-  syntax checks on PHP 8.4 and 8.5
+- `CI`: composer validation, minimum/current published component installs,
+  tests, PHP syntax checks, and security audits on PHP 8.4 and 8.5
 - `Release`: publish GitHub release on semantic tags
 - `Dependabot`: weekly Composer dependency checks
 
