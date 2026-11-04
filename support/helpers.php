@@ -688,11 +688,11 @@ if (!function_exists('mailer')) {
     /**
      * Get the mailer instance.
      *
-     * @return \Denosys\Mail\Mailer
+     * @return \Symfony\Component\Mailer\MailerInterface
      */
-    function mailer(): \Denosys\Mail\Mailer
+    function mailer(): \Symfony\Component\Mailer\MailerInterface
     {
-        return container(\Denosys\Mail\Mailer::class);
+        return container(\Symfony\Component\Mailer\MailerInterface::class);
     }
 }
 

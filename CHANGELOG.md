@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased (proposed 0.6.1)
+
+- Make the global `mailer()` helper resolve the registered Symfony
+  `MailerInterface` instead of a nonexistent Denosys mailer class.
+
 ## Unreleased (proposed 0.6.0)
 
 - Define the framework as a tested distribution of current component APIs and
