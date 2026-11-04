@@ -22,7 +22,7 @@
     "denosyscore/http": "^0.3.2",
     "denosyscore/session": "^0.2.4",
     "denosyscore/auth": "^0.3.1",
-    "denosyscore/console": "^0.3.2",
+    "denosyscore/console": "^0.4.0",
     "denosyscore/support": "^0.1.0",
     "denosyscore/routing": "0.6.0-alpha.1",
     "doctrine/inflector": "^2.1",

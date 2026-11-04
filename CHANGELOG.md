@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased (proposed 0.7.0)
+
+- Require Console 0.4.0 so the framework distribution includes the corrected
+  Symfony MIME mail generator. This drops Console 0.3 from the supported
+  distribution and removes the command's unsupported Markdown option.
+- Exercise Console 0.4.0 as the minimum published component and send a
+  generated message through the framework mail provider in CI.
+
 ## Unreleased (proposed 0.6.1)
 
 - Make the global `mailer()` helper resolve the registered Symfony

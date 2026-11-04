@@ -56,6 +56,9 @@ it is available after registering the provider. Call `send()` with a Symfony
 Unsupported drivers throw when the mailer is resolved; they never silently
 discard messages. A working transport and sender address are required before
 sending account or other transactional mail.
+Framework 0.7.0 requires Console 0.4.0, whose `make:mail` command generates
+Symfony MIME `Email` messages accepted by this provider. Its former Markdown
+option is removed because no Markdown renderer is registered by the framework.
 
 ## Form requests in route handlers
 
@@ -78,8 +81,8 @@ The default router returns PSR responses for routing HTTP exceptions, including
 exception middleware runs inside CORS so those responses retain CORS headers.
 Unexpected exceptions continue through the configured exception pipeline.
 
-The Composer requirement accepts database 0.2, 0.3, and 0.4; CI verifies
-published combinations of the framework dependencies.
+Framework 0.6.0 and later require database 0.4.1 or newer within that release
+line; CI verifies minimum and current published component combinations.
 
 ## Filesystem configuration
 
