@@ -88,6 +88,8 @@ including after it is replaced. A prepared replacement container passed to
 directory. Framework 0.5.1 requires filesystem 0.3.2 and contracts 0.2.4 or newer
 within their respective release lines. Release contracts before filesystem,
 then framework, before updating a consumer's Composer lockfile.
+Framework 0.5.2 raises the filesystem and Symfony Filesystem/HTTP Client
+minimums to patched releases without changing the framework API.
 
 ## Repository Workflows
 
