@@ -70,7 +70,8 @@
     }
   },
   "scripts": {
-    "test": "pest"
+    "test": "pest",
+    "analyse": "phpstan analyse --no-progress --memory-limit=1G"
   },
   "config": {
     "sort-packages": true,
