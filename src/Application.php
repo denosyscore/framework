@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Denosys;
 
+use Composer\InstalledVersions;
 use Closure;
 use RuntimeException;
 use Throwable;
@@ -29,7 +30,6 @@ class Application
     /**
      * The framework version.
      */
-    protected const VERSION = '0.0.1';
 
     protected static ?Application $instance = null;
 
@@ -442,7 +442,7 @@ class Application
 
     public function version(): string
     {
-        return static::VERSION;
+        return InstalledVersions::getPrettyVersion('denosyscore/framework') ?? 'dev';
     }
 
     /**
@@ -585,14 +585,6 @@ class Application
     }
 
     /**
-     * Check if running in console mode
-     */
-    public function isConsole(): bool
-    {
-        return PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg';
-    }
-
-    /**
      * @throws NotFoundException
      * @throws ContainerException
      * @throws ContainerResolutionException
@@ -637,6 +629,6 @@ class Application
         $this->container->instance('path.config', $this->configPath());
         $this->container->instance('path.public', $this->publicPath());
         $this->container->instance('path.storage', $this->storagePath());
-        $this->container->instance('path.view', $this->basePath('app/Views'));
+        $this->container->instance('path.view', $this->basePath('resources/views'));
     }
 }

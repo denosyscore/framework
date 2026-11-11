@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Mailgun\Mailgun;
 use Denosys\Application;
 use Denosys\Config\ConfigurationInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -143,93 +142,6 @@ if (!function_exists('config')) {
     }
 }
 
-if (!function_exists('send_email')) {
-    /**
-     * Send an email using the Mailgun API.
-     *
-     * @param  string  $to
-     * @param  string  $subject
-     * @param  string  $text
-     * @param  string|null  $html
-     *
-     * @return bool
-     *
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    function send_email(string $to, string $subject, string $text, ?string $html = null): bool
-    {
-        $domain = config('mail.mailgun.domain', '');
-        $apiKey = config('mail.mailgun.api_key', '');
-        $fromAddress = config('mail.from.address', 'noreply@localhost');
-        $fromName = config('mail.from.name', config('app.name', 'Denosys Framework'));
-
-        if (empty($apiKey) || empty($domain)) {
-            error_log('Mailgun API key or domain is not configured.');
-            return false;
-        }
-
-        $mailgun = Mailgun::create($apiKey);
-
-        try {
-            $mailgun->messages()->send(
-                $domain,
-                [
-                    'from' => sprintf('%s <%s>', $fromName, $fromAddress),
-                    'to' => $to,
-                    'subject' => $subject,
-                    'text' => $text,
-                    'html' => $html,
-                ]
-            );
-
-            return true;
-        } catch (Throwable $e) {
-            error_log('Mailgun error: ' . $e->getMessage());
-
-            return false;
-        }
-    }
-}
-
-if (!function_exists('send_email_with_template')) {
-    /**
-     * Send an email using a template.
-     *
-     * @param  string  $to
-     * @param  string  $subject
-     * @param  string  $template
-     * @param  array<string, mixed>  $data
-     *
-     * @return bool
-     */
-    function send_email_with_template(string $to, string $subject, string $template, array $data = []): bool
-    {
-        $html = render_template($template, $data);
-        $text = strip_tags($html);
-
-        return send_email($to, $subject, $text, $html);
-    }
-}
-
-if (!function_exists('render_template')) {
-    /**
-     * Render a template with data.
-     *
-     * @param  string  $template
-     * @param  array<string, mixed>  $data
-     *
-     * @return string
-     */
-    function render_template(string $template, array $data = []): string
-    {
-        extract($data);
-        ob_start();
-        include __DIR__ . "/templates/{$template}.php";
-        return ob_get_clean();
-    }
-}
-
 if (!function_exists('url')) {
     /**
      * Build an absolute URL from the base app URL and a relative path.
@@ -258,40 +170,6 @@ if (!function_exists('asset')) {
             }
         }
         return $full;
-    }
-}
-
-if (!function_exists('format_currency')) {
-    /**
-     * Format a number as currency.
-     *
-     * @param  float  $amount
-     *
-     * @return string
-     */
-    function format_currency(float $amount): string
-    {
-        return '$' . number_format($amount, 2, '.', ',');
-    }
-}
-
-if (!function_exists('rand_float')) {
-    /**
-     * Generate a random float between two numbers.
-     *
-     * @param  float  $startNumber
-     * @param  float  $endNumber
-     * @param  int  $multiple
-     *
-     * @return float
-     */
-    function rand_float(float $startNumber = 25, float $endNumber = 57, int $multiple = 1000000): float
-    {
-        if ($startNumber > $endNumber) {
-            throw new InvalidArgumentException('Start number must be less than or equal to end number.');
-        }
-
-        return mt_rand((int) ($startNumber * $multiple), (int) ($endNumber * $multiple)) / $multiple;
     }
 }
 
@@ -545,90 +423,6 @@ if (!function_exists('flash')) {
 
         // Get all flash messages
         return $session->getFlashAll();
-    }
-}
-
-if (!function_exists('render_flash')) {
-    /**
-     * Render flash messages with custom styling
-     *
-     * @param  string|null  $type  Specific flash message type to render
-     * @param  array<string, mixed>  $options  Styling options
-     *
-     * @return string
-     */
-    function render_flash(?string $type = null, array $options = []): string
-    {
-        $html = '';
-        $defaultOptions = [
-            'framework' => 'bootstrap', // bootstrap, tailwind, custom
-            'dismissible' => true,
-            'fade' => true,
-            'custom_classes' => [],
-            'icons' => [
-                'success' => '✓',
-                'error' => '✗',
-                'warning' => '⚠',
-                'info' => 'ℹ',
-            ],
-        ];
-
-        $options = array_merge($defaultOptions, $options);
-
-        // Get flash messages using the flash() helper
-        $allMessages = flash();
-
-        if (empty($allMessages)) {
-            return '';
-        }
-
-        $messages = $type !== null ? [$type => $allMessages[$type] ?? null] : $allMessages;
-
-        foreach ($messages as $msgType => $message) {
-            if ($message === null) {
-                continue;
-            }
-
-            $classes = $options['framework'] === 'bootstrap'
-                ? "alert alert-{$msgType}"
-                : ($options['framework'] === 'tailwind'
-                    ? "p-4 mb-4 text-sm rounded-lg " . ($msgType === 'success' ? 'text-green-800 bg-green-50' : ($msgType === 'error' ? 'text-red-800 bg-red-50' : ($msgType === 'warning' ? 'text-yellow-800 bg-yellow-50' : 'text-blue-800 bg-blue-50')))
-                    : "flash flash-{$msgType}");
-
-            if ($options['framework'] === 'bootstrap') {
-                if ($options['dismissible']) {
-                    $classes .= ' alert-dismissible';
-                }
-                if ($options['fade']) {
-                    $classes .= ' fade show';
-                }
-            }
-
-            if (!empty($options['custom_classes'][$msgType])) {
-                $classes .= ' ' . $options['custom_classes'][$msgType];
-            }
-
-            $icon = $options['icons'][$msgType] ?? '';
-            $iconHtml = $icon ? "<span class=\"flash-icon\">{$icon}</span> " : '';
-
-            $closeButton = '';
-            if ($options['dismissible']) {
-                if ($options['framework'] === 'bootstrap') {
-                    $closeButton = '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-                } elseif ($options['framework'] === 'tailwind') {
-                    $closeButton = '<button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex h-8 w-8" onclick="this.parentElement.remove()">×</button>';
-                } else {
-                    $closeButton = '<button type="button" class="flash-close" onclick="this.parentElement.remove()">×</button>';
-                }
-            }
-
-            $html .= "<div class=\"{$classes}\" role=\"alert\">";
-            $html .= $iconHtml . htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
-            $html .= $closeButton;
-            $html .= "</div>";
-        }
-
-        return $html;
     }
 }
 
