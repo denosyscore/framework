@@ -130,7 +130,7 @@ class RateLimiter
      */
     private function attemptsKey(string $key): string
     {
-        return 'rate_limiter_' . $key . '_attempts';
+        return 'rate_limiter_' . $this->cacheSafe($key) . '_attempts';
     }
 
     /**
@@ -138,6 +138,15 @@ class RateLimiter
      */
     private function timerKey(string $key): string
     {
-        return 'rate_limiter_' . $key . '_timer';
+        return 'rate_limiter_' . $this->cacheSafe($key) . '_timer';
+    }
+
+    /**
+     * Hash the caller's key so any text (IPv6 addresses, emails, paths) maps
+     * to a PSR-16-safe cache key without colliding with other keys.
+     */
+    private function cacheSafe(string $key): string
+    {
+        return hash('sha256', $key);
     }
 }

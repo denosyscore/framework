@@ -8,12 +8,23 @@
     "denosyscore/contracts": "^0.2",
     "denosyscore/cache": "^0.2"
   },
+  "require-dev": {
+    "phpunit/phpunit": "^11.5"
+  },
   "autoload": {
     "psr-4": {
       "Denosys\\RateLimiter\\": "src/RateLimiter/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Denosys\\RateLimiter\\Tests\\": "tests/"
+    }
+  },
   "config": {
     "sort-packages": true
+  },
+  "scripts": {
+    "test": "phpunit tests"
   }
 }
