@@ -2,6 +2,17 @@
 
 ## Unreleased (proposed 0.7.0)
 
+### Fixed
+
+- `Configuration::has()` resolves dot-separated keys (`has('app.name')`); it
+  previously only checked top-level sections and returned false for every
+  nested key.
+- `Configuration::get()` returns stored `null` and `false` values instead of
+  the default, and returns the default unchanged when a key is missing at any
+  depth.
+
+### Changed
+
 - Require Console 0.4.0 so the framework distribution includes the corrected
   Symfony MIME mail generator. This drops Console 0.3 from the supported
   distribution and removes the command's unsupported Markdown option.
