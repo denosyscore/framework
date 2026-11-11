@@ -24,7 +24,7 @@
     "denosyscore/auth": "^0.3.3",
     "denosyscore/console": "^0.4.2",
     "denosyscore/support": "^0.1.0",
-    "denosyscore/routing": "0.7.0-alpha.1",
+    "denosyscore/routing": "0.7.0-alpha.2",
     "doctrine/inflector": "^2.1",
     "graham-campbell/result-type": "^1.1",
     "laminas/laminas-diactoros": "^3.6",
