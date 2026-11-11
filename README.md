@@ -10,11 +10,22 @@ maintained `Illuminate\Support\Collection`; the underlying collection
 operations are not reimplemented here. The DenoSys type keeps package method
 signatures stable while allowing a future implementation change if needed.
 
+<!-- quickstart -->
 ```php
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
 use Denosys\Support\Collection;
 
-$items = new Collection([['id' => 1], ['id' => 2]]);
-$ids = $items->pluck('id')->all(); // [1, 2]
+$orders = new Collection([
+    ['id' => 1, 'total' => 120],
+    ['id' => 2, 'total' => 80],
+    ['id' => 3, 'total' => 200],
+]);
+
+print_r($orders->pluck('id')->all());                        // [1, 2, 3]
+echo $orders->where('total', '>', 100)->sum('total'), "\n";  // 320
 ```
 
 Requires PHP 8.2 or later. Install with `composer require denosyscore/support`.
