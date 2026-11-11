@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.5 – 2026-11-12
+
+### Fixed
+
+- The built-in rules work without `ValidationServiceProvider`.
+  `Validator::make($data, ['email' => 'required|email'])` used to throw
+  "Validation rule 'required' does not exist" unless the provider had scanned
+  the rules directory. The validator now falls back to `BuiltInRules::MAP`.
+  Rules registered with `Validator::extend()` still take precedence, and
+  `Validator::reset()` restores the built-in set.
+
+### Added
+
+- `Validator::hasRule()`, and a README quick start that CI runs after
+  installing the package on its own.
+
 ## 0.3.4 – 2026-11-11
 
 - Accept `denosyscore/database` 0.5. The test suite passes against 0.5.0.

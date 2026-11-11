@@ -121,6 +121,14 @@ class Validator
     }
 
     /**
+     * Whether a rule name resolves: registered with extend() or shipped with the package.
+     */
+    public static function hasRule(string $ruleName): bool
+    {
+        return isset(self::$registeredRules[$ruleName]) || isset(BuiltInRules::MAP[$ruleName]);
+    }
+
+    /**
      * Restore default rule registry (and clear custom callbacks)
      */
     public static function reset(): void
@@ -364,7 +372,7 @@ private function parseRule(string $rule): array
             return $this->ruleInstances[$ruleName];
         }
 
-        $factory = self::$registeredRules[$ruleName] ?? null;
+        $factory = self::$registeredRules[$ruleName] ?? BuiltInRules::MAP[$ruleName] ?? null;
 
         if ($factory === null) {
             throw new InvalidArgumentException("Validation rule '$ruleName' does not exist");
@@ -566,10 +574,9 @@ private function parseRule(string $rule): array
         $class = get_class($rule);
 
         // Check direct class mapping
-        if (isset(self::$registeredRules[$name])) {
-            if (is_string(self::$registeredRules[$name])) {
-                return self::$registeredRules[$name] === $class;
-            }
+        $factory = self::$registeredRules[$name] ?? BuiltInRules::MAP[$name] ?? null;
+        if (is_string($factory)) {
+            return $factory === $class;
         }
 
         // Check if the class name ends with the rule name

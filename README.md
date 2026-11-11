@@ -2,13 +2,42 @@
 
 Validation engine and rules
 
-## Status
-
-Initial extraction snapshot from denosyscore monorepo as of 2026-02-14.
-
 ## Installation
 
+```bash
 composer require denosyscore/validation
+```
+
+## Quick start
+
+Validate arrays against rule strings. The built-in rules work without a container or service provider.
+
+<!-- quickstart -->
+```php
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
+use Denosys\Validation\Validator;
+
+$input = ['email' => 'ada@example', 'age' => '15', 'plan' => 'pro'];
+
+$validator = Validator::make($input, [
+    'email' => 'required|email',
+    'age'   => 'required|integer|min:18',
+    'plan'  => 'required|in:free,pro',
+    'name'  => 'nullable|string|max:80',
+]);
+
+if ($validator->fails()) {
+    echo $validator->errors()->first('email'), "\n";  // the email error message
+    echo $validator->errors()->first('age'), "\n";    // the minimum-age message
+    var_dump($validator->errors()->has('plan'));      // bool(false)
+}
+
+$valid = Validator::make(['email' => 'ada@example.com'], ['email' => 'required|email']);
+print_r($valid->validated());  // ['email' => 'ada@example.com']
+```
 
 ## Included Modules
 
