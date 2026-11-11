@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.1 – 2026-11-12
+
+### Fixed
+
+- Require routing `0.7.0-alpha.2`, which keeps several parameter resolvers of
+  one class instead of reporting a false circular dependency.
+
 ## 0.9.0 – 2026-11-11
 
 ### Removed (breaking)
