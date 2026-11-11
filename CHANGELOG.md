@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.8.1 – 2026-11-11
+
+### Fixed
+
+- Mail transport and URL generator settings stored as `null` (common when a
+  config file reads an unset environment variable) fall back to their
+  defaults again: SMTP keeps `localhost:587` with required TLS, the mailer
+  defaults to SMTP, and the base and asset URLs default to empty strings.
+  0.8.0 passed the stored `null` through, which could disable the TLS
+  requirement or throw a `TypeError`.
+- Configuration lookups traverse `ArrayAccess` values such as `ArrayObject`
+  again, as they did before 0.8.0.
+
 ## 0.8.0 – 2026-11-11
 
 ### Changed (breaking)

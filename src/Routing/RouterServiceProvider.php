@@ -112,7 +112,7 @@ protected function middlewareAliases(ContainerInterface $container): array
 
         try {
             $config = $container->get('config');
-            $customAliases = $config->get('routing.middleware_aliases', []);
+            $customAliases = ($config->get('routing.middleware_aliases') ?? []);
 
             if (!is_array($customAliases)) {
                 return $defaults;
@@ -286,8 +286,8 @@ protected function middlewareAliases(ContainerInterface $container): array
             
             // Always set key resolver - this is critical for signed URLs
             $url->setKeyResolver(fn() => $container->get('config')->get('app.key'));
-            $url->setBaseUrl($container->get('config')->get('app.url', ''));
-            $url->setAssetUrl($container->get('config')->get('app.asset_url', ''));
+            $url->setBaseUrl($container->get('config')->get('app.url') ?? '');
+            $url->setAssetUrl($container->get('config')->get('app.asset_url') ?? '');
             return $url;
         });
     }

@@ -57,11 +57,13 @@ class Configuration implements ConfigurationInterface
         $value = $this->config;
 
         foreach (explode('.', $key) as $segment) {
-            if (!is_array($value) || !array_key_exists($segment, $value)) {
+            if (is_array($value) && array_key_exists($segment, $value)) {
+                $value = $value[$segment];
+            } elseif ($value instanceof \ArrayAccess && $value->offsetExists($segment)) {
+                $value = $value[$segment];
+            } else {
                 return [false, null];
             }
-
-            $value = $value[$segment];
         }
 
         return [true, $value];
