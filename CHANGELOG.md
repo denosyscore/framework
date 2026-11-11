@@ -1,6 +1,22 @@
 # Changelog
 
-## Unreleased
+## 0.8.0 – 2026-11-11
+
+### Changed (breaking)
+
+- Raise the component floors to the releases that contain data-safety and
+  security fixes. Database 0.5 and Routing 0.7.0-alpha.1 contain breaking
+  changes (listed in their changelogs), so this is a minor release:
+  - Database `^0.5.0`: queries and models no longer change or lose data
+    silently; PostgreSQL migrations work.
+  - Routing `0.7.0-alpha.1`: group middleware covers every route in a group;
+    parameter-plus-wildcard routes no longer crash every request.
+  - View `^0.3.0`: templates always compile and escape output.
+  - HTTP `^0.3.3`: redirect-back only follows same-origin referers.
+  - Cache `^0.2.3`: atomic counters for rate limiting.
+  - Auth `^0.3.2`, Console `^0.4.1`, Queue `^0.3.3`, Session `^0.2.5` and
+    Validation `^0.3.4` accept Database 0.5.
+- CI installs the new minimum versions, including Cache and View.
 
 ### Fixed
 
