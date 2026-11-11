@@ -18,9 +18,11 @@ final class MailTransportFactory
             return Transport::fromDsn($dsn);
         }
 
-        $driver = $config->get('mail.default', 'smtp');
+        // Config files often store unset environment variables as null, so apply the
+        // defaults for null as well as for missing keys.
+        $driver = $config->get('mail.default') ?? 'smtp';
         if ($driver === 'sendmail') {
-            $command = (string) $config->get('mail.mailers.sendmail.path', '/usr/sbin/sendmail -bs');
+            $command = (string) ($config->get('mail.mailers.sendmail.path') ?? '/usr/sbin/sendmail -bs');
 
             return Transport::fromDsn('sendmail://default?command=' . rawurlencode($command));
         }
@@ -29,9 +31,10 @@ final class MailTransportFactory
             throw new RuntimeException('Unsupported mail transport. Configure mail.dsn for this driver.');
         }
 
-        $host = (string) $config->get('mail.mailers.smtp.host', 'localhost');
-        $port = (int) $config->get('mail.mailers.smtp.port', 587);
-        $encryption = $config->get('mail.mailers.smtp.encryption', 'tls');
+        $host = (string) ($config->get('mail.mailers.smtp.host') ?? 'localhost');
+        $port = (int) ($config->get('mail.mailers.smtp.port') ?? 587);
+        // Unset encryption keeps requiring TLS, so credentials are never sent in clear text by default.
+        $encryption = $config->get('mail.mailers.smtp.encryption') ?? 'tls';
         if ($host === '' || $port < 1 || $port > 65535) {
             throw new RuntimeException('SMTP host and port must be configured.');
         }
