@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.2 – 2026-11-12
+
+### Fixed
+
+- Require validation `^0.3.5`, whose built-in rules work without the service
+  provider, and rate-limiter `^0.2.3`, which accepts keys containing `:` such
+  as IPv6 addresses.
+
 ## 0.9.1 – 2026-11-12
 
 ### Fixed

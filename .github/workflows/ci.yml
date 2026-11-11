@@ -30,7 +30,7 @@ jobs:
       - name: Select minimum published component versions
         if: matrix.profile == 'minimum-components'
         run: |
-          composer require --no-update --no-interaction 'denosyscore/auth:0.3.3' 'denosyscore/cache:0.2.3' 'denosyscore/console:0.4.2' 'denosyscore/database:0.5.0' 'denosyscore/filesystem:0.4.0' 'denosyscore/http:0.4.0' 'denosyscore/queue:0.3.3' 'denosyscore/session:0.2.6' 'denosyscore/validation:0.3.4' 'denosyscore/view:0.3.0'
+          composer require --no-update --no-interaction 'denosyscore/auth:0.3.3' 'denosyscore/cache:0.2.3' 'denosyscore/console:0.4.2' 'denosyscore/database:0.5.0' 'denosyscore/filesystem:0.4.0' 'denosyscore/http:0.4.0' 'denosyscore/queue:0.3.3' 'denosyscore/session:0.2.6' 'denosyscore/rate-limiter:0.2.3' 'denosyscore/validation:0.3.5' 'denosyscore/view:0.3.0'
 
       - name: Install published dependency combination
         run: composer install --no-interaction --prefer-dist --no-progress
