@@ -29,14 +29,9 @@ class Configuration implements ConfigurationInterface
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        $segments  = explode('.', $key);
-        $value = $this->config;
+        [$found, $value] = $this->lookup($key);
 
-        foreach ($segments as $segment) {
-            $value = $value[$segment] ?? $default;
-        }
-
-        return $value;
+        return $found ? $value : $default;
     }
 
     /**
@@ -48,7 +43,28 @@ class Configuration implements ConfigurationInterface
      */
     public function has(string $key): bool
     {
-        return array_key_exists($key, $this->config);
+        return $this->lookup($key)[0];
+    }
+
+    /**
+     * Walk a dot-separated key. Stored null and false values count as found;
+     * the default is only used when a segment is missing.
+     *
+     * @return array{bool, mixed}
+     */
+    private function lookup(string $key): array
+    {
+        $value = $this->config;
+
+        foreach (explode('.', $key) as $segment) {
+            if (!is_array($value) || !array_key_exists($segment, $value)) {
+                return [false, null];
+            }
+
+            $value = $value[$segment];
+        }
+
+        return [true, $value];
     }
 
     /**
