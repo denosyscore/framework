@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased (proposed 0.3.3)
+## 0.3.4 – 2026-11-11
+
+- Accept `denosyscore/database` 0.5. The test suite passes against 0.5.0.
+
+## 0.3.3
 
 - Remove the HTTP exception response adapter from validation. HTTP v0.3.2
   owns it and preserves the former class name as an alias when both packages
