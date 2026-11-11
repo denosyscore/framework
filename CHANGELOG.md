@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.9.0 – 2026-11-11
+
+### Removed (breaking)
+
+- Application-specific helpers: `send_email()`, `send_email_with_template()`,
+  `render_template()`, `format_currency()`, `rand_float()` and
+  `render_flash()`. Send mail through the registered Symfony
+  `MailerInterface`, and format money and flash markup in the application.
+- `mailgun/mailgun-php`, `geoip2/geoip2`, `html2text/html2text`,
+  `symfony/http-client` and `league/flysystem-aws-s3-v3` are no longer
+  required. Applications that import them must require them directly; S3 disks
+  need `composer require league/flysystem-aws-s3-v3`.
+- `Application::isConsole()`; use `runningInConsole()`.
+- The `Application::VERSION` constant.
+
+### Changed (breaking)
+
+- `path.view` points at `resources/views`, where the skeleton keeps views,
+  instead of `app/Views`.
+- `Application::version()` reports the installed `denosyscore/framework`
+  version instead of `0.0.1`.
+- Raise component floors: filesystem `^0.4.0` (S3 adapter optional), http
+  `^0.4.0` (copied container exceptions and debugging leftovers removed), and
+  auth `^0.3.3`, console `^0.4.2` and session `^0.2.6`, which accept http 0.4.
+
 ## 0.8.1 – 2026-11-11
 
 ### Fixed
