@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Denosys\Framework\Providers;
 
+use Denosys\Framework\Console\CommandRegistry;
+use Denosys\Database\Console\DbSeedCommand;
+use Denosys\Database\Console\MigrateFreshCommand;
+use Denosys\Database\Console\MigrateStatusCommand;
+use Denosys\Database\Console\MigrateRollbackCommand;
+use Denosys\Database\Console\MigrateCommand;
 use Denosys\Database\Migration\MigrationRepository;
 use Denosys\Database\Migration\Migrator;
 use Denosys\Container\ContainerInterface;
@@ -23,6 +29,11 @@ class MigrationServiceProvider implements Provider
 {
     public function register(ContainerInterface $container): void
     {
+        $commands = $container->has(CommandRegistry::class) ? $container->get(CommandRegistry::class) : null;
+        if ($commands instanceof CommandRegistry) {
+            $commands->add(MigrateCommand::class, MigrateRollbackCommand::class, MigrateStatusCommand::class, MigrateFreshCommand::class, DbSeedCommand::class);
+        }
+
         // Register SchemaGrammar based on database driver
         $container->singleton(SchemaGrammarInterface::class, function (ContainerInterface $c) {
             $connection = $c->get(Connection::class);
