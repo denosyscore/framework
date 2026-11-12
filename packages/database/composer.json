@@ -1,0 +1,30 @@
+{
+  "name": "denosyscore/database",
+  "description": "Database ORM, query builder, migrations, and seeding",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "ext-pdo": "*",
+    "denosyscore/contracts": "^0.2",
+    "denosyscore/container": "^0.2",
+    "denosyscore/support": "^0.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5",
+    "phpstan/phpstan": "^2.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Denosys\\Database\\": "src/Database/"
+    }
+  },
+  "scripts": {
+    "analyse": "phpstan analyse --no-progress --memory-limit=1G",
+    "test": "phpunit",
+    "analyse:types": "phpstan analyse --no-progress --configuration=phpstan-types.neon"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
