@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.13.0 – 2026-11-12
+
+The container (finding F11): about 550 lines instead of 6,787, with
+parameter attributes.
+
+### Changed (breaking)
+
+- `denosyscore/container` keeps `bind`, `singleton`, `instance`, `alias`,
+  `getAlias`, `extend`, `setDeferredResolver`, `has` and `get`, and constructor
+  autowiring. Removed, with no consumers: contextual bindings (`when`),
+  tagging, scoped and lazy bindings, decorators, container middleware,
+  `call()`, multi-resolution, mocks and spies, the validator, the profiler,
+  resolution events and the compiler.
+- The compiled container is gone: `container:warmup` and `container:clear`
+  are removed, `optimize` and `optimize:clear` no longer run them, and
+  `Application` no longer loads `storage/core/cache/container.php` (it used
+  to swallow errors while doing so). `Application::containerCacheFile()` is
+  removed.
+- `get()` on an identifier the container cannot provide throws
+  `NotFoundException` (PSR-11) instead of a wrapped
+  `ContainerResolutionException`; an unbound interface is such an identifier.
+  Routing's handler resolvers already catch this to fall back.
+- The container no longer depends on `denosyscore/events`.
+
+### Added
+
+- `#[Config('path')]` injects a configuration value through the bound
+  `ConfigReader`, using the parameter's default when the setting is absent;
+  `#[Inject('id')]` injects a specific binding. Any attribute implementing
+  `Denosys\Container\ParameterResolver` works the same way.
+
 ## 0.12.0 – 2026-11-12
 
 Configuration (finding F04): one correct way to read settings and one way to

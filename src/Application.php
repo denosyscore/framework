@@ -120,25 +120,6 @@ class Application
 
     private function createContainer(): Container
     {
-        $cacheFile = $this->basePath('storage/core/cache/container.php');
-        $compiledClass = 'Denosys\Container\Compiled\CompiledContainer';
-
-        if (!is_file($cacheFile)) {
-            return new Container();
-        }
-
-        try {
-            require_once $cacheFile;
-
-            if (class_exists($compiledClass) && is_subclass_of($compiledClass, Container::class)) {
-                /** @var Container $container */
-                $container = new $compiledClass();
-                return $container;
-            }
-        } catch (Throwable) {
-            // Fall back to standard container if cache is invalid.
-        }
-
         return new Container();
     }
 
@@ -401,12 +382,6 @@ class Application
         return rtrim($path, '/') . '/routes.php';
     }
 
-    public function containerCacheFile(string $path = ''): string
-    {
-        $path = $this->joinPaths($this->storageCachePath ?: $this->basePath('storage/core/cache'), $path);
-
-        return rtrim($path, '/') . '/container.php';
-    }
 
     public function isLocal(): bool
     {
