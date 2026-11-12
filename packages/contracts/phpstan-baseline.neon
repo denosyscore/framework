@@ -1,0 +1,43 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Denosys\\Contracts\\Container\\ContainerInterface\:\:lazy\(\) has invalid return type Denosys\\Contracts\\Container\\LazyProxy\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Container/ContainerInterface.php
+
+		-
+			message: '#^Method Denosys\\Contracts\\Container\\ContainerInterface\:\:when\(\) has invalid return type Denosys\\Contracts\\Container\\ContextualBindingBuilder\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Container/ContainerInterface.php
+
+		-
+			message: '#^Method Denosys\\Contracts\\Container\\IntrospectableContainerInterface\:\:getPerformanceMetrics\(\) has invalid return type Denosys\\Contracts\\Container\\PerformanceReport\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Container/IntrospectableContainerInterface.php
+
+		-
+			message: '#^Method Denosys\\Contracts\\Container\\IntrospectableContainerInterface\:\:validate\(\) has invalid return type Denosys\\Contracts\\Container\\ValidationResult\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Container/IntrospectableContainerInterface.php
+
+		-
+			message: '#^Method Denosys\\Contracts\\Container\\TestableContainerInterface\:\:spy\(\) has invalid return type Denosys\\Contracts\\Container\\ServiceSpy\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Container/TestableContainerInterface.php
+
+		-
+			message: '#^Parameter \$container of method Denosys\\Contracts\\ServiceProviderInterface\:\:boot\(\) has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/ServiceProviderInterface.php
+
+		-
+			message: '#^Parameter \$container of method Denosys\\Contracts\\ServiceProviderInterface\:\:register\(\) has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/ServiceProviderInterface.php
