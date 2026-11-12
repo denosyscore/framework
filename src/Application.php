@@ -278,7 +278,7 @@ class Application
 
         $this->bindPendingConfigurations();
 
-        $dispatcher = new Events\Dispatcher(new Events\ListenerProvider());
+        $dispatcher = new Events\Dispatcher(new Events\ListenerProvider($this->container));
         $this->container->instance(Events\Dispatcher::class, $dispatcher);
         $this->container->instance(\Psr\EventDispatcher\EventDispatcherInterface::class, $dispatcher);
         $this->container->alias('events', \Psr\EventDispatcher\EventDispatcherInterface::class);

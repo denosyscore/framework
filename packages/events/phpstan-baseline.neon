@@ -1,7 +1,2 @@
 parameters:
-	ignoreErrors:
-		-
-			message: '#^Parameter \#2 \$offset of function array_splice expects int, int\|string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Events/ListenerProvider.php
+    ignoreErrors: []

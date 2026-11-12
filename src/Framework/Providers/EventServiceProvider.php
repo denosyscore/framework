@@ -21,7 +21,7 @@ class EventServiceProvider implements Provider
         // Only register if not already registered by Kernel
         // This supports both HTTP (Kernel pre-registers) and CLI/testing scenarios
         if (!$container->has(Dispatcher::class)) {
-            $container->singleton(Dispatcher::class, fn() => new Dispatcher(new ListenerProvider()));
+            $container->singleton(Dispatcher::class, fn(ContainerInterface $container) => new Dispatcher(new ListenerProvider($container)));
         }
 
         // Only register interface binding if not already present
