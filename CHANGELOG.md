@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.4 – 2026-11-12
+
+### Fixed
+
+- Require `psr/http-message`, `psr/http-server-handler` and
+  `psr/http-server-middleware`, which the throttle middleware implements.
+
 ## 0.2.3 – 2026-11-12
 
 ### Fixed
