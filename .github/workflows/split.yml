@@ -26,11 +26,41 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  split:
+  # Runs without access to SPLIT_TOKEN, so the third-party PHP setup action
+  # never shares a job with the token.
+  version-line:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+
+      # A tag must belong to the declared version line, so a release can never
+      # ship sibling requirements on the previous line.
+      - name: Check the version line
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          if [ "$REF_TYPE" = tag ]; then
+            bin/package-ci versions --tag "$REF_NAME"
+          else
+            bin/package-ci versions
+          fi
+
+  split:
+    needs: version-line
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           # Otherwise checkout's URL-specific GITHUB_TOKEN header takes

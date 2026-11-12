@@ -212,6 +212,50 @@ switch ($command) {
         echo "Package declarations follow the tiers, and code uses only declared packages.\n";
         break;
 
+    case 'versions':
+        // Every package shares one version line. Requirements on siblings must
+        // use that line (`^X.Y`), and every branch alias must point at it. With
+        // --tag vX.Y.Z the tag must belong to the line too; the split workflow
+        // runs this before tagging, so a release cannot ship requirements on
+        // the previous line.
+        $alias = $line;
+        if (!preg_match('/^(\d+)\.(\d+)\.x-dev$/', $alias, $parts)) {
+            fail("The root branch alias [{$alias}] must look like X.Y.x-dev.");
+        }
+        $expected = "^{$parts[1]}.{$parts[2]}";
+        $problems = [];
+        foreach (glob($packages . '/*/composer.json') ?: [] as $manifestPath) {
+            $manifest = readJson($manifestPath);
+            $package = basename(dirname($manifestPath));
+            if (($manifest['extra']['branch-alias']['dev-main'] ?? null) !== $alias) {
+                $problems[] = "{$package}: extra.branch-alias.dev-main must be {$alias}.";
+            }
+            foreach (['require', 'require-dev'] as $section) {
+                foreach ($manifest[$section] ?? [] as $dependency => $constraint) {
+                    if (str_starts_with($dependency, 'denosyscore/') && $constraint !== $expected) {
+                        $problems[] = "{$package}: {$section} {$dependency} is {$constraint}, expected {$expected}.";
+                    }
+                }
+            }
+        }
+        $tagIndex = array_search('--tag', $argv, true);
+        if ($tagIndex !== false) {
+            $tag = (string) ($argv[$tagIndex + 1] ?? '');
+            if (!preg_match('/^v(\d+)\.(\d+)\.\d+(-[0-9A-Za-z.-]+)?$/', $tag, $tagParts)) {
+                $problems[] = "Tag [{$tag}] is not a vX.Y.Z version.";
+            } elseif ($tagParts[1] !== $parts[1] || $tagParts[2] !== $parts[2]) {
+                $problems[] = "Tag {$tag} is outside the {$parts[1]}.{$parts[2]} line. Raise extra.branch-alias and the sibling requirements to the new line first.";
+            }
+        }
+        foreach ($problems as $problem) {
+            fwrite(STDERR, "✗ {$problem}\n");
+        }
+        if ($problems !== []) {
+            fail('Version line check failed.');
+        }
+        echo "Every package is on the {$parts[1]}.{$parts[2]} line.\n";
+        break;
+
     default:
-        fail("Usage: bin/package-ci install|check|quickstart|list|layers\n");
+        fail("Usage: bin/package-ci install|check|quickstart|list|layers|versions\n");
 }
