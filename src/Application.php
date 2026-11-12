@@ -9,6 +9,7 @@ use Closure;
 use RuntimeException;
 use Throwable;
 use Denosys\Framework\Http\Kernel;
+use Denosys\Framework\Console\CommandRegistry;
 use Denosys\Framework\Provider;
 use Denosys\Console\Kernel as ConsoleKernel;
 use Denosys\Container\Container;
@@ -282,6 +283,8 @@ class Application
         $this->container->instance(Events\Dispatcher::class, $dispatcher);
         $this->container->instance(\Psr\EventDispatcher\EventDispatcherInterface::class, $dispatcher);
         $this->container->alias('events', \Psr\EventDispatcher\EventDispatcherInterface::class);
+
+        $this->container->instance(CommandRegistry::class, new CommandRegistry());
 
         $bootstrapper = new ServiceProviderBootstrapper($this->container);
         $bootstrapper->setProviders($this->providers());
@@ -606,6 +609,21 @@ class Application
     }
 
     /**
+     * The booted console application: the console package's commands, the
+     * framework's, those package providers registered, and the application's
+     * commands discovered in app/Console/Commands.
+     */
+    public function console(): \Denosys\Console\Application
+    {
+        $this->boot();
+
+        $registry = $this->container->get(CommandRegistry::class);
+        $contributed = $registry instanceof CommandRegistry ? $registry->all() : [];
+
+        return (new ConsoleKernel($this->container, $this->basePath, [...self::consoleCommands(), ...$contributed]))->bootstrap();
+    }
+
+    /**
      * Run console application
      *
      * Bootstraps all services (same as web) and runs the console kernel.
@@ -618,10 +636,7 @@ class Application
     {
         $this->boot();
         
-        // Resolve console kernel class from config to avoid hard App coupling.
-        $kernelClass = $this->resolveConsoleKernelClass();
-        $consoleKernel = new $kernelClass($this->container, $this->basePath, self::consoleCommands());
-        return $consoleKernel->handle();
+        return $this->console()->run();
     }
 
     /**
@@ -638,32 +653,6 @@ class Application
             \Denosys\Framework\Console\RoutesClearCommand::class,
             \Denosys\Framework\Console\ViewClearCommand::class,
         ];
-    }
-
-    /**
-     * Resolve console kernel class name.
-     *
-     * @return class-string<ConsoleKernel>
-     */
-    protected function resolveConsoleKernelClass(): string
-    {
-        $kernelClass = $this->config->get('console.kernel');
-
-        if (is_string($kernelClass) && $kernelClass !== '') {
-            if (!class_exists($kernelClass)) {
-                throw new RuntimeException("Configured console kernel class [{$kernelClass}] does not exist.");
-            }
-
-            if (!is_subclass_of($kernelClass, ConsoleKernel::class)) {
-                throw new RuntimeException(
-                    "Configured console kernel class [{$kernelClass}] must extend [" . ConsoleKernel::class . '].'
-                );
-            }
-
-            return $kernelClass;
-        }
-
-        return \App\Console\Kernel::class;
     }
 
     /**

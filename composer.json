@@ -120,7 +120,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-main": "0.15.x-dev"
+      "dev-main": "0.16.x-dev"
     },
     "denosys": {
       "tiers": {
@@ -128,7 +128,8 @@
           "contracts",
           "config",
           "container",
-          "events"
+          "events",
+          "console"
         ],
         "infrastructure": [
           "database",
@@ -147,12 +148,8 @@
         "features": [
           "auth",
           "queue",
-          "view",
-          "console"
+          "view"
         ]
-      },
-      "tier-notes": {
-        "console": "Part VIII places console in foundation; it moves there once packages register their own commands."
       }
     }
   },

@@ -19,18 +19,6 @@ parameters:
 			path: src/Application.php
 
 		-
-			message: '#^Class App\\Console\\Kernel not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Application.php
-
-		-
-			message: '#^Method Denosys\\Application\:\:resolveConsoleKernelClass\(\) should return class\-string\<Denosys\\Console\\Kernel\> but returns string\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Application.php
-
-		-
 			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1

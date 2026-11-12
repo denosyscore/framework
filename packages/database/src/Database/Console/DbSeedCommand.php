@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Denosys\Console\Command;
+namespace Denosys\Database\Console;
 
 use Denosys\Console\CommandDefinition;
 use Denosys\Console\CommandInterface;

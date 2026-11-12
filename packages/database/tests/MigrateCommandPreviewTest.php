@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests;
 
 use Denosys\Console\Application;
-use Denosys\Console\Command\MigrateCommand;
+use Denosys\Database\Console\MigrateCommand;
 use Denosys\Container\Container;
 use Denosys\Database\Connection\Connection;
 use Denosys\Database\Grammar\SqliteGrammar;
@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-final class MigratePreviewCommandTest extends TestCase
+final class MigrateCommandPreviewTest extends TestCase
 {
     public function testPreviewListsPendingMigrationWithoutWritingHistory(): void
     {
@@ -54,7 +54,7 @@ final class MigratePreviewCommandTest extends TestCase
         $connection = new Connection(new PDO('sqlite::memory:'), new SqliteGrammar());
         $schema = new SchemaBuilder($connection, new SqliteSchemaGrammar());
         $repository = new MigrationRepository($connection, $schema);
-        $migrator = new Migrator($connection, $schema, $repository, __DIR__ . '/fixtures/migrations');
+        $migrator = new Migrator($connection, $schema, $repository, __DIR__ . '/fixtures/console-migrations');
         $container = new Container();
         $container->instance(Migrator::class, $migrator);
         $console = new Application($container);

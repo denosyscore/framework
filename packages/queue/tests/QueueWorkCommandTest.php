@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests;
 
 use Denosys\Console\Application;
-use Denosys\Console\Command\QueueWorkCommand;
+use Denosys\Queue\Console\QueueWorkCommand;
 use Denosys\Container\Container;
 use Denosys\Container\ContainerInterface;
 use Denosys\Database\Connection\Connection;
@@ -47,7 +47,7 @@ final class LegacyWorkerJob extends Job
     }
 }
 
-final class QueueWorkRuntimeJobTest extends TestCase
+final class QueueWorkCommandTest extends TestCase
 {
     public function testDatabaseWorkerRunsRuntimeAndLegacyJobs(): void
     {

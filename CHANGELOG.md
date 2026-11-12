@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.16.0 – 2026-11-12
+
+Console (finding F20). This completes Phase 2.
+
+### Changed (breaking)
+
+- The console `Kernel` is final and configured by constructor arguments;
+  applications no longer subclass it. Delete `app/Console/Kernel.php`. The
+  `console.kernel` setting and the fallback to `\App\Console\Kernel` are
+  removed.
+- Commands live in the package that owns them: `migrate`,
+  `migrate:rollback`, `migrate:status`, `migrate:fresh` and `db:seed` move to
+  `Denosys\Database\Console`, and `queue:work` to `Denosys\Queue\Console`.
+  Their framework providers register them through `CommandRegistry`.
+- `denosyscore/console` moves to the foundation tier and requires only the
+  container and Symfony Console.
+
+### Added
+
+- `#[AsCommand('name', 'description')]` on a plain invokable class, with an
+  optional static `definition()`; its metadata is read without building it.
+  `make:command` generates this style.
+- `Application::console()` returns the booted console application;
+  `runConsole()` runs it.
+
 ## 0.15.0 – 2026-11-12
 
 Lazy listeners (finding F21).
