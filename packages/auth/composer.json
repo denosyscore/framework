@@ -1,0 +1,36 @@
+{
+  "name": "denosyscore/auth",
+  "description": "Authentication and authorization components",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "denosyscore/container": "^0.2",
+    "denosyscore/contracts": "^0.2",
+    "denosyscore/database": "^0.2 || ^0.3 || ^0.4 || ^0.5",
+    "denosyscore/encryption": "^0.2",
+    "denosyscore/http": "^0.2 || ^0.3 || ^0.4",
+    "denosyscore/session": "^0.2",
+    "psr/event-dispatcher": "^1.0",
+    "psr/http-message": "^2.0",
+    "psr/http-server-handler": "^1.0",
+    "psr/http-server-middleware": "^1.0"
+  },
+  "require-dev": {
+    "laminas/laminas-diactoros": "^3.6",
+    "phpunit/phpunit": "^10.5",
+    "phpstan/phpstan": "^2.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Denosys\\Auth\\": "src/Auth/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "analyse": "phpstan analyse --no-progress --memory-limit=1G"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
