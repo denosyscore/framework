@@ -48,7 +48,7 @@ provided default; the usual boolean and null string values are cast.
 
 ## Mail provider
 
-Register `Denosys\Mail\MailServiceProvider` with `Application::withProviders()`
+Register `Denosys\Framework\Providers\MailServiceProvider` with `Application::withProviders()`
 when an application needs `Symfony\Component\Mailer\MailerInterface`. The
 provider binds a lazy `TransportInterface` and mailer. Set `mail.dsn` for a
 Symfony-supported transport, or configure `mail.default` as `smtp` or
@@ -108,7 +108,8 @@ minimums to patched releases without changing the framework API.
 |---|---|
 | `src/`, `support/`, `tests/` | The framework package itself |
 | `packages/<name>/` | One component per directory, each with its own `composer.json`, README, tests and PHPStan baseline |
-| `bin/package-ci` | Installs one package on its own, with sibling packages from this checkout, and runs its checks |
+| `src/Framework/` | Framework-owned integration: service providers (`Providers/`), the HTTP kernel, routing integration and framework console commands |
+| `bin/package-ci` | Installs one package on its own, with sibling packages from this checkout, and runs its checks; `layers` checks package boundaries |
 
 Every package directory is published to the read-only repository
 `denosyscore/<name>` by the **Split packages** workflow. Pull requests opened
@@ -127,9 +128,23 @@ packages from `packages/`, so a change is tested against the other packages at
 the same commit. A package that uses a class it does not require fails here,
 even though the root autoloader would hide it.
 
+## Package boundaries
+
+Packages are grouped into tiers in `composer.json` under `extra.denosys.tiers`:
+foundation (contracts, container, events), infrastructure (database, cache,
+encryption, hashing, filesystem), HTTP (http, routing, session, validation,
+rate-limiter) and features (auth, queue, view, console). A package may require
+only packages in its own or a lower tier, without cycles, and its code may use
+only the DenoSys packages it requires. Packages contain no service providers:
+the framework's providers in `src/Framework/Providers` wire them together.
+
+```bash
+bin/package-ci layers
+```
+
 ## Repository workflows
 
-- **CI:** framework tests, static analysis and an audit. Each package is installed alone and its tests, PHPStan baseline and README quick start are run. Database tests also run against MySQL, MariaDB and PostgreSQL, and there is an HTTP and session integration check.
+- **CI:** framework tests, static analysis, an audit and the package boundary check. Each package is installed alone and its tests, PHPStan baseline and README quick start are run. Database tests also run against MySQL, MariaDB and PostgreSQL, and there is an HTTP and session integration check.
 - **Split packages:** publishes `packages/*` to the package repositories on every push to `main` and on version tags. It needs the `SPLIT_TOKEN` secret.
 - **Release:** creates the GitHub release for a tag.
 - **Dependabot:** weekly Composer updates for the root and every package, and GitHub Actions updates.

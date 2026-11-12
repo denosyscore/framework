@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.0 – 2026-11-12
+
+- **Breaking:** the provider interfaces moved to the framework as `Denosys\Framework\Provider` and `DeferrableProvider`; the unused container interfaces are removed; `ConfigurationReaderInterface` is renamed `ConfigReader`.
+- Adds `View\TemplateRenderer`. Requires no packages.
+
 ## 0.10.0 – 2026-11-12
 
 ### Changed

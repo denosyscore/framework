@@ -66,6 +66,28 @@ jobs:
       - name: PHPStan
         run: composer analyse
 
+  layers:
+    name: Package boundaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+
+      - name: Install
+        run: composer update --no-interaction --prefer-dist --no-progress
+
+      # Each package requires only packages in its own or a lower tier
+      # (extra.denosys.tiers), with no cycles, and its code uses only the
+      # DenoSys packages it requires.
+      - name: Tiers, cycles and undeclared package use
+        run: bin/package-ci layers
+
   package-list:
     runs-on: ubuntu-latest
     outputs:

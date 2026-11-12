@@ -47,15 +47,3 @@ parameters:
 			identifier: encapsedStringPart.nonString
 			count: 1
 			path: src/Filesystem/FilesystemManager.php
-
-		-
-			message: '#^Cannot call method disk\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Filesystem/FilesystemServiceProvider.php
-
-		-
-			message: '#^Parameter \#1 \$config of class Denosys\\Filesystem\\FilesystemManager constructor expects Denosys\\Contracts\\Config\\ConfigurationReaderInterface, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Filesystem/FilesystemServiceProvider.php

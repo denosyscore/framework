@@ -14,3 +14,5 @@ composer.lock
 /packages/*/composer.lock
 /packages/http/integration/session/vendor/
 /packages/http/integration/session/composer.monorepo.*
+/deptrac.yaml
+/.deptrac.cache

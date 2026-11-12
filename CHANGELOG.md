@@ -1,5 +1,50 @@
 # Changelog
 
+## 0.11.0 – 2026-11-12
+
+Package boundaries. Every package now requires exactly the DenoSys packages
+its code uses, no package depends on a package in a higher tier, and there are
+no dependency cycles. `bin/package-ci layers` checks all three in CI.
+
+### Changed (breaking)
+
+| Before | After |
+|---|---|
+| `Denosys\Contracts\ServiceProviderInterface` | `Denosys\Framework\Provider` |
+| `Denosys\Contracts\DeferrableProviderInterface` | `Denosys\Framework\DeferrableProvider` |
+| `Denosys\{Package}\…ServiceProvider` (all 19, including `Denosys\Mail\MailServiceProvider`, `Denosys\Logging\LoggerServiceProvider`, `Denosys\Routing\RouterServiceProvider`) | `Denosys\Framework\Providers\…ServiceProvider` |
+| `Denosys\Http\Kernel` | `Denosys\Framework\Http\Kernel` |
+| `Denosys\Routing\RouteLoader`, `RouteCache`, `Contracts\UrlRoutable`, `ParameterResolvers\FormRequestResolver`, `ParameterResolvers\RouteModelBindingResolver`, `Strategy\ModelBindingInvocationStrategy` (framework classes inside the routing namespace) | `Denosys\Framework\Routing\…` |
+| `Denosys\Console\Command\{ConfigCache,ConfigClear,RoutesCache,RoutesClear,ViewClear}Command` | `Denosys\Framework\Console\…Command` |
+| `Denosys\Http\Middleware\ThrottleRequestsMiddleware` | `Denosys\RateLimiter\Middleware\ThrottleRequestsMiddleware` |
+| `Denosys\Contracts\Config\ConfigurationReaderInterface` | `Denosys\Contracts\Config\ConfigReader` |
+| `Denosys\Support\Collection` | `Illuminate\Support\Collection` (`denosyscore/support` is retired) |
+| `ResponseFactory::setViewEngine()` / `getViewEngine()` | `setTemplateRenderer()` / `getTemplateRenderer()` with `Denosys\Contracts\View\TemplateRenderer` |
+
+- The contracts package's unused container interfaces are removed.
+- The root autoloader maps only the framework's own namespaces (`Bootstrap`,
+  `Config`, `Environment`, `Framework`, `Mail`, and `Denosys\Application`)
+  instead of claiming all of `Denosys\`.
+
+### Fixed
+
+- **Security:** the fallback 401, 403, 404 and 500 pages escape their message.
+- The cache provider's default directory is `cache` under `path.storage`. It
+  used to resolve inside the package, which is `vendor/` in an application.
+- Packages declare the third-party libraries they use: database requires
+  `doctrine/inflector`, http requires `filp/whoops` and `psr/log`, filesystem
+  requires `league/flysystem-local`, and events and session require the PSR
+  interface packages their classes implement.
+
+### Added
+
+- `Denosys\Contracts\View\TemplateRenderer`, implemented by `ViewEngine`.
+- The console `Kernel` accepts commands owned by the host application; the
+  framework passes its own through `Application::consoleCommands()`.
+- `bin/package-ci layers` and a **Package boundaries** CI job. Tiers are
+  declared in `extra.denosys.tiers`: foundation (contracts, container,
+  events), infrastructure, HTTP, and features.
+
 ## 0.10.0 – 2026-11-12
 
 ### Changed (breaking)
