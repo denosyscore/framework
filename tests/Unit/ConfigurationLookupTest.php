@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-use Denosys\Config\Configuration;
+use Denosys\Config\ConfigLoader;
+use Denosys\Config\Repository;
 
-function configurationFrom(array $files): Configuration
+function configurationFrom(array $files): Repository
 {
     $directory = sys_get_temp_dir() . '/denosys-config-' . bin2hex(random_bytes(4));
     mkdir($directory);
@@ -12,8 +13,7 @@ function configurationFrom(array $files): Configuration
         file_put_contents("{$directory}/{$name}.php", '<?php return ' . var_export($values, true) . ';');
     }
 
-    $configuration = new Configuration($directory, $directory . '/cache/config.php');
-    $configuration->loadFiles();
+    $configuration = (new ConfigLoader())->fromDirectory($directory);
 
     return $configuration;
 }

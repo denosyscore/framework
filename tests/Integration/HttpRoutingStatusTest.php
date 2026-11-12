@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-use Denosys\Config\Configuration;
-use Denosys\Config\ConfigurationInterface;
+use Denosys\Config\Repository;
 use Denosys\Contracts\Config\ConfigReader;
 use Denosys\Container\Container;
 use Denosys\Routing\Router;
@@ -14,8 +13,8 @@ use Laminas\Diactoros\ServerRequest;
 function frameworkRouterForHttpStatusTest(): Router
 {
     $container = new Container();
-    $config = new Configuration();
-    $container->instance(ConfigurationInterface::class, $config);
+    $config = new Repository();
+    $container->instance(Repository::class, $config);
     $container->instance(ConfigReader::class, $config);
     (new RouterServiceProvider())->register($container);
 

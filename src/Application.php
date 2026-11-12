@@ -11,16 +11,16 @@ use Throwable;
 use Denosys\Framework\Http\Kernel;
 use Denosys\Console\Kernel as ConsoleKernel;
 use Denosys\Container\Container;
-use Denosys\Config\Configuration;
+use Denosys\Config\ConfigLoader;
 use Symfony\Component\Filesystem\Path;
 use Psr\Http\Message\ResponseInterface;
 use Denosys\Container\ContainerInterface;
 use Denosys\Container\Exceptions\NotFoundException;
-use Denosys\Config\ConfigurationInterface;
+use Denosys\Config\Repository;
 use Denosys\Contracts\Config\ConfigReader;
 use Denosys\Container\Exceptions\ContainerException;
 use Psr\Http\Message\ServerRequestInterface;
-use Denosys\Environment\EnvironmentManager;
+use Denosys\Config\Environment;
 use Denosys\Bootstrap\ServiceProviderBootstrapper;
 use Denosys\Container\Exceptions\ContainerResolutionException;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
@@ -34,7 +34,7 @@ class Application
     protected static ?Application $instance = null;
 
     protected Container $container;
-    protected EnvironmentManager $environment;
+    protected Environment $environment;
     protected ?Kernel $httpKernel = null;
 
     /**
@@ -57,7 +57,7 @@ class Application
      */
     protected ?string $storageCachePath = null;
 
-    protected ConfigurationInterface $config;
+    protected Repository $config;
 
     /**
      * The application's namespace.
@@ -108,15 +108,12 @@ class Application
         // work correctly when config files are loaded
         $this->registerPathBindings();
 
-        $this->environment = new EnvironmentManager();
+        $this->environment = new Environment();
         $this->environment->load($this->basePath);
 
-        $this->config = (new Configuration(
-            $this->configPath(),
-            $this->configCacheFile()
-        ));
-
-        $this->config->loadFiles();
+        $loader = new ConfigLoader();
+        $this->config = $loader->fromCache($this->configCacheFile())
+            ?? (is_dir($this->configPath()) ? $loader->fromDirectory($this->configPath()) : new Repository());
 
         $this->registerBaseBindings();
     }
@@ -413,7 +410,7 @@ class Application
 
     public function isLocal(): bool
     {
-        return $_ENV['APP_ENV'] === 'local';
+        return $this->config->get('app.env') === 'local';
     }
 
     /**
@@ -595,7 +592,7 @@ class Application
     /**
      * Get environment configuration
      */
-    public function getEnvironment(): EnvironmentManager
+    public function getEnvironment(): Environment
     {
         return $this->environment;
     }
@@ -616,12 +613,12 @@ class Application
         $this->container->instance(PsrContainerInterface::class, $this->container);
         $this->container->instance(Container::class, $this->container);
 
-        $this->container->instance(ConfigurationInterface::class, $this->config);
+        $this->container->instance(Repository::class, $this->config);
         $this->bindConfigurationReader($this->container);
-        $this->container->alias('config', ConfigurationInterface::class);
+        $this->container->alias('config', Repository::class);
 
-        $this->container->instance(EnvironmentManager::class, $this->environment);
-        $this->container->alias('environment', EnvironmentManager::class);
+        $this->container->instance(Environment::class, $this->environment);
+        $this->container->alias('environment', Environment::class);
 
         $this->registerPathBindings();
     }
@@ -630,7 +627,7 @@ class Application
     {
         $container->bind(
             ConfigReader::class,
-            static fn (ContainerInterface $container): ConfigReader => $container->get(ConfigurationInterface::class)
+            static fn (ContainerInterface $container): ConfigReader => $container->get(Repository::class)
         );
     }
 

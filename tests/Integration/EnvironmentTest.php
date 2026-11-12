@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Denosys\Environment\EnvironmentManager;
+use Denosys\Config\Environment;
 use Dotenv\Repository\Adapter\ArrayAdapter;
 use Dotenv\Repository\RepositoryBuilder;
 
@@ -18,7 +18,7 @@ it('ignores a missing optional env file without a PHP warning', function (): voi
     });
 
     try {
-        (new EnvironmentManager())->load($directory);
+        (new Environment())->load($directory);
     } finally {
         restore_error_handler();
         expect(rmdir($directory))->toBeTrue();
@@ -36,7 +36,7 @@ it('loads a present env file after an optional missing file', function (): void 
     $repository = RepositoryBuilder::createWithNoAdapters()
         ->addAdapter(ArrayAdapter::class)
         ->make();
-    $environment = new EnvironmentManager($repository);
+    $environment = new Environment($repository);
     $warnings = [];
     set_error_handler(static function (int $severity, string $message) use (&$warnings): bool {
         $warnings[] = $message;
@@ -59,7 +59,7 @@ it('loads a present env file after an optional missing file', function (): void 
 it('rejects a nonexistent environment directory', function (): void {
     $directory = sys_get_temp_dir() . '/denosys-env-' . bin2hex(random_bytes(8));
 
-    expect(fn () => (new EnvironmentManager())->load($directory))
+    expect(fn () => (new Environment())->load($directory))
         ->toThrow(InvalidArgumentException::class, 'Env directory not found');
 });
 

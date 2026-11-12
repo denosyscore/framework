@@ -8,7 +8,7 @@ use Denosys\Container\ContainerInterface;
 use Denosys\Framework\Provider;
 use Denosys\Container\Exceptions\NotFoundException;
 use Denosys\Container\Exceptions\ContainerException;
-use Denosys\Environment\EnvironmentManager;
+use Denosys\Config\Repository;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
@@ -27,10 +27,18 @@ class LoggerServiceProvider implements Provider
      */
     public function register(ContainerInterface $container): void
     {
-        /** @var EnvironmentManager $environmentManager */
-        $environmentManager = $container->get(EnvironmentManager::class);
-        $environment = $environmentManager->get('APP_ENV', 'production');
-        $logPath = $environmentManager->get('LOG_PATH') ?: $container->get('path.base') . '/storage/logs/app.log';
+        // Read through configuration, like every other setting.
+        $config = $container->get(Repository::class);
+        if (!$config instanceof Repository) {
+            throw new \LogicException('The configuration repository is not bound.');
+        }
+        $environment = $config->get('app.env');
+        $environment = is_string($environment) && $environment !== '' ? $environment : 'production';
+        $logPath = $config->get('logging.path');
+        if (!is_string($logPath) || $logPath === '') {
+            $basePath = $container->get('path.base');
+            $logPath = (is_string($basePath) ? $basePath : (string) getcwd()) . '/storage/logs/app.log';
+        }
         $level   = ($environment === 'production') ? Level::Warning : Level::Debug;
 
         $logHandler = new StreamHandler(

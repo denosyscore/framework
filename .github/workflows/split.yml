@@ -91,6 +91,13 @@ jobs:
             sha=$(git subtree split -q --prefix="packages/$package" HEAD)
             remote="https://github.com/denosyscore/$package.git"
 
+            # A new package publishes once its repository exists and the token
+            # can reach it; until then skip it instead of failing every package.
+            if ! git -c http.extraheader="$auth" ls-remote "$remote" >/dev/null 2>&1; then
+              echo "::warning::denosyscore/$package is not reachable; create it and grant SPLIT_TOKEN access to publish packages/$package."
+              continue
+            fi
+
             if [ "$REF_TYPE" = branch ]; then
               git -c http.extraheader="$auth" push "$remote" "$sha:refs/heads/main"
               continue

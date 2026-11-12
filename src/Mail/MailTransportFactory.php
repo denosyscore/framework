@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Denosys\Mail;
 
-use Denosys\Config\ConfigurationInterface;
+use Denosys\Contracts\Config\ConfigReader;
 use RuntimeException;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 
 final class MailTransportFactory
 {
-    public function create(ConfigurationInterface $config): TransportInterface
+    public function create(ConfigReader $config): TransportInterface
     {
         $dsn = $config->get('mail.dsn');
         if (is_string($dsn) && $dsn !== '') {

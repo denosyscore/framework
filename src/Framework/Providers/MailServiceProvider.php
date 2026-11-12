@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Denosys\Framework\Providers;
 
 use Denosys\Mail\MailTransportFactory;
-use Denosys\Config\ConfigurationInterface;
+use Denosys\Config\Repository;
 use Denosys\Container\ContainerInterface;
 use Denosys\Framework\Provider;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -18,7 +18,12 @@ final class MailServiceProvider implements Provider
     public function register(ContainerInterface $container): void
     {
         $container->singleton(TransportInterface::class, static function (ContainerInterface $container): TransportInterface {
-            return (new MailTransportFactory())->create($container->get(ConfigurationInterface::class));
+            $config = $container->get(Repository::class);
+            if (!$config instanceof Repository) {
+                throw new \LogicException('The configuration repository is not bound.');
+            }
+
+            return (new MailTransportFactory())->create($config);
         });
 
         $container->singleton(MailerInterface::class, static function (ContainerInterface $container): MailerInterface {
