@@ -40,6 +40,10 @@ class Application
 
     private bool $booted = false;
 
+    private ?\Throwable $bootFailure = null;
+
+    private bool $booting = false;
+
     /** @var list<class-string<Provider>> */
     private array $withoutProviders = [];
 
@@ -185,6 +189,12 @@ class Application
      */
     public function without(string ...$providers): static
     {
+        foreach ($providers as $provider) {
+            if (!in_array($provider, self::defaultProviders(), true)) {
+                throw new \InvalidArgumentException("[{$provider}] is not a default provider, so it cannot be left out.");
+            }
+        }
+
         $this->withoutProviders = array_values(array_unique([...$this->withoutProviders, ...$providers]));
 
         return $this;
@@ -212,6 +222,8 @@ class Application
                     Provider::class,
                 ));
             }
+            // One class can be spelled in different cases; register it once.
+            $provider = (new \ReflectionClass($provider))->getName();
             if (!in_array($provider, $providers, true)) {
                 $providers[] = $provider;
             }
@@ -229,7 +241,33 @@ class Application
         if ($this->booted) {
             return;
         }
+        // A failed boot leaves a partly initialized application: keep
+        // reporting the original error rather than running on top of it.
+        if ($this->bootFailure !== null) {
+            throw $this->bootFailure;
+        }
+
+        // A provider that triggers boot() while booting must not start again.
+        if ($this->booting) {
+            return;
+        }
+
+        $this->booting = true;
+        try {
+            $this->bootProviders();
+        } catch (\Throwable $exception) {
+            $this->bootFailure = $exception;
+
+            throw $exception;
+        } finally {
+            $this->booting = false;
+        }
+
         $this->booted = true;
+    }
+
+    private function bootProviders(): void
+    {
 
         $legacyProviders = $this->basePath('bootstrap/providers.php');
         if (is_file($legacyProviders) && (require $legacyProviders) !== []) {
@@ -330,6 +368,10 @@ class Application
 
     public function setContainer(Container $container): void
     {
+        if ($this->booted || $this->bootFailure !== null) {
+            throw new \LogicException('The container cannot be replaced after boot: the new container would have no providers.');
+        }
+
         $this->container = $container;
 
         if (!$container->has(ConfigReader::class)) {

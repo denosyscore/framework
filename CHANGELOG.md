@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.14.1 – 2026-11-12
+
+### Fixed
+
+- A failed boot no longer counts as booted. Every later `boot()`, request or
+  command reports the original error instead of running on a partly
+  initialized application.
+- `without()` rejects a class that is not a default provider, so a misspelled
+  exclusion no longer leaves the provider enabled silently.
+- A provider listed under differently cased names is registered once.
+- `setContainer()` refuses to replace the container after boot, when the new
+  container would have no providers.
+- Deferred providers are documented as booting on first use, not at boot.
+
 ## 0.14.0 – 2026-11-12
 
 One boot path (findings F09 and F16).

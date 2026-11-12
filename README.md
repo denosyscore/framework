@@ -46,10 +46,15 @@ return Application::configure(basePath: dirname(__DIR__))
 ```
 
 The first request or command calls `boot()`, which registers and boots every
-provider once, with one event dispatcher, for HTTP and the console alike.
+eager provider once, with one event dispatcher, for HTTP and the console
+alike. A provider that implements `DeferrableProvider` is registered and booted
+only when one of the services it provides is first requested, so listeners it
+adds in `boot()` do not exist before then. If boot fails, every later attempt
+reports the same error, and the container cannot be replaced after boot.
 `Application::defaultProviders()` lists the framework's providers;
-`without()` removes some, `withProviders()` adds the application's, each is
-registered once, and a class that does not exist or is not a provider is an
+`without()` removes some (it rejects a class that is not a default),
+`withProviders()` adds the application's, each class is registered once
+however its name is cased, and a class that does not exist or is not a provider is an
 error. `bootstrap/providers.php` is no longer read: boot stops with an error
 if it still lists providers.
 
