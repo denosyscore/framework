@@ -1,5 +1,10 @@
+includes:
+    - phpstan-baseline.neon
+
 parameters:
-    level: 6
+    level: max
     paths:
         - src
         - tests
+    # Fixed errors must be removed from the baseline, so it only shrinks.
+    reportUnmatchedIgnoredErrors: true
