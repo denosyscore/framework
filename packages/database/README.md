@@ -78,7 +78,7 @@ PHP 8.5 warns about it at run time and PHPStan reports it
 receives:
 
 ```php
-$users->where(fn (Builder $q) => $q->where('role', '=', 'admin')->orWhere('owner', '=', 1));
+$users = $users->where(fn (Builder $q) => $q->where('role', '=', 'admin')->orWhere('owner', '=', 1));
 ```
 
 Every string is quoted as an identifier, so a column name can never carry
@@ -88,11 +88,12 @@ review; never put user input in one, bind it instead:
 ```php
 use Denosys\Database\Query\Sql;
 
-$db->table('users')
+$teams = $db->table('users')
     ->select(['team_id', Sql::raw('count(*) as total')])
     ->groupBy('team_id')
     ->having(Sql::raw('count(*)'), '>', 5)
-    ->orderBy(Sql::raw('lower(name)'));
+    ->orderBy(Sql::raw('count(*)'), 'desc')
+    ->get();
 ```
 
 Also available:

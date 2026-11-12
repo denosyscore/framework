@@ -250,9 +250,12 @@ switch ($command) {
                 continue;
             }
             $relative = substr($manifestPath, strlen($packages) + 1);
-            foreach ((readJson($manifestPath)['require'] ?? []) as $dependency => $constraint) {
-                if (str_starts_with($dependency, 'denosyscore/') && $constraint !== $expected) {
-                    $problems[] = "{$relative}: require {$dependency} is {$constraint}, expected {$expected}.";
+            $manifest = readJson($manifestPath);
+            foreach (['require', 'require-dev'] as $section) {
+                foreach ($manifest[$section] ?? [] as $dependency => $constraint) {
+                    if (str_starts_with($dependency, 'denosyscore/') && $constraint !== $expected) {
+                        $problems[] = "{$relative}: {$section} {$dependency} is {$constraint}, expected {$expected}.";
+                    }
                 }
             }
         }

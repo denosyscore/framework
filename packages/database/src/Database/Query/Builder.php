@@ -324,7 +324,7 @@ class Builder implements QueryBuilderInterface
     public function join(string $table, string $first, string $operator, string $second, string $type = 'inner'): static
     {
         $this->assertIdentifiers([$first, $second]);
-        if (!in_array($type, ['inner', 'left', 'right', 'cross'], true)) {
+        if (!in_array($type, ['inner', 'left', 'right'], true)) {
             throw new InvalidArgumentException("Unsupported join type [{$type}].");
         }
 
@@ -503,7 +503,9 @@ class Builder implements QueryBuilderInterface
 
     public function value(string $column): mixed
     {
-        return $this->select($column)->first()?->$column;
+        $name = $this->resultName($column);
+
+        return $this->select($column)->first()?->$name;
     }
 
     /**
@@ -513,14 +515,16 @@ class Builder implements QueryBuilderInterface
     {
         $query = $this->select($key ? [$key, $column] : [$column]);
         $results = $this->connection->select($query->toSql(), $query->getBindings());
+        $name = $this->resultName($column);
 
         if ($key === null) {
-            return array_map(fn (object $row): mixed => $row->$column, $results);
+            return array_map(fn (object $row): mixed => $row->$name, $results);
         }
 
+        $keyName = $this->resultName($key);
         $output = [];
         foreach ($results as $row) {
-            $output[$row->$key] = $row->$column;
+            $output[$row->$keyName] = $row->$name;
         }
 
         return $output;
@@ -544,14 +548,22 @@ class Builder implements QueryBuilderInterface
             throw new LogicException('lazyById() orders and pages by the key itself; remove orderBy(), limit() and offset().');
         }
 
-        $alias ??= str_contains($column, '.') ? substr($column, (int) strrpos($column, '.') + 1) : $column;
+        $alias ??= $this->resultName($column);
         $last = null;
 
+        // Group the caller's conditions, so an orWhere() cannot bypass the cursor.
+        $base = $this->wheres === []
+            ? $this
+            : $this->emptyConditions()->addWhere(['type' => 'nested', 'query' => $this->wheres, 'boolean' => 'and'], $this->bindings['where']);
+
         do {
-            $page = ($last === null ? $this : $this->where($column, '>', $last))->orderBy($column)->limit($chunkSize);
+            $page = ($last === null ? $base : $base->where($column, '>', $last))->orderBy($column)->limit($chunkSize);
             $rows = $this->connection->select($page->toSql(), $page->getBindings());
 
             foreach ($rows as $row) {
+                if (!property_exists($row, $alias)) {
+                    throw new LogicException("lazyById() needs the key [{$alias}] in every row; add it to select().");
+                }
                 yield $row;
             }
 
@@ -741,9 +753,8 @@ class Builder implements QueryBuilderInterface
             $updateColumns = array_values(array_diff($insertColumns, $conflictColumns));
         }
 
-        $sql = $this->grammar->getDriverName() === 'mysql'
-            ? $this->grammar->compileUpsert($this->requireTable(), $insertColumns, $updateColumns)
-            : $this->grammar->compileUpsert($this->requireTable(), $insertColumns, $conflictColumns, $updateColumns);
+        // MySQL ignores the conflict columns: ON DUPLICATE KEY uses every unique key.
+        $sql = $this->grammar->compileUpsert($this->requireTable(), $insertColumns, $conflictColumns, $updateColumns);
 
         return $this->connection->statement($sql, array_values($values));
     }
@@ -885,6 +896,22 @@ class Builder implements QueryBuilderInterface
         }
 
         return $normalized;
+    }
+
+    /**
+     * The name a selected column has in the result row: the alias of
+     * 'a as b', the last segment of 'table.column', or the column itself.
+     */
+    protected function resultName(string $column): string
+    {
+        $parts = preg_split('/\s+as\s+/i', $column, 2) ?: [$column];
+        if (isset($parts[1])) {
+            return trim($parts[1]);
+        }
+
+        $dot = strrpos($column, '.');
+
+        return $dot === false ? $column : substr($column, $dot + 1);
     }
 
     protected function requireTable(): string

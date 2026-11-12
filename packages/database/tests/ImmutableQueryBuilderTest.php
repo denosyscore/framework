@@ -10,6 +10,19 @@ use Denosys\Database\Query\Builder;
 use Denosys\Database\Query\Sql;
 use PHPUnit\Framework\TestCase;
 
+final class RecordingConnection extends Connection
+{
+    /** @var list<string> */
+    public array $statements = [];
+
+    public function statement(string $query, array $bindings = []): bool
+    {
+        $this->statements[] = $query;
+
+        return true;
+    }
+}
+
 final class ImmutableQueryBuilderTest extends TestCase
 {
     private Connection $connection;
@@ -217,5 +230,49 @@ final class ImmutableQueryBuilderTest extends TestCase
         $this->expectException(LogicException::class);
 
         iterator_to_array($this->connection->table('users')->orderBy('name')->lazyById(3));
+    }
+
+    public function testLazyByIdGroupsExistingConditionsBeforeTheCursor(): void
+    {
+        $ids = [];
+        foreach ($this->connection->table('users')->where('id', '<=', 2)->orWhere('id', '=', 10)->lazyById(1) as $row) {
+            $ids[] = (int) $row->id;
+            self::assertLessThan(10, count($ids), 'lazyById() did not finish');
+        }
+
+        self::assertSame([1, 2, 10], $ids);
+    }
+
+    public function testLazyByIdRequiresTheKeyInTheSelection(): void
+    {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('[id]');
+
+        iterator_to_array($this->connection->table('users')->select('name')->lazyById(3));
+    }
+
+    public function testValueAndPluckReadQualifiedColumns(): void
+    {
+        $users = $this->connection->table('users')->where('users.id', '<=', 2);
+
+        self::assertSame('user1', $users->value('users.name'));
+        self::assertSame([1 => 'user1', 2 => 'user2'], $users->pluck('users.name', 'users.id'));
+        self::assertSame(['user1', 'user2'], $users->pluck('users.name as name'));
+    }
+
+    public function testCrossJoinIsRejectedBecauseItHasNoOnClause(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $unused = $this->connection->table('users')->join('teams', 'teams.id', '=', 'users.team_id', 'cross');
+    }
+
+    public function testMySqlUpsertUpdatesOnlyTheNamedColumns(): void
+    {
+        $connection = new RecordingConnection(new PDO('sqlite::memory:'), new MySqlGrammar());
+
+        (new Builder($connection))->table('users')->upsert(['id' => 1, 'name' => 'a', 'role' => 'admin'], ['id'], ['name']);
+
+        self::assertStringEndsWith('ON DUPLICATE KEY UPDATE `name` = VALUES(`name`)', $connection->statements[0]);
     }
 }

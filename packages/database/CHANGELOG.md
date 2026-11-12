@@ -37,6 +37,12 @@
 - `whereIn($column, [])` matched every row or failed with a syntax error; it
   now matches none, and `whereNotIn($column, [])` matches every row.
 - `limit(0)` was ignored and returned every row; it now returns none.
+- `upsert()` on MySQL updated every inserted column instead of the
+  `$updateColumns` given, because they were passed in the wrong position.
+- `value('users.name')` and `pluck('users.name', 'users.id')` returned null:
+  a qualified or aliased column is read by its name in the result row.
+- `join(..., 'cross')` is rejected: the grammar compiles every join with an
+  ON clause, which a cross join cannot have.
 
 ## 0.16.0 – 2026-11-12
 

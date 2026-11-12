@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.17.0 – 2026-11-12
 
-- Released with the framework's 0.17 line; no changes to this package.
+- Released with the framework's 0.17 line. Requires its DenoSys dependencies
+  at `^0.17`; no other changes.
 
 ## 0.16.0 – 2026-11-12
 
