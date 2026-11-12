@@ -1,0 +1,79 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Denosys\\Encryption\\Encrypter\:\:decryptString\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Encryption/Encrypter.php
+
+		-
+			message: '#^Parameter \#1 \$message of function sodium_crypto_secretbox expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Encryption/Encrypter.php
+
+		-
+			message: '#^Call to method alias\(\) on an unknown class Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Encryption/EncryptionServiceProvider.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Denosys\\Config\\ConfigurationInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Encryption/EncryptionServiceProvider.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Encryption/EncryptionServiceProvider.php
+
+		-
+			message: '#^Call to method singleton\(\) on an unknown class Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Encryption/EncryptionServiceProvider.php
+
+		-
+			message: '#^Class Denosys\\Config\\ConfigurationInterface not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Encryption/EncryptionServiceProvider.php
+
+		-
+			message: '#^Method Denosys\\Encryption\\EncryptionServiceProvider\:\:getEncryptionKey\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Encryption/EncryptionServiceProvider.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$config contains unknown class Denosys\\Config\\ConfigurationInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Encryption/EncryptionServiceProvider.php
+
+		-
+			message: '#^Parameter \$container of anonymous function has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Encryption/EncryptionServiceProvider.php
+
+		-
+			message: '#^Parameter \$container of method Denosys\\Encryption\\EncryptionServiceProvider\:\:boot\(\) has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Encryption/EncryptionServiceProvider.php
+
+		-
+			message: '#^Parameter \$container of method Denosys\\Encryption\\EncryptionServiceProvider\:\:getEncryptionKey\(\) has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Encryption/EncryptionServiceProvider.php
+
+		-
+			message: '#^Parameter \$container of method Denosys\\Encryption\\EncryptionServiceProvider\:\:register\(\) has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Encryption/EncryptionServiceProvider.php

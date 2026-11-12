@@ -1,0 +1,74 @@
+name: Split packages
+
+# Publishes each packages/<name> directory to its read-only repository,
+# denosyscore/<name>, which Packagist reads. Splits are deterministic, so
+# every push fast-forwards the package repository.
+#
+# Tags: a minor release (vX.Y.0, and pre-releases) tags every package; a patch
+# release tags only the packages that changed since the previous tag, so an
+# unchanged package never gets an empty release.
+#
+# Requires the SPLIT_TOKEN secret: a fine-grained token with Contents
+# read/write on the package repositories.
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: split
+  cancel-in-progress: false
+
+jobs:
+  split:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Split and push
+        env:
+          SPLIT_TOKEN: ${{ secrets.SPLIT_TOKEN }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if [ -z "$SPLIT_TOKEN" ]; then
+            echo "::error::The SPLIT_TOKEN secret is not set, so packages cannot be published."
+            exit 1
+          fi
+          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$SPLIT_TOKEN" | base64 -w0)"
+          echo "::add-mask::$auth"
+
+          previous=""
+          if [ "$REF_TYPE" = tag ]; then
+            previous=$(git describe --tags --abbrev=0 --match 'v*.*.*' "$REF_NAME^" 2>/dev/null || true)
+          fi
+
+          for dir in packages/*/; do
+            package=$(basename "$dir")
+            sha=$(git subtree split --prefix="packages/$package" HEAD)
+            remote="https://github.com/denosyscore/$package.git"
+
+            if [ "$REF_TYPE" = branch ]; then
+              git -c http.extraheader="$auth" push "$remote" "$sha:refs/heads/main"
+              continue
+            fi
+
+            # Patch releases skip packages with no changes since the previous tag.
+            if [[ "$REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[1-9][0-9]*$ ]] && [ -n "$previous" ] \
+              && git diff --quiet "$previous" "$REF_NAME" -- "packages/$package"; then
+              echo "$package: unchanged since $previous, not tagged"
+              continue
+            fi
+            git -c http.extraheader="$auth" push "$remote" "$sha:refs/tags/$REF_NAME"
+            echo "$package: tagged $REF_NAME"
+          done

@@ -1,0 +1,38 @@
+{
+  "name": "denosyscore/console",
+  "description": "Console kernel and command infrastructure",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "symfony/console": "^7.4",
+    "denosyscore/contracts": "^0.10",
+    "denosyscore/container": "^0.10",
+    "denosyscore/database": "^0.10",
+    "denosyscore/http": "^0.10",
+    "denosyscore/queue": "^0.10"
+  },
+  "autoload": {
+    "psr-4": {
+      "Denosys\\Console\\": "src/Console/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit --bootstrap vendor/autoload.php tests",
+    "analyse": "phpstan analyse --no-progress --memory-limit=1G"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "require-dev": {
+    "egulias/email-validator": "^4.0",
+    "phpunit/phpunit": "^10.5",
+    "symfony/mime": "^7.4 || ^8.0",
+    "phpstan/phpstan": "^2.1"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "0.10.x-dev"
+    }
+  }
+}

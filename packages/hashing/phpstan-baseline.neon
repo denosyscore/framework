@@ -1,0 +1,127 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Property Denosys\\Hashing\\Argon2IdHasher\:\:\$memory \(int\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Hashing/Argon2IdHasher.php
+
+		-
+			message: '#^Property Denosys\\Hashing\\Argon2IdHasher\:\:\$threads \(int\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Hashing/Argon2IdHasher.php
+
+		-
+			message: '#^Property Denosys\\Hashing\\Argon2IdHasher\:\:\$time \(int\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Hashing/Argon2IdHasher.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between non\-empty\-string and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Hashing/Argon2IdHasher.php
+
+		-
+			message: '#^Property Denosys\\Hashing\\BcryptHasher\:\:\$rounds \(int\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Hashing/BcryptHasher.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between non\-empty\-string and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Hashing/BcryptHasher.php
+
+		-
+			message: '#^Method Denosys\\Hashing\\HashManager\:\:driver\(\) should return Denosys\\Hashing\\HasherInterface but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Hashing/HashManager.php
+
+		-
+			message: '#^Method Denosys\\Hashing\\HashManager\:\:resolve\(\) should return Denosys\\Hashing\\HasherInterface but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Hashing/HashManager.php
+
+		-
+			message: '#^Parameter \#1 \$options of class Denosys\\Hashing\\Argon2IdHasher constructor expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Hashing/HashManager.php
+
+		-
+			message: '#^Parameter \#1 \$options of class Denosys\\Hashing\\BcryptHasher constructor expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Hashing/HashManager.php
+
+		-
+			message: '#^Property Denosys\\Hashing\\HashManager\:\:\$defaultDriver \(string\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Hashing/HashManager.php
+
+		-
+			message: '#^Trying to invoke mixed but it''s not a callable\.$#'
+			identifier: callable.nonCallable
+			count: 1
+			path: src/Hashing/HashManager.php
+
+		-
+			message: '#^Call to method alias\(\) on an unknown class Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Hashing/HashingServiceProvider.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Hashing/HashingServiceProvider.php
+
+		-
+			message: '#^Call to method singleton\(\) on an unknown class Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Hashing/HashingServiceProvider.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Hashing/HashingServiceProvider.php
+
+		-
+			message: '#^Class Denosys\\Config\\ConfigurationInterface not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Hashing/HashingServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$config of class Denosys\\Hashing\\HashManager constructor expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Hashing/HashingServiceProvider.php
+
+		-
+			message: '#^Parameter \$container of anonymous function has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Hashing/HashingServiceProvider.php
+
+		-
+			message: '#^Parameter \$container of method Denosys\\Hashing\\HashingServiceProvider\:\:boot\(\) has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Hashing/HashingServiceProvider.php
+
+		-
+			message: '#^Parameter \$container of method Denosys\\Hashing\\HashingServiceProvider\:\:register\(\) has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Hashing/HashingServiceProvider.php

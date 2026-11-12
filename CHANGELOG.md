@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.10.0 – 2026-11-12
+
+### Changed (breaking)
+
+- This repository is now the DenoSys monorepo. All 18 components are
+  developed under `packages/` with their full history, and are published to
+  their existing read-only repositories by the **Split packages** workflow.
+- The framework `replace`s every component instead of requiring it. An
+  application that requires `denosyscore/framework` gets every component at
+  the framework's version, from this one package. Applications that also
+  require a component directly must allow `^0.10`.
+- All packages share the `0.10` version line.
+
+### Added
+
+- `bin/package-ci`, which installs one package on its own, with sibling
+  packages from this checkout, and runs its tests, PHPStan baseline and README
+  quick start. CI runs it for every package on PHP 8.2 and 8.5.
+
 ## 0.9.2 – 2026-11-12
 
 ### Fixed

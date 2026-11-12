@@ -7,36 +7,24 @@
     "php": "^8.4.1",
     "ext-fileinfo": "*",
     "ext-pdo": "*",
-    "denosyscore/contracts": "^0.2.4",
-    "denosyscore/events": "^0.2.2",
-    "denosyscore/container": "^0.2.2",
-    "denosyscore/cache": "^0.2.3",
-    "denosyscore/rate-limiter": "^0.2.3",
-    "denosyscore/hashing": "^0.2.2",
-    "denosyscore/encryption": "^0.2.2",
-    "denosyscore/database": "^0.5.0",
-    "denosyscore/validation": "^0.3.5",
-    "denosyscore/filesystem": "^0.4.0",
-    "denosyscore/queue": "^0.3.3",
-    "denosyscore/view": "^0.3.0",
-    "denosyscore/http": "^0.4.0",
-    "denosyscore/session": "^0.2.6",
-    "denosyscore/auth": "^0.3.3",
-    "denosyscore/console": "^0.4.2",
-    "denosyscore/support": "^0.1.0",
-    "denosyscore/routing": "0.7.0-alpha.2",
     "doctrine/inflector": "^2.1",
     "graham-campbell/result-type": "^1.1",
+    "illuminate/collections": "^12.0",
     "laminas/laminas-diactoros": "^3.6",
     "laminas/laminas-httphandlerrunner": "^2.12",
-    "league/flysystem": "^3.30",
+    "league/flysystem": "^3.35.3",
     "monolog/monolog": "^3.9",
     "nesbot/carbon": "^3.10",
     "nyholm/psr7": "^1.8",
     "psr/container": "^2.0",
     "psr/event-dispatcher": "^1.0",
+    "psr/http-factory": "^1.1",
+    "psr/http-message": "^2.0",
+    "psr/http-server-handler": "^1.0",
+    "psr/http-server-middleware": "^1.0",
     "psr/log": "^3.0",
     "psr/simple-cache": "^3.0",
+    "ramsey/uuid": "^4.7",
     "symfony/console": "^7.4",
     "symfony/filesystem": "^7.4.23",
     "symfony/mailer": "^8.0",
@@ -56,12 +44,62 @@
     "squizlabs/php_codesniffer": "^4.0",
     "symfony/var-dumper": "^8.0"
   },
+  "replace": {
+    "denosyscore/auth": "self.version",
+    "denosyscore/cache": "self.version",
+    "denosyscore/console": "self.version",
+    "denosyscore/container": "self.version",
+    "denosyscore/contracts": "self.version",
+    "denosyscore/database": "self.version",
+    "denosyscore/encryption": "self.version",
+    "denosyscore/events": "self.version",
+    "denosyscore/filesystem": "self.version",
+    "denosyscore/hashing": "self.version",
+    "denosyscore/http": "self.version",
+    "denosyscore/queue": "self.version",
+    "denosyscore/rate-limiter": "self.version",
+    "denosyscore/routing": "self.version",
+    "denosyscore/session": "self.version",
+    "denosyscore/support": "self.version",
+    "denosyscore/validation": "self.version",
+    "denosyscore/view": "self.version"
+  },
+  "conflict": {
+    "aws/aws-sdk-php": "<3.371.4",
+    "guzzlehttp/guzzle": "<7.15.2 || >=8.0.0,<8.0.1",
+    "guzzlehttp/psr7": "<2.12.3",
+    "mtdowling/jmespath.php": "<2.9.1"
+  },
   "autoload": {
     "psr-4": {
-      "Denosys\\": "src/"
+      "Denosys\\": "src/",
+      "Denosys\\Auth\\": "packages/auth/src/Auth/",
+      "Denosys\\Cache\\": "packages/cache/src/Cache/",
+      "Denosys\\Console\\": "packages/console/src/Console/",
+      "Denosys\\Container\\": "packages/container/src/Container/",
+      "Denosys\\Container\\Exceptions\\": "packages/container/src/Exceptions/",
+      "Denosys\\Contracts\\": "packages/contracts/src/",
+      "Denosys\\Database\\": "packages/database/src/Database/",
+      "Denosys\\Encryption\\": "packages/encryption/src/Encryption/",
+      "Denosys\\Events\\": "packages/events/src/Events/",
+      "Denosys\\Filesystem\\": "packages/filesystem/src/Filesystem/",
+      "Denosys\\Hashing\\": "packages/hashing/src/Hashing/",
+      "Denosys\\Http\\": "packages/http/src/Http/",
+      "Denosys\\Http\\Exceptions\\": "packages/http/src/Exceptions/",
+      "Denosys\\Http\\Security\\": "packages/http/src/Security/",
+      "Denosys\\Queue\\": "packages/queue/src/Queue/",
+      "Denosys\\RateLimiter\\": "packages/rate-limiter/src/RateLimiter/",
+      "Denosys\\Routing\\": "packages/routing/src/",
+      "Denosys\\Session\\": "packages/session/src/Session/",
+      "Denosys\\Support\\": "packages/support/src/Support/",
+      "Denosys\\Validation\\": "packages/validation/src/Validation/",
+      "Denosys\\View\\": "packages/view/src/View/",
+      "Denosys\\View\\Form\\": "packages/view/src/Form/",
+      "Denosys\\View\\ValueObjects\\": "packages/view/src/ValueObjects/"
     },
     "files": [
-      "support/helpers.php"
+      "support/helpers.php",
+      "packages/http/src/legacy-validation-handler.php"
     ]
   },
   "autoload-dev": {
@@ -72,6 +110,11 @@
   "scripts": {
     "test": "pest",
     "analyse": "phpstan analyse --no-progress --memory-limit=1G"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "0.10.x-dev"
+    }
   },
   "config": {
     "sort-packages": true,

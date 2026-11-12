@@ -6,14 +6,17 @@ on:
       - main
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  quality:
+  framework:
+    name: Framework (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         php: ['8.4', '8.5']
-        profile: ['minimum-components', 'current-components']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,32 +27,28 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: none
 
-      - name: Validate composer.json
-        run: composer validate --strict
-
-      - name: Select minimum published component versions
-        if: matrix.profile == 'minimum-components'
+      - name: Validate manifests
         run: |
-          composer require --no-update --no-interaction 'denosyscore/auth:0.3.3' 'denosyscore/cache:0.2.3' 'denosyscore/console:0.4.2' 'denosyscore/database:0.5.0' 'denosyscore/filesystem:0.4.0' 'denosyscore/http:0.4.0' 'denosyscore/queue:0.3.3' 'denosyscore/session:0.2.6' 'denosyscore/rate-limiter:0.2.3' 'denosyscore/validation:0.3.5' 'denosyscore/view:0.3.0'
+          composer validate --strict
+          for manifest in packages/*/composer.json; do
+            composer validate --strict --no-check-publish "$manifest"
+          done
 
-      - name: Install published dependency combination
-        run: composer install --no-interaction --prefer-dist --no-progress
+      # Every component resolves from packages/ through the root `replace`.
+      - name: Install
+        run: composer update --no-interaction --prefer-dist --no-progress
 
       - name: PHP syntax check
-        run: |
-          for dir in src support; do
-            if [ -d "$dir" ]; then
-              find "$dir" -type f -name '*.php' -print0 | xargs -0 -n1 php -l
-            fi
-          done
+        run: find src support packages/*/src -type f -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
 
       - name: Framework tests
         run: composer test
 
-      - name: Audit resolved dependencies
-        run: composer audit --locked
+      - name: Audit dependencies
+        run: composer audit
 
-  static-analysis:
+  framework-analysis:
+    name: Framework static analysis
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -61,10 +60,141 @@ jobs:
           php-version: '8.5'
           coverage: none
 
-      - name: Install dependencies
+      - name: Install
         run: composer update --no-interaction --prefer-dist --no-progress
 
-      # Level max with a frozen baseline: new errors fail, and fixed errors
-      # must be removed from phpstan-baseline.neon.
       - name: PHPStan
         run: composer analyse
+
+  package-list:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.list.outputs.packages }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: List packages
+        id: list
+        run: echo "packages=$(bin/package-ci list)" >> "$GITHUB_OUTPUT"
+
+  # Each package installed on its own, with sibling packages taken from this
+  # commit. A package that uses code it does not require fails here even
+  # though the root autoloader would hide it.
+  package:
+    name: ${{ matrix.package }} (PHP ${{ matrix.php }})
+    needs: package-list
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.package-list.outputs.packages) }}
+        php: ['8.2', '8.5']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          extensions: pdo_sqlite
+
+      - name: Install the package alone
+        run: bin/package-ci install packages/${{ matrix.package }}
+
+      # Baselines are generated on PHP 8.5, so analysis runs there only.
+      - name: Tests and static analysis
+        run: bin/package-ci check ${{ matrix.package }} ${{ matrix.php != '8.5' && '--skip-analyse' || '' }}
+
+      - name: README quick start in an empty project
+        run: bin/package-ci quickstart ${{ matrix.package }}
+
+  database-servers:
+    # Supported versions follow the vendor support policy in the workspace
+    # AGENTS.md: the minimum and the latest supported release of each database.
+    name: Database on ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: MySQL 8.4 LTS, family: mysql, image: 'mysql:8.4', port: 3306, health: 'mysqladmin ping -h 127.0.0.1 -ptest' }
+          - { name: MySQL 9, family: mysql, image: 'mysql:9', port: 3306, health: 'mysqladmin ping -h 127.0.0.1 -ptest' }
+          - { name: MariaDB 10.11 LTS, family: mysql, image: 'mariadb:10.11', port: 3306, health: 'healthcheck.sh --connect --innodb_initialized' }
+          - { name: MariaDB 11.4 LTS, family: mysql, image: 'mariadb:11.4', port: 3306, health: 'healthcheck.sh --connect --innodb_initialized' }
+          - { name: PostgreSQL 15, family: pgsql, image: 'postgres:15', port: 5432, health: 'pg_isready -U postgres' }
+          - { name: PostgreSQL 17, family: pgsql, image: 'postgres:17', port: 5432, health: 'pg_isready -U postgres' }
+    services:
+      database:
+        image: ${{ matrix.image }}
+        env:
+          MYSQL_ROOT_PASSWORD: test
+          MYSQL_DATABASE: denosys_test
+          MARIADB_ROOT_PASSWORD: test
+          MARIADB_DATABASE: denosys_test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: denosys_test
+        ports:
+          - ${{ matrix.port }}:${{ matrix.port }}
+        options: >-
+          --health-cmd="${{ matrix.health }}"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=15
+    env:
+      # Only the running family's variables are set; the other family's tests skip.
+      DENOSYS_TEST_MYSQL_HOST: 127.0.0.1
+      DENOSYS_TEST_MYSQL_PORT: 3306
+      DENOSYS_TEST_MYSQL_DATABASE: ${{ matrix.family == 'mysql' && 'denosys_test' || '' }}
+      DENOSYS_TEST_MYSQL_USERNAME: root
+      DENOSYS_TEST_MYSQL_PASSWORD: test
+      DENOSYS_TEST_PGSQL_HOST: 127.0.0.1
+      DENOSYS_TEST_PGSQL_PORT: 5432
+      DENOSYS_TEST_PGSQL_DATABASE: ${{ matrix.family == 'pgsql' && 'denosys_test' || '' }}
+      DENOSYS_TEST_PGSQL_USERNAME: postgres
+      DENOSYS_TEST_PGSQL_PASSWORD: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+          extensions: pdo_mysql, pdo_pgsql, pdo_sqlite
+
+      - name: Install the database package alone
+        run: bin/package-ci install packages/database
+
+      - name: Database tests against ${{ matrix.name }}
+        working-directory: packages/database
+        run: composer run-script --no-interaction test
+        env:
+          COMPOSER: composer.monorepo.json
+
+  http-session-integration:
+    name: HTTP and session middleware (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.5']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Install the integration project
+        run: bin/package-ci install packages/http/integration/session
+
+      - name: Run the real session middleware check
+        working-directory: packages/http/integration/session
+        run: php session-middleware.php

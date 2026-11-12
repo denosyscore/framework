@@ -1,0 +1,44 @@
+{
+  "name": "denosyscore/filesystem",
+  "description": "Filesystem management and disk abstractions",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "league/flysystem": "^3.35.3",
+    "symfony/filesystem": "^7.4.23",
+    "denosyscore/container": "^0.10",
+    "denosyscore/contracts": "^0.10",
+    "denosyscore/events": "^0.10"
+  },
+  "require-dev": {
+    "league/flysystem-aws-s3-v3": "^3.30",
+    "phpstan/phpstan": "^2.1"
+  },
+  "suggest": {
+    "league/flysystem-aws-s3-v3": "Required for disks that use the s3 driver"
+  },
+  "conflict": {
+    "aws/aws-sdk-php": "<3.371.4",
+    "guzzlehttp/guzzle": "<7.15.2 || >=8.0.0,<8.0.1",
+    "guzzlehttp/psr7": "<2.12.3",
+    "mtdowling/jmespath.php": "<2.9.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Denosys\\Filesystem\\": "src/Filesystem/"
+    }
+  },
+  "scripts": {
+    "test": "php tests/standalone.php",
+    "analyse": "phpstan analyse --no-progress --memory-limit=1G"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "0.10.x-dev"
+    }
+  }
+}

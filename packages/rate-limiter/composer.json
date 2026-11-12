@@ -1,0 +1,40 @@
+{
+  "name": "denosyscore/rate-limiter",
+  "description": "Rate limiting services and middleware",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "denosyscore/cache": "^0.10",
+    "denosyscore/contracts": "^0.10",
+    "psr/http-message": "^2.0",
+    "psr/http-server-handler": "^1.0",
+    "psr/http-server-middleware": "^1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.5",
+    "phpstan/phpstan": "^2.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Denosys\\RateLimiter\\": "src/RateLimiter/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Denosys\\RateLimiter\\Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "scripts": {
+    "test": "phpunit tests",
+    "analyse": "phpstan analyse --no-progress --memory-limit=1G"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "0.10.x-dev"
+    }
+  }
+}

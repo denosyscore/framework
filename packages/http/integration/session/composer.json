@@ -1,0 +1,15 @@
+{
+  "name": "denosyscore/http-session-integration-test",
+  "description": "Isolated integration test for optional HTTP session middleware",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "denosyscore/http": "^0.10",
+    "denosyscore/session": "^0.10",
+    "denosyscore/validation": "^0.10"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}

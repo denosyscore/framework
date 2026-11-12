@@ -1,0 +1,6 @@
+parameters:
+    level: 5
+    paths:
+        - tests/StaticAnalysis/RuleParameterTypes.php
+    bootstrapFiles:
+        - vendor/autoload.php

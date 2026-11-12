@@ -1,0 +1,7 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:map\(\) expects callable\(mixed, int\|string\)\: uppercase\-string, ''strtoupper'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/CollectionTest.php
