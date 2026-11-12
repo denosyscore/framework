@@ -8,11 +8,13 @@
     "ext-fileinfo": "*",
     "ext-pdo": "*",
     "doctrine/inflector": "^2.1",
+    "filp/whoops": "^2.18",
     "graham-campbell/result-type": "^1.1",
     "illuminate/collections": "^12.0",
     "laminas/laminas-diactoros": "^3.6",
     "laminas/laminas-httphandlerrunner": "^2.12",
     "league/flysystem": "^3.35.3",
+    "league/flysystem-local": "^3.30",
     "monolog/monolog": "^3.9",
     "nesbot/carbon": "^3.10",
     "nyholm/psr7": "^1.8",
@@ -31,8 +33,8 @@
     "vlucas/phpdotenv": "^5.5"
   },
   "require-dev": {
+    "deptrac/deptrac": "^4.7",
     "fakerphp/faker": "^1.24",
-    "filp/whoops": "^2.18",
     "friendsofphp/php-cs-fixer": "^3.89",
     "mockery/mockery": "^1.6",
     "pestphp/pest": "^4.1",
@@ -60,7 +62,6 @@
     "denosyscore/rate-limiter": "self.version",
     "denosyscore/routing": "self.version",
     "denosyscore/session": "self.version",
-    "denosyscore/support": "self.version",
     "denosyscore/validation": "self.version",
     "denosyscore/view": "self.version"
   },
@@ -72,7 +73,11 @@
   },
   "autoload": {
     "psr-4": {
-      "Denosys\\": "src/",
+      "Denosys\\Bootstrap\\": "src/Bootstrap/",
+      "Denosys\\Config\\": "src/Config/",
+      "Denosys\\Environment\\": "src/Environment/",
+      "Denosys\\Framework\\": "src/Framework/",
+      "Denosys\\Mail\\": "src/Mail/",
       "Denosys\\Auth\\": "packages/auth/src/Auth/",
       "Denosys\\Cache\\": "packages/cache/src/Cache/",
       "Denosys\\Console\\": "packages/console/src/Console/",
@@ -91,12 +96,14 @@
       "Denosys\\RateLimiter\\": "packages/rate-limiter/src/RateLimiter/",
       "Denosys\\Routing\\": "packages/routing/src/",
       "Denosys\\Session\\": "packages/session/src/Session/",
-      "Denosys\\Support\\": "packages/support/src/Support/",
       "Denosys\\Validation\\": "packages/validation/src/Validation/",
       "Denosys\\View\\": "packages/view/src/View/",
       "Denosys\\View\\Form\\": "packages/view/src/Form/",
       "Denosys\\View\\ValueObjects\\": "packages/view/src/ValueObjects/"
     },
+    "classmap": [
+      "src/Application.php"
+    ],
     "files": [
       "support/helpers.php",
       "packages/http/src/legacy-validation-handler.php"
@@ -113,7 +120,39 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-main": "0.10.x-dev"
+      "dev-main": "0.11.x-dev"
+    },
+    "denosys": {
+      "tiers": {
+        "foundation": [
+          "contracts",
+          "container",
+          "events"
+        ],
+        "infrastructure": [
+          "database",
+          "cache",
+          "encryption",
+          "hashing",
+          "filesystem"
+        ],
+        "http": [
+          "http",
+          "routing",
+          "session",
+          "validation",
+          "rate-limiter"
+        ],
+        "features": [
+          "auth",
+          "queue",
+          "view",
+          "console"
+        ]
+      },
+      "tier-notes": {
+        "console": "Part VIII places console in foundation; it moves there once packages register their own commands."
+      }
     }
   },
   "config": {

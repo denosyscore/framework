@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Denosys\RateLimiter\Middleware;
 
-use Denosys\Http\Middleware\ThrottleRequestsMiddleware;
 use Denosys\RateLimiter\RateLimiter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

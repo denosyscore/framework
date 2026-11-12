@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 use Denosys\Config\Configuration;
 use Denosys\Config\ConfigurationInterface;
+use Denosys\Contracts\Config\ConfigReader;
 use Denosys\Container\Container;
 use Denosys\Routing\Router;
-use Denosys\Routing\RouterServiceProvider;
+use Denosys\Framework\Providers\RouterServiceProvider;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\ServerRequest;
 
 function frameworkRouterForHttpStatusTest(): Router
 {
     $container = new Container();
-    $container->instance(ConfigurationInterface::class, new Configuration());
+    $config = new Configuration();
+    $container->instance(ConfigurationInterface::class, $config);
+    $container->instance(ConfigReader::class, $config);
     (new RouterServiceProvider())->register($container);
 
     return $container->get(Router::class);

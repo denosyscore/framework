@@ -8,7 +8,7 @@ use Denosys\Container\Exceptions\ContainerResolutionException;
 use Denosys\Application;
 use Denosys\Console\Application as ConsoleApplication;
 use Denosys\Console\Command\MakeMailCommand;
-use Denosys\Mail\MailServiceProvider;
+use Denosys\Framework\Providers\MailServiceProvider;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Mailer\MailerInterface;

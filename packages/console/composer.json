@@ -5,12 +5,10 @@
   "license": "MIT",
   "require": {
     "php": "^8.2",
-    "symfony/console": "^7.4",
-    "denosyscore/contracts": "^0.10",
-    "denosyscore/container": "^0.10",
-    "denosyscore/database": "^0.10",
-    "denosyscore/http": "^0.10",
-    "denosyscore/queue": "^0.10"
+    "denosyscore/container": "^0.11",
+    "denosyscore/database": "^0.11",
+    "denosyscore/queue": "^0.11",
+    "symfony/console": "^7.4"
   },
   "autoload": {
     "psr-4": {
@@ -32,7 +30,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-main": "0.10.x-dev"
+      "dev-main": "0.11.x-dev"
     }
   }
 }

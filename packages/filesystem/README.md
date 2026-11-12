@@ -30,11 +30,11 @@ Read and write files on configured disks. The manager needs only a configuration
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Denosys\Contracts\Config\ConfigurationReaderInterface;
+use Denosys\Contracts\Config\ConfigReader;
 use Denosys\Filesystem\FilesystemManager;
 
 // Any object that reads settings by dot path works as configuration.
-$config = new class implements ConfigurationReaderInterface {
+$config = new class implements ConfigReader {
     private array $settings = [
         'filesystems.default' => 'local',
         'filesystems.disks.local' => ['driver' => 'local'],
@@ -56,31 +56,14 @@ $disk->delete('reports/today.txt');
 
 ## Configuration
 
-Bind a `Denosys\Contracts\Config\ConfigurationReaderInterface` implementation
-before registering `FilesystemServiceProvider`. The interface has one method:
-`get(string $key, mixed $default = null): mixed`. The provider reads
-`filesystems.default` and `filesystems.disks.<name>` from that object.
+`FilesystemManager` takes any `Denosys\Contracts\Config\ConfigReader` and reads
+`filesystems.default` and `filesystems.disks.<name>` from it. Its second
+argument is the root for local disks without an explicit `root`; without it the
+manager uses `getcwd() . '/storage/app'`.
 
-```php
-use Denosys\Container\Container;
-use Denosys\Contracts\Config\ConfigurationReaderInterface;
-use Denosys\Filesystem\FilesystemInterface;
-use Denosys\Filesystem\FilesystemServiceProvider;
-
-$container = new Container();
-$container->instance(ConfigurationReaderInterface::class, $configuration);
-$container->instance('path.storage', '/private/storage'); // optional
-(new FilesystemServiceProvider())->register($container);
-
-$disk = $container->get(FilesystemInterface::class);
-$disk->put('example.txt', 'Stored on the default disk');
-```
-
-When `path.storage` is bound, the provider's default local root is its `app`
-subdirectory. Without it, the manager uses `getcwd() . '/storage/app'`.
-An explicit disk `root` setting takes precedence in both cases. Direct
-`FilesystemManager` callers must pass an implementation of the shared read
-contract starting with 0.3.
+In a DenoSys application the framework's `FilesystemServiceProvider` builds the
+manager from the application configuration, using the `app` directory under
+`path.storage` as the default local root.
 
 ## Included Modules
 

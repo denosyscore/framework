@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Denosys\Bootstrap;
 
 use Denosys\Container\ContainerInterface;
-use Denosys\Contracts\DeferrableProviderInterface;
-use Denosys\Contracts\ServiceProviderInterface;
+use Denosys\Framework\DeferrableProvider;
+use Denosys\Framework\Provider;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Denosys\Container\Exceptions\ContainerResolutionException;
 
@@ -17,7 +17,7 @@ class ServiceProviderBootstrapper
 
     private array $loadedProviders = [];
 
-    /** @var ServiceProviderInterface[] */
+    /** @var Provider[] */
     /** @var array<string, mixed> */
 
     private array $providerInstances = [];
@@ -96,7 +96,7 @@ private function partitionProviders(array $providers): array
                 continue;
             }
 
-            if (is_subclass_of($providerClass, DeferrableProviderInterface::class)) {
+            if (is_subclass_of($providerClass, DeferrableProvider::class)) {
                 $deferred[] = $providerClass;
             } else {
                 $eager[] = $providerClass;
@@ -115,7 +115,7 @@ private function partitionProviders(array $providers): array
     private function registerDeferredProviders(array $providers): void
     {
         foreach ($providers as $providerClass) {
-            /** @var DeferrableProviderInterface $instance */
+            /** @var DeferrableProvider $instance */
             $instance = new $providerClass();
             
             foreach ($instance->provides() as $service) {
@@ -186,21 +186,21 @@ private function partitionProviders(array $providers): array
     private function getCoreProviders(): array
     {
         return [
-            \Denosys\Logging\LoggerServiceProvider::class,
-            \Denosys\Http\Exceptions\ExceptionHandlerServiceProvider::class,
-            \Denosys\Database\DatabaseServiceProvider::class,
-            \Denosys\Database\Migration\MigrationServiceProvider::class,
-            \Denosys\Events\EventServiceProvider::class,
-            \Denosys\Encryption\EncryptionServiceProvider::class,
-            \Denosys\Session\SessionServiceProvider::class,
-            \Denosys\Cache\CacheServiceProvider::class,
-            \Denosys\RateLimiter\RateLimiterServiceProvider::class,
-            \Denosys\Auth\AuthServiceProvider::class,
-            \Denosys\Validation\ValidationServiceProvider::class,
-            \Denosys\View\ViewServiceProvider::class,
-            \Denosys\Http\HttpServiceProvider::class,
-            \Denosys\Routing\RouterServiceProvider::class,
-            \Denosys\Http\Security\SecurityHeadersServiceProvider::class,
+            \Denosys\Framework\Providers\LoggerServiceProvider::class,
+            \Denosys\Framework\Providers\ExceptionHandlerServiceProvider::class,
+            \Denosys\Framework\Providers\DatabaseServiceProvider::class,
+            \Denosys\Framework\Providers\MigrationServiceProvider::class,
+            \Denosys\Framework\Providers\EventServiceProvider::class,
+            \Denosys\Framework\Providers\EncryptionServiceProvider::class,
+            \Denosys\Framework\Providers\SessionServiceProvider::class,
+            \Denosys\Framework\Providers\CacheServiceProvider::class,
+            \Denosys\Framework\Providers\RateLimiterServiceProvider::class,
+            \Denosys\Framework\Providers\AuthServiceProvider::class,
+            \Denosys\Framework\Providers\ValidationServiceProvider::class,
+            \Denosys\Framework\Providers\ViewServiceProvider::class,
+            \Denosys\Framework\Providers\HttpServiceProvider::class,
+            \Denosys\Framework\Providers\RouterServiceProvider::class,
+            \Denosys\Framework\Providers\SecurityHeadersServiceProvider::class,
         ];
     }
 
@@ -219,7 +219,7 @@ private function partitionProviders(array $providers): array
             return;
         }
 
-        /** @var ServiceProviderInterface $provider */
+        /** @var Provider $provider */
         $provider = $this->container->get($providerClass);
 
         // Register services

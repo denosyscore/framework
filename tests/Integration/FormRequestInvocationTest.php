@@ -6,7 +6,7 @@ use Denosys\Container\Container;
 use Denosys\Http\Exceptions\AuthorizationException;
 use Denosys\Http\FormRequest;
 use Denosys\Http\Request;
-use Denosys\Routing\Strategy\ModelBindingInvocationStrategy;
+use Denosys\Framework\Routing\Strategy\ModelBindingInvocationStrategy;
 use Denosys\Validation\Rules\Required;
 use Denosys\Validation\ValidationException;
 use Denosys\Validation\Validator;

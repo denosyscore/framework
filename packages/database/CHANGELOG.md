@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.11.1 – 2026-11-12
+
+### Fixed
+
+- Requirements on other DenoSys packages are `^0.11`. In 0.11.0 they were
+  still `^0.10`, which for a 0.x version allows only 0.10 releases, so 0.11.0
+  packages resolved their siblings to 0.10 or could not be installed. Use
+  0.11.1 instead of 0.11.0.
+
+## 0.11.0 – 2026-11-12
+
+- **Breaking:** `Denosys\Database\DatabaseServiceProvider` moved to the framework as `Denosys\Framework\Providers\DatabaseServiceProvider`. Packages no longer ship service providers; the framework wires packages together.
+- **Breaking:** `Denosys\Database\Migration\MigrationServiceProvider` moved to the framework as `Denosys\Framework\Providers\MigrationServiceProvider`. Packages no longer ship service providers; the framework wires packages together.
+- **Breaking:** queries return `Illuminate\Support\Collection`; `denosyscore/support` is retired.
+- Requires `illuminate/collections` and `doctrine/inflector`; suggests `fakerphp/faker`.
+
 ## 0.10.0 – 2026-11-12
 
 ### Changed
@@ -84,7 +100,7 @@
   actions such as cascading deletes.
 - Record migration execution time without a driver-specific SQL function, so
   SQLite can log migrations successfully.
-- Require the package that provides `Denosys\Support\Collection`, fixing
+- Require the package that provides `Illuminate\Support\Collection`, fixing
   hydrated model queries and eager-loaded relation collections in clean
   installations.
 - Correct the static types of model `$fillable` and `$hidden` metadata to
