@@ -1,0 +1,637 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Anonymous function should return Denosys\\Contracts\\Config\\ConfigurationReaderInterface but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Cannot access offset ''autoload'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Cannot access offset ''psr\-4'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Cannot call method handle\(\) on Denosys\\Http\\Kernel\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Cannot call method run\(\) on Denosys\\Http\\Kernel\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Class App\\Console\\Kernel not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Method Denosys\\Application\:\:getHttpKernel\(\) should return Denosys\\Http\\Kernel but returns Denosys\\Http\\Kernel\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Method Denosys\\Application\:\:resolveConsoleKernelClass\(\) should return class\-string\<Denosys\\Console\\Kernel\> but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Out of 151 possible param types, only 145 \- 96\.0 %% actually have it\. Add more param types to get over 99 %%$#'
+			identifier: typeCoverage.paramTypeCoverage
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Parameter \#1 \$configurator of method Denosys\\Bootstrap\\Configuration\\RoutesConfiguration\:\:using\(\) expects Closure\(Denosys\\Routing\\Router\)\: void, Closure\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Parameter \#1 \$path of method Denosys\\Application\:\:basePath\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Parameter \#1 \$path of method Denosys\\Bootstrap\\Configuration\\RoutesConfiguration\:\:api\(\) expects string, Closure\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Parameter \#1 \$path of method Denosys\\Bootstrap\\Configuration\\RoutesConfiguration\:\:web\(\) expects string, Closure\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Application.php
+
+		-
+			message: '#^Parameter \#1 \$providers of method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:setAdditionalProviders\(\) expects array\<class\-string\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Application.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Binary operation "\." between mixed and ''/providers\.php'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Call to an undefined method object\:\:boot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Cannot call method boot\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:collectAllProviders\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:getDeferredServices\(\) should return array\<string, string\> but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:getLoadedProviders\(\) should return array\<string\> but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:loadAppProviders\(\) should return array\<string\> but returns array\<mixed, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:partitionProviders\(\) should return array\<string, mixed\> but returns array\<int, list\<class\-string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Offset 0 does not exist on array\<string, mixed\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Offset 1 does not exist on array\<string, mixed\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Parameter \#1 \$object of function get_class expects object, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Parameter \#1 \$providerClass of method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:registerProvider\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Parameter \#1 \$providers of method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:partitionProviders\(\) expects array\<class\-string\>, array\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Parameter \#1 \$providers of method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:registerDeferredProviders\(\) expects array\<class\-string\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Property Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:\$additionalProviders \(array\<string, mixed\>\) does not accept array\<class\-string\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Property Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:\$loadedProviders \(array\<string, mixed\>\) does not accept array\<int\|string, mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Property Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:\$providerInstances \(array\<string, mixed\>\) does not accept array\<int\|string, mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Bootstrap/ServiceProviderBootstrapper.php
+
+		-
+			message: '#^Method Denosys\\Config\\Configuration\:\:loadFromCache\(\) should return array\<string, mixed\>\|null but returns array\<mixed, mixed\>\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Config/Configuration.php
+
+		-
+			message: '#^Out of 151 possible param types, only 145 \- 96\.0 %% actually have it\. Add more param types to get over 99 %%$#'
+			identifier: typeCoverage.paramTypeCoverage
+			count: 1
+			path: src/Environment/EnvironmentManager.php
+
+		-
+			message: '#^Parameter \#1 \$value of method Denosys\\Environment\\EnvironmentManager\:\:cast\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Environment/EnvironmentManager.php
+
+		-
+			message: '#^Binary operation "\." between mixed and ''/storage/logs/app…'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Logging/LoggerServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$name of class Monolog\\Logger constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Logging/LoggerServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$stream of class Monolog\\Handler\\StreamHandler constructor expects resource\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Logging/LoggerServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$config of method Denosys\\Mail\\MailTransportFactory\:\:create\(\) expects Denosys\\Config\\ConfigurationInterface, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mail/MailServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$transport of class Symfony\\Component\\Mailer\\Mailer constructor expects Symfony\\Component\\Mailer\\Transport\\TransportInterface, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mail/MailServiceProvider.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: src/Mail/MailTransportFactory.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: src/Mail/MailTransportFactory.php
+
+		-
+			message: '#^Method Denosys\\Routing\\ParameterResolvers\\FormRequestResolver\:\:canResolve\(\) has parameter \$routeArguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Routing/ParameterResolvers/FormRequestResolver.php
+
+		-
+			message: '#^Method Denosys\\Routing\\ParameterResolvers\\RouteModelBindingResolver\:\:canResolve\(\) has parameter \$routeArguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Routing/ParameterResolvers/RouteModelBindingResolver.php
+
+		-
+			message: '#^Parameter \#1 \$id of static method Denosys\\Database\\Model\:\:findOrFail\(\) expects int\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/ParameterResolvers/RouteModelBindingResolver.php
+
+		-
+			message: '#^Parameter \#1 \$value of static method Denosys\\Routing\\Contracts\\UrlRoutable\:\:resolveRouteBinding\(\) expects int\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/ParameterResolvers/RouteModelBindingResolver.php
+
+		-
+			message: '#^Method Denosys\\Routing\\RouteCache\:\:assertHandlerSerializable\(\) has parameter \$handler with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Routing/RouteCache.php
+
+		-
+			message: '#^Parameter \#1 \$middleware of method Denosys\\Routing\\RouteCache\:\:assertMiddlewareSerializable\(\) expects array\<int, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Routing/RouteCache.php
+
+		-
+			message: '#^Parameter \#1 \$port of method Denosys\\Routing\\Contracts\\PortMatchingInterface\:\:setPort\(\) expects array\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouteCache.php
+
+		-
+			message: '#^Parameter \#1 \$route of method Denosys\\Routing\\RouteCache\:\:serializeRoute\(\) expects Denosys\\Routing\\RouteInterface, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouteCache.php
+
+		-
+			message: '#^Parameter \#2 \$routeData of method Denosys\\Routing\\RouteCache\:\:hydrateRoute\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouteCache.php
+
+		-
+			message: '#^Binary operation "\." between mixed and ''/''\|''\\\\'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Cannot call method apply\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Cannot call method getRouteCollection\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Method Denosys\\Routing\\RouterServiceProvider\:\:middlewareAliases\(\) should return array\<string, mixed\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Out of 151 possible param types, only 145 \- 96\.0 %% actually have it\. Add more param types to get over 99 %%$#'
+			identifier: typeCoverage.paramTypeCoverage
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$aliases of method Denosys\\Routing\\MiddlewareRegistry\:\:aliases\(\) expects array\<string, string\>, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$assetUrl of method Denosys\\Routing\\UrlGeneratorInterface\:\:setAssetUrl\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$baseUrl of method Denosys\\Routing\\UrlGeneratorInterface\:\:setBaseUrl\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$request of method Denosys\\Routing\\UrlGeneratorInterface\:\:setRequest\(\) expects Psr\\Http\\Message\\ServerRequestInterface\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$routeCollection of class Denosys\\Routing\\UrlGenerator constructor expects Denosys\\Routing\\RouteCollectionInterface, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$router of static method Denosys\\Routing\\RouteLoader\:\:loadWebRoutes\(\) expects Denosys\\Routing\\RouteGroupInterface\|Denosys\\Routing\\Router, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \#2 \$basePath of method Denosys\\Routing\\RouterServiceProvider\:\:resolvePath\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \#2 \$basePath of method Denosys\\Routing\\RouterServiceProvider\:\:resolveRouteCacheFile\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \#2 \$middleware of method Denosys\\Routing\\MiddlewareRegistry\:\:group\(\) expects array\<string\>, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \#2 \$registry of method Denosys\\Routing\\RouterServiceProvider\:\:applyMiddlewareConfiguration\(\) expects Denosys\\Routing\\MiddlewareRegistry, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \#2 \$router of method Denosys\\Routing\\RouterServiceProvider\:\:applyRoutesConfiguration\(\) expects Denosys\\Routing\\Router, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \#3 \$registry of method Denosys\\Routing\\RouterServiceProvider\:\:applyRoutesConfiguration\(\) expects Denosys\\Routing\\MiddlewareRegistry, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \$middlewareRegistry of class Denosys\\Routing\\Router constructor expects Denosys\\Routing\\MiddlewareRegistryInterface\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Parameter \$middlewareRegistry of static method Denosys\\Routing\\Dispatcher\:\:withDefaults\(\) expects Denosys\\Routing\\MiddlewareRegistryInterface\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/RouterServiceProvider.php
+
+		-
+			message: '#^Method Denosys\\Routing\\Strategy\\ModelBindingInvocationStrategy\:\:buildParameterResolvers\(\) has parameter \$routeArguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Routing/Strategy/ModelBindingInvocationStrategy.php
+
+		-
+			message: '#^Method Denosys\\Routing\\Strategy\\ModelBindingInvocationStrategy\:\:buildParameterResolvers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Routing/Strategy/ModelBindingInvocationStrategy.php
+
+		-
+			message: '#^Method Denosys\\Routing\\Strategy\\ModelBindingInvocationStrategy\:\:createResolverForParameter\(\) has parameter \$placeholderOrder with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Routing/Strategy/ModelBindingInvocationStrategy.php
+
+		-
+			message: '#^Method Denosys\\Routing\\Strategy\\ModelBindingInvocationStrategy\:\:invoke\(\) has parameter \$routeArguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Routing/Strategy/ModelBindingInvocationStrategy.php
+
+		-
+			message: '#^Out of 151 possible param types, only 145 \- 96\.0 %% actually have it\. Add more param types to get over 99 %%$#'
+			identifier: typeCoverage.paramTypeCoverage
+			count: 2
+			path: src/Routing/Strategy/ModelBindingInvocationStrategy.php
+
+		-
+			message: '#^Parameter \#1 \$objectOrMethod of class ReflectionMethod constructor expects object\|string, callable given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/Strategy/ModelBindingInvocationStrategy.php
+
+		-
+			message: '#^Parameter \#3 \$routeArguments of method Denosys\\Routing\\ParameterResolvers\\ParameterResolverInterface\:\:resolve\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Routing/Strategy/ModelBindingInvocationStrategy.php
+
+		-
+			message: '#^Property Denosys\\Routing\\Strategy\\ModelBindingInvocationStrategy\:\:\$parameterResolversCache type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Routing/Strategy/ModelBindingInvocationStrategy.php
+
+		-
+			message: '#^Binary operation "\." between mixed and string results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Binary operation "\." between string and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Cannot call method dispatch\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: support/helpers.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: support/helpers.php
+
+		-
+			message: '#^Cannot call method getName\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Cannot call method getPattern\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Cannot call method has\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Cannot call method token\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 3
+			path: support/helpers.php
+
+		-
+			message: '#^Function app\(\) should return Denosys\\Application but returns Denosys\\Application\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Function auth\(\) should return Denosys\\Auth\\Authentication\\Authenticator but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Function csrf_token\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Function dispatch\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Function encrypter\(\) should return Denosys\\Encryption\\EncrypterInterface but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Function event\(\) should return object but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Function mailer\(\) should return Symfony\\Component\\Mailer\\MailerInterface but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Function request\(\) should return Psr\\Http\\Message\\ServerRequestInterface\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Out of 151 possible param types, only 145 \- 96\.0 %% actually have it\. Add more param types to get over 99 %%$#'
+			identifier: typeCoverage.paramTypeCoverage
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Parameter \#1 \$string of function rtrim expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Parameter \#1 \$string of function rtrim expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: support/helpers.php
+
+		-
+			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between mixed and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: support/helpers.php
+
+		-
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: support/validation.php
+
+		-
+			message: '#^Cannot call method getFlash\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: support/validation.php
+
+		-
+			message: '#^Function errors\(\) should return Denosys\\Validation\\ErrorBag but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: support/validation.php
+
+		-
+			message: '#^Parameter \#1 \$errors of class Denosys\\Validation\\ErrorBag constructor expects array\<string, array\<string\>\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: support/validation.php
