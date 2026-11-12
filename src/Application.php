@@ -611,7 +611,8 @@ class Application
     /**
      * The booted console application: the console package's commands, the
      * framework's, those package providers registered, and the application's
-     * commands discovered in app/Console/Commands.
+     * commands discovered in app/Console/Commands under the application's
+     * namespace.
      */
     public function console(): \Denosys\Console\Application
     {
@@ -620,7 +621,30 @@ class Application
         $registry = $this->container->get(CommandRegistry::class);
         $contributed = $registry instanceof CommandRegistry ? $registry->all() : [];
 
-        return (new ConsoleKernel($this->container, $this->basePath, [...self::consoleCommands(), ...$contributed]))->bootstrap();
+        return (new ConsoleKernel(
+            $this->container,
+            $this->basePath,
+            [...self::consoleCommands(), ...$contributed],
+            discoverNamespace: $this->consoleCommandNamespace(),
+        ))->bootstrap();
+    }
+
+    /**
+     * The namespace of app/Console/Commands: the application's PSR-4
+     * namespace for app/, or App\ when composer.json does not map it.
+     */
+    private function consoleCommandNamespace(): string
+    {
+        $namespace = 'App\\';
+        if (is_file($this->basePath('composer.json'))) {
+            try {
+                $namespace = $this->getNamespace();
+            } catch (RuntimeException) {
+                // app/ is not mapped in composer.json: keep App\.
+            }
+        }
+
+        return rtrim($namespace, '\\') . '\\Console\\Commands';
     }
 
     /**

@@ -9,7 +9,9 @@ Console (finding F20). This completes Phase 2.
 - The console `Kernel` is final and configured by constructor arguments;
   applications no longer subclass it. Delete `app/Console/Kernel.php`. The
   `console.kernel` setting and the fallback to `\App\Console\Kernel` are
-  removed.
+  removed, as is `console.command_namespace`: application commands are
+  discovered in `app/Console/Commands` under the namespace composer.json maps
+  to `app/` (`App\` when it maps none).
 - Commands live in the package that owns them: `migrate`,
   `migrate:rollback`, `migrate:status`, `migrate:fresh` and `db:seed` move to
   `Denosys\Database\Console`, and `queue:work` to `Denosys\Queue\Console`.
