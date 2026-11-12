@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.11.1 – 2026-11-12
+
+### Fixed
+
+- Every package's requirements on its siblings are `^0.11` and the branch
+  alias is `0.11.x-dev`. 0.11.0 shipped them on the 0.10 line, so its packages
+  resolved 0.10 siblings and `denosyscore/http` 0.11.0 could not be installed.
+
+### Added
+
+- `bin/package-ci versions` checks that sibling requirements and branch
+  aliases share one line. CI runs it on every change, and the split workflow
+  runs it with `--tag` before tagging, refusing a tag outside the declared
+  line.
+
 ## 0.11.0 – 2026-11-12
 
 Package boundaries. Every package now requires exactly the DenoSys packages
