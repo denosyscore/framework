@@ -4,9 +4,7 @@
   "type": "library",
   "license": "MIT",
   "require": {
-    "php": "^8.2",
-    "psr/container": "^2.0",
-    "psr/event-dispatcher": "^1.0"
+    "php": "^8.2"
   },
   "autoload": {
     "psr-4": {

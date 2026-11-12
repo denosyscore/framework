@@ -8,7 +8,7 @@ use Composer\InstalledVersions;
 use Closure;
 use RuntimeException;
 use Throwable;
-use Denosys\Http\Kernel;
+use Denosys\Framework\Http\Kernel;
 use Denosys\Console\Kernel as ConsoleKernel;
 use Denosys\Container\Container;
 use Denosys\Config\Configuration;
@@ -17,7 +17,7 @@ use Psr\Http\Message\ResponseInterface;
 use Denosys\Container\ContainerInterface;
 use Denosys\Container\Exceptions\NotFoundException;
 use Denosys\Config\ConfigurationInterface;
-use Denosys\Contracts\Config\ConfigurationReaderInterface;
+use Denosys\Contracts\Config\ConfigReader;
 use Denosys\Container\Exceptions\ContainerException;
 use Psr\Http\Message\ServerRequestInterface;
 use Denosys\Environment\EnvironmentManager;
@@ -226,7 +226,7 @@ class Application
     {
         $this->container = $container;
 
-        if (!$container->has(ConfigurationReaderInterface::class)) {
+        if (!$container->has(ConfigReader::class)) {
             $this->bindConfigurationReader($container);
         }
     }
@@ -501,8 +501,24 @@ class Application
         
         // Resolve console kernel class from config to avoid hard App coupling.
         $kernelClass = $this->resolveConsoleKernelClass();
-        $consoleKernel = new $kernelClass($this->container, $this->basePath);
+        $consoleKernel = new $kernelClass($this->container, $this->basePath, self::consoleCommands());
         return $consoleKernel->handle();
+    }
+
+    /**
+     * Console commands owned by the framework rather than the console package.
+     *
+     * @return list<class-string<\Denosys\Console\CommandInterface>>
+     */
+    public static function consoleCommands(): array
+    {
+        return [
+            \Denosys\Framework\Console\ConfigCacheCommand::class,
+            \Denosys\Framework\Console\ConfigClearCommand::class,
+            \Denosys\Framework\Console\RoutesCacheCommand::class,
+            \Denosys\Framework\Console\RoutesClearCommand::class,
+            \Denosys\Framework\Console\ViewClearCommand::class,
+        ];
     }
 
     /**
@@ -613,8 +629,8 @@ class Application
     private function bindConfigurationReader(ContainerInterface $container): void
     {
         $container->bind(
-            ConfigurationReaderInterface::class,
-            static fn (ContainerInterface $container): ConfigurationReaderInterface => $container->get(ConfigurationInterface::class)
+            ConfigReader::class,
+            static fn (ContainerInterface $container): ConfigReader => $container->get(ConfigurationInterface::class)
         );
     }
 

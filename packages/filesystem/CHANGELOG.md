@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.0 – 2026-11-12
+
+- **Breaking:** `Denosys\Filesystem\FilesystemServiceProvider` moved to the framework as `Denosys\Framework\Providers\FilesystemServiceProvider`. Packages no longer ship service providers; the framework wires packages together.
+- Requires `psr/http-message` and `league/flysystem-local`; no longer `symfony/filesystem`, container or events.
+
 ## 0.10.0 – 2026-11-12
 
 ### Changed

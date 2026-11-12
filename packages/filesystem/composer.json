@@ -5,11 +5,10 @@
   "license": "MIT",
   "require": {
     "php": "^8.2",
-    "league/flysystem": "^3.35.3",
-    "symfony/filesystem": "^7.4.23",
-    "denosyscore/container": "^0.10",
     "denosyscore/contracts": "^0.10",
-    "denosyscore/events": "^0.10"
+    "league/flysystem": "^3.35.3",
+    "league/flysystem-local": "^3.30",
+    "psr/http-message": "^2.0"
   },
   "require-dev": {
     "league/flysystem-aws-s3-v3": "^3.30",

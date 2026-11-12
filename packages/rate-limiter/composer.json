@@ -6,7 +6,7 @@
   "require": {
     "php": "^8.2",
     "denosyscore/cache": "^0.10",
-    "denosyscore/contracts": "^0.10",
+    "denosyscore/http": "^0.10",
     "psr/http-message": "^2.0",
     "psr/http-server-handler": "^1.0",
     "psr/http-server-middleware": "^1.0"

@@ -4,8 +4,7 @@
   "type": "library",
   "license": "MIT",
   "require": {
-    "php": "^8.2",
-    "denosyscore/contracts": "^0.10"
+    "php": "^8.2"
   },
   "autoload": {
     "psr-4": {

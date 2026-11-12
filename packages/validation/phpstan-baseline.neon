@@ -217,12 +217,6 @@ parameters:
 			path: src/Validation/ValidationException.php
 
 		-
-			message: '#^Method Denosys\\Validation\\ValidationServiceProvider\:\:registerCustomRules\(\) is unused\.$#'
-			identifier: method.unused
-			count: 1
-			path: src/Validation/ValidationServiceProvider.php
-
-		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 1

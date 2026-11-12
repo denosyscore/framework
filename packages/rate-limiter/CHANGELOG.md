@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.0 – 2026-11-12
+
+- **Breaking:** `Denosys\RateLimiter\RateLimiterServiceProvider` moved to the framework as `Denosys\Framework\Providers\RateLimiterServiceProvider`. Packages no longer ship service providers; the framework wires packages together.
+- Adds `Middleware\ThrottleRequestsMiddleware` (from http); requires `denosyscore/http`.
+
 ## 0.10.0 – 2026-11-12
 
 ### Changed
