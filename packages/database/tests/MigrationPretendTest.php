@@ -72,7 +72,8 @@ final class MigrationPretendTest extends TestCase
         self::assertFalse($repository->exists);
         self::assertSame([], $repository->records);
         self::assertFalse($schema->hasTable('widgets'));
-        self::assertCount(1, $migrator->getPretendLog());
+        self::assertSame('-- 0001_create_widgets', $migrator->getPretendLog()[0]);
+        self::assertStringContainsString('CREATE TABLE "widgets"', implode("\n", $migrator->getPretendLog()));
 
         $applied = $migrator->pretend(false)->run();
 
@@ -105,7 +106,8 @@ final class MigrationPretendTest extends TestCase
         self::assertSame(1, $fresh->count());
         self::assertTrue($schema->hasTable('widgets'));
         self::assertSame($before, $repository->records);
-        self::assertSame('Would drop all tables', $migrator->getPretendLog()[0]);
+        self::assertSame('-- drop all tables', $migrator->getPretendLog()[0]);
+        self::assertContains('-- 0001_create_widgets', $migrator->getPretendLog());
     }
 
     /** @return array{Migrator, RecordingMigrationRepository, SchemaBuilder} */
