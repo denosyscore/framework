@@ -33,6 +33,26 @@ public component APIs are still available under their `Denosys\` namespaces.
 If an application imports a third-party library directly, declare that library
 in the application's own Composer requirements. PHP 8.4.1 or newer is required.
 
+## Application lifecycle
+
+`bootstrap/app.php` configures the application and returns it unbooted:
+
+```php
+return Application::configure(basePath: dirname(__DIR__))
+    ->withProviders([App\Providers\AppServiceProvider::class])
+    ->without(Denosys\Framework\Providers\ViewServiceProvider::class) // optional
+    ->withRoutes(web: __DIR__ . '/../routes/web.php')
+    ->create();
+```
+
+The first request or command calls `boot()`, which registers and boots every
+provider once, with one event dispatcher, for HTTP and the console alike.
+`Application::defaultProviders()` lists the framework's providers;
+`without()` removes some, `withProviders()` adds the application's, each is
+registered once, and a class that does not exist or is not a provider is an
+error. `bootstrap/providers.php` is no longer read: boot stops with an error
+if it still lists providers.
+
 ## Configuration
 
 The framework loads `config/*.php` into a `Denosys\Config\Repository`
@@ -64,13 +84,13 @@ provided default; the usual boolean and null string values are cast.
 
 ## Mail provider
 
-Register `Denosys\Framework\Providers\MailServiceProvider` with `Application::withProviders()`
-when an application needs `Symfony\Component\Mailer\MailerInterface`. The
-provider binds a lazy `TransportInterface` and mailer. Set `mail.dsn` for a
+`Denosys\Framework\Providers\MailServiceProvider` is one of the default
+providers, so `Symfony\Component\Mailer\MailerInterface` is available in every
+application. The provider binds a lazy `TransportInterface` and mailer. Set `mail.dsn` for a
 Symfony-supported transport, or configure `mail.default` as `smtp` or
 `sendmail` with `mail.mailers.smtp.*` or `mail.mailers.sendmail.path`.
 The global `mailer()` helper resolves the provider's `MailerInterface` binding;
-it is available after registering the provider. Call `send()` with a Symfony
+it is available once the application has booted. Call `send()` with a Symfony
 `Email` instance or inject `MailerInterface` into an application service.
 Unsupported drivers throw when the mailer is resolved; they never silently
 discard messages. A working transport and sender address are required before

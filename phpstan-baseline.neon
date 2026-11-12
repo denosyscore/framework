@@ -19,26 +19,8 @@ parameters:
 			path: src/Application.php
 
 		-
-			message: '#^Cannot call method handle\(\) on Denosys\\Framework\\Http\\Kernel\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Application.php
-
-		-
-			message: '#^Cannot call method run\(\) on Denosys\\Framework\\Http\\Kernel\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Application.php
-
-		-
 			message: '#^Class App\\Console\\Kernel not found\.$#'
 			identifier: class.notFound
-			count: 1
-			path: src/Application.php
-
-		-
-			message: '#^Method Denosys\\Application\:\:getHttpKernel\(\) should return Denosys\\Framework\\Http\\Kernel but returns Denosys\\Framework\\Http\\Kernel\|null\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Application.php
 
@@ -85,24 +67,6 @@ parameters:
 			path: src/Application.php
 
 		-
-			message: '#^Parameter \#1 \$providers of method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:setAdditionalProviders\(\) expects array\<class\-string\>, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Application.php
-
-		-
-			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: src/Bootstrap/ServiceProviderBootstrapper.php
-
-		-
-			message: '#^Binary operation "\." between mixed and ''/providers\.php'' results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: src/Bootstrap/ServiceProviderBootstrapper.php
-
-		-
 			message: '#^Call to an undefined method object\:\:boot\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -111,12 +75,6 @@ parameters:
 		-
 			message: '#^Cannot call method boot\(\) on mixed\.$#'
 			identifier: method.nonObject
-			count: 1
-			path: src/Bootstrap/ServiceProviderBootstrapper.php
-
-		-
-			message: '#^Method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:collectAllProviders\(\) should return array\<string\> but returns array\<mixed\>\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Bootstrap/ServiceProviderBootstrapper.php
 
@@ -133,30 +91,6 @@ parameters:
 			path: src/Bootstrap/ServiceProviderBootstrapper.php
 
 		-
-			message: '#^Method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:loadAppProviders\(\) should return array\<string\> but returns array\<mixed, mixed\>\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Bootstrap/ServiceProviderBootstrapper.php
-
-		-
-			message: '#^Method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:partitionProviders\(\) should return array\<string, mixed\> but returns array\<int, list\<class\-string\>\>\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Bootstrap/ServiceProviderBootstrapper.php
-
-		-
-			message: '#^Offset 0 does not exist on array\<string, mixed\>\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: src/Bootstrap/ServiceProviderBootstrapper.php
-
-		-
-			message: '#^Offset 1 does not exist on array\<string, mixed\>\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: src/Bootstrap/ServiceProviderBootstrapper.php
-
-		-
 			message: '#^Parameter \#1 \$object of function get_class expects object, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -165,24 +99,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$providerClass of method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:registerProvider\(\) expects string, mixed given\.$#'
 			identifier: argument.type
-			count: 2
-			path: src/Bootstrap/ServiceProviderBootstrapper.php
-
-		-
-			message: '#^Parameter \#1 \$providers of method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:partitionProviders\(\) expects array\<class\-string\>, array\<string\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Bootstrap/ServiceProviderBootstrapper.php
-
-		-
-			message: '#^Parameter \#1 \$providers of method Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:registerDeferredProviders\(\) expects array\<class\-string\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Bootstrap/ServiceProviderBootstrapper.php
-
-		-
-			message: '#^Property Denosys\\Bootstrap\\ServiceProviderBootstrapper\:\:\$additionalProviders \(array\<string, mixed\>\) does not accept array\<class\-string\>\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: src/Bootstrap/ServiceProviderBootstrapper.php
 
@@ -221,24 +137,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Framework/Console/ViewClearCommand.php
-
-		-
-			message: '#^Parameter \#1 \$container of class Denosys\\Http\\Events\\KernelBooted constructor expects Denosys\\Container\\Container, Denosys\\Container\\ContainerInterface given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Http/Kernel.php
-
-		-
-			message: '#^Parameter \#1 \$container of class Denosys\\Http\\Events\\KernelBooting constructor expects Denosys\\Container\\Container, Denosys\\Container\\ContainerInterface given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Http/Kernel.php
-
-		-
-			message: '#^Property Denosys\\Framework\\Http\\Kernel\:\:\$exceptionHandler \(Denosys\\Http\\Exceptions\\ExceptionHandler\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Framework/Http/Kernel.php
 
 		-
 			message: '#^Cannot call method get\(\) on mixed\.$#'

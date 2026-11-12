@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.14.0 – 2026-11-12
+
+One boot path (findings F09 and F16).
+
+### Changed (breaking)
+
+- `Application::configure(basePath:)` starts configuration and `create()`
+  finishes it; the application boots on first use. `new Application(...)`
+  and the `with*()` methods still work.
+- `boot()` registers and boots every provider once, with one event
+  dispatcher, for HTTP requests and console commands alike. It replaces
+  `bootstrap()` and the console's separate `bootstrapServices()`, which
+  created a second dispatcher. `getHttpKernel()` is removed.
+- `Denosys\Framework\Http\Kernel` takes only the container, uses the
+  dispatcher and exception handler that `boot()` created, and no longer boots
+  anything; its `getContainer()`, `getEventDispatcher()` and
+  `getExceptionHandler()` are removed.
+- Providers come from one list: `Application::defaultProviders()` (now
+  including mail, filesystem, queue and hashing, which applications used to
+  register by hand), minus `without()`, plus `withProviders()`. Each is
+  registered once. `bootstrap/providers.php` is no longer read, and boot
+  stops with an error if it still lists providers.
+- A provider class that does not exist, or does not implement `Provider`, is
+  an error. It used to be skipped silently.
+- The `KernelBooting` and `KernelBooted` events are removed from
+  `denosyscore/http`. They fired only on the HTTP path and nothing listened.
+
 ## 0.13.0 – 2026-11-12
 
 The container (finding F11): about 550 lines instead of 6,787, with
