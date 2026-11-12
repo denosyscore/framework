@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.15.0 – 2026-11-12
+
+- `ListenerProvider::on()` and `Dispatcher::listen()` accept an invokable class
+  name as well as a callable; the class is resolved from a PSR-11 container
+  passed to `ListenerProvider` only when its event fires. Registering a class
+  listener without a container, or a class without `__invoke`, throws.
+- **Breaking:** `RequestHandling` and `ResponseReady` moved to the framework
+  (`Denosys\Framework\Http\Events`); this package no longer requires
+  `psr/http-message` and now requires `psr/container`.
+- `ListenerProvider` is final. Tests run in CI.
+
 ## 0.14.0 – 2026-11-12
 
 - Released with the framework's 0.14 line; no changes to this package.

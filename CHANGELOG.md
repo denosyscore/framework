@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.15.0 – 2026-11-12
+
+Lazy listeners (finding F21).
+
+### Changed (breaking)
+
+- `Denosys\Events\RequestHandling` and `ResponseReady` move to
+  `Denosys\Framework\Http\Events`, next to the kernel that dispatches them.
+
+### Added
+
+- Listeners can be invokable class names:
+  `$events->listen(UserRegistered::class, SendWelcomeMail::class)` builds the
+  listener, with its constructor dependencies, only when the event fires. The
+  framework's listener provider resolves them from the application container.
+
 ## 0.14.1 – 2026-11-12
 
 ### Fixed

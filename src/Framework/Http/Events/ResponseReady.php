@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Denosys\Events;
+namespace Denosys\Framework\Http\Events;
 
 use Psr\Http\Message\ResponseInterface;
 

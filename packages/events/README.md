@@ -38,6 +38,21 @@ $events = new Dispatcher($listeners);
 $events->dispatch(new OrderPlaced(1001));  // Send receipt for order 1001
 ```
 
+
+## Class listeners
+
+Register an invokable class instead of a callable to build the listener, and
+its dependencies, only when its event is dispatched. The provider resolves it
+from any PSR-11 container:
+
+```php
+$listeners = new ListenerProvider($container);
+$listeners->on(OrderPlaced::class, SendReceipt::class);  // built on dispatch
+```
+
+A class listener without a container, or a class without `__invoke`, is
+rejected when it is registered.
+
 ## Included Modules
 
 - src/Events/* (legacy namespace)

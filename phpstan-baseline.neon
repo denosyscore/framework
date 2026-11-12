@@ -31,7 +31,7 @@ parameters:
 			path: src/Application.php
 
 		-
-			message: '#^Out of 204 possible param types, only 192 \- 94\.1 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/Application.php
@@ -115,7 +115,7 @@ parameters:
 			path: src/Bootstrap/ServiceProviderBootstrapper.php
 
 		-
-			message: '#^Out of 204 possible param types, only 192 \- 94\.1 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/Framework/Console/RoutesCacheCommand.php
@@ -343,7 +343,7 @@ parameters:
 			path: src/Framework/Providers/DatabaseServiceProvider.php
 
 		-
-			message: '#^Out of 204 possible param types, only 192 \- 94\.1 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 3
 			path: src/Framework/Providers/DatabaseServiceProvider.php
@@ -625,7 +625,7 @@ parameters:
 			path: src/Framework/Providers/RouterServiceProvider.php
 
 		-
-			message: '#^Out of 204 possible param types, only 192 \- 94\.1 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/Framework/Providers/RouterServiceProvider.php
@@ -769,7 +769,7 @@ parameters:
 			path: src/Framework/Providers/ViewServiceProvider.php
 
 		-
-			message: '#^Out of 204 possible param types, only 192 \- 94\.1 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 4
 			path: src/Framework/Providers/ViewServiceProvider.php
@@ -871,7 +871,7 @@ parameters:
 			path: src/Framework/Routing/Strategy/ModelBindingInvocationStrategy.php
 
 		-
-			message: '#^Out of 204 possible param types, only 192 \- 94\.1 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 2
 			path: src/Framework/Routing/Strategy/ModelBindingInvocationStrategy.php

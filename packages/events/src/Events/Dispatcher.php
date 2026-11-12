@@ -33,8 +33,11 @@ readonly class Dispatcher implements EventDispatcherInterface
         return $event;
     }
 
-    public function listen(string $event, callable $listener): void
+    /**
+     * @param callable|class-string $listener A callable, or an invokable class resolved when the event fires
+     */
+    public function listen(string $event, callable|string $listener): void
     {
-        $this->provider->addListener($event, $listener);
+        $this->provider->on($event, $listener);
     }
 }
