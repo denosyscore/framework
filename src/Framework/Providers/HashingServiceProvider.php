@@ -8,7 +8,7 @@ use Denosys\Hashing\HashManager;
 use Denosys\Hashing\HasherInterface;
 use Denosys\Container\ContainerInterface;
 use Denosys\Framework\Provider;
-use Denosys\Config\ConfigurationInterface;
+use Denosys\Config\Repository;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class HashingServiceProvider implements Provider
@@ -16,7 +16,7 @@ class HashingServiceProvider implements Provider
     public function register(ContainerInterface $container): void
     {
         $container->singleton(HashManager::class, function (ContainerInterface $container) {
-            $config = $container->get(ConfigurationInterface::class);
+            $config = $container->get(Repository::class);
             
             return new HashManager($config->get('hashing', [
                 'driver' => 'bcrypt',

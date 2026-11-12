@@ -49,7 +49,7 @@ parameters:
 			path: src/Application.php
 
 		-
-			message: '#^Out of 220 possible param types, only 206 \- 93\.6 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 205 possible param types, only 193 \- 94\.1 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/Application.php
@@ -199,25 +199,7 @@ parameters:
 			path: src/Bootstrap/ServiceProviderBootstrapper.php
 
 		-
-			message: '#^Method Denosys\\Config\\Configuration\:\:loadFromCache\(\) should return array\<string, mixed\>\|null but returns array\<mixed, mixed\>\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Config/Configuration.php
-
-		-
-			message: '#^Out of 220 possible param types, only 206 \- 93\.6 %% actually have it\. Add more param types to get over 99 %%$#'
-			identifier: typeCoverage.paramTypeCoverage
-			count: 1
-			path: src/Environment/EnvironmentManager.php
-
-		-
-			message: '#^Parameter \#1 \$value of method Denosys\\Environment\\EnvironmentManager\:\:cast\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Environment/EnvironmentManager.php
-
-		-
-			message: '#^Out of 220 possible param types, only 206 \- 93\.6 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 205 possible param types, only 193 \- 94\.1 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/Framework/Console/RoutesCacheCommand.php
@@ -463,7 +445,7 @@ parameters:
 			path: src/Framework/Providers/DatabaseServiceProvider.php
 
 		-
-			message: '#^Out of 220 possible param types, only 206 \- 93\.6 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 205 possible param types, only 193 \- 94\.1 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 3
 			path: src/Framework/Providers/DatabaseServiceProvider.php
@@ -529,18 +511,6 @@ parameters:
 			path: src/Framework/Providers/ExceptionHandlerServiceProvider.php
 
 		-
-			message: '#^Parameter \#3 \$debug of class Denosys\\Http\\Exceptions\\ExceptionHandler constructor expects bool, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Providers/ExceptionHandlerServiceProvider.php
-
-		-
-			message: '#^Parameter \#4 \$environment of class Denosys\\Http\\Exceptions\\ExceptionHandler constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Providers/ExceptionHandlerServiceProvider.php
-
-		-
 			message: '#^Cannot call method disk\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -581,30 +551,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Framework/Providers/HttpServiceProvider.php
-
-		-
-			message: '#^Binary operation "\." between mixed and ''/storage/logs/app…'' results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: src/Framework/Providers/LoggerServiceProvider.php
-
-		-
-			message: '#^Parameter \#1 \$name of class Monolog\\Logger constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Providers/LoggerServiceProvider.php
-
-		-
-			message: '#^Parameter \#1 \$stream of class Monolog\\Handler\\StreamHandler constructor expects resource\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Providers/LoggerServiceProvider.php
-
-		-
-			message: '#^Parameter \#1 \$config of method Denosys\\Mail\\MailTransportFactory\:\:create\(\) expects Denosys\\Config\\ConfigurationInterface, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Providers/MailServiceProvider.php
 
 		-
 			message: '#^Parameter \#1 \$transport of class Symfony\\Component\\Mailer\\Mailer constructor expects Symfony\\Component\\Mailer\\Transport\\TransportInterface, mixed given\.$#'
@@ -781,7 +727,7 @@ parameters:
 			path: src/Framework/Providers/RouterServiceProvider.php
 
 		-
-			message: '#^Out of 220 possible param types, only 206 \- 93\.6 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 205 possible param types, only 193 \- 94\.1 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/Framework/Providers/RouterServiceProvider.php
@@ -925,7 +871,7 @@ parameters:
 			path: src/Framework/Providers/ViewServiceProvider.php
 
 		-
-			message: '#^Out of 220 possible param types, only 206 \- 93\.6 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 205 possible param types, only 193 \- 94\.1 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 4
 			path: src/Framework/Providers/ViewServiceProvider.php
@@ -1027,7 +973,7 @@ parameters:
 			path: src/Framework/Routing/Strategy/ModelBindingInvocationStrategy.php
 
 		-
-			message: '#^Out of 220 possible param types, only 206 \- 93\.6 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 205 possible param types, only 193 \- 94\.1 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 2
 			path: src/Framework/Routing/Strategy/ModelBindingInvocationStrategy.php
@@ -1111,12 +1057,6 @@ parameters:
 			path: support/helpers.php
 
 		-
-			message: '#^Cannot cast mixed to string\.$#'
-			identifier: cast.string
-			count: 3
-			path: support/helpers.php
-
-		-
 			message: '#^Function app\(\) should return Denosys\\Application but returns Denosys\\Application\|null\.$#'
 			identifier: return.type
 			count: 1
@@ -1165,12 +1105,6 @@ parameters:
 			path: support/helpers.php
 
 		-
-			message: '#^Out of 220 possible param types, only 206 \- 93\.6 %% actually have it\. Add more param types to get over 99 %%$#'
-			identifier: typeCoverage.paramTypeCoverage
-			count: 1
-			path: support/helpers.php
-
-		-
 			message: '#^Parameter \#1 \$string of function rtrim expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1185,12 +1119,6 @@ parameters:
 		-
 			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, mixed given\.$#'
 			identifier: argument.type
-			count: 1
-			path: support/helpers.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between mixed and null will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
 			count: 1
 			path: support/helpers.php
 

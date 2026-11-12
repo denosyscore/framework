@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Denosys\Framework\Console;
 
-use Denosys\Config\Configuration;
+use Denosys\Config\ConfigLoader;
 use Denosys\Console\CommandDefinition;
 use Denosys\Console\CommandInterface;
 use Denosys\Console\InputInterface;
@@ -37,8 +37,7 @@ class ConfigClearCommand implements CommandInterface
         $configPath = $this->resolveConfigPath();
         $cacheFile = $this->resolveConfigCacheFile();
 
-        $configuration = new Configuration($configPath, $cacheFile);
-        $configuration->clearCache();
+        (new ConfigLoader())->clearCache($cacheFile);
 
         $output->success("Configuration cache cleared at {$cacheFile}");
 

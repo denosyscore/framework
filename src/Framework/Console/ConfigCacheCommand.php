@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Denosys\Framework\Console;
 
-use Denosys\Config\Configuration;
+use Denosys\Config\ConfigLoader;
 use Denosys\Console\CommandDefinition;
 use Denosys\Console\CommandInterface;
 use Denosys\Console\InputInterface;
@@ -37,8 +37,9 @@ class ConfigCacheCommand implements CommandInterface
         $configPath = $this->resolveConfigPath();
         $cacheFile = $this->resolveConfigCacheFile();
 
-        $configuration = new Configuration($configPath, $cacheFile);
-        $configuration->saveToCache();
+        $loader = new ConfigLoader();
+        $loader->clearCache($cacheFile);
+        $loader->writeCache($loader->fromDirectory($configPath), $cacheFile);
 
         $output->success("Configuration cached at {$cacheFile}");
 

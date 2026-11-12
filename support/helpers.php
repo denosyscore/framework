@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Denosys\Application;
-use Denosys\Config\ConfigurationInterface;
+use Denosys\Config\Repository;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Container\ContainerExceptionInterface;
 
@@ -131,8 +131,8 @@ if (!function_exists('config')) {
      */
     function config(?string $key = null, mixed $default = null): mixed
     {
-        /** @var ConfigurationInterface $config */
-        $config = container(ConfigurationInterface::class);
+        /** @var Repository $config */
+        $config = container(Repository::class);
 
         if ($key === null) {
             return $config;
@@ -148,7 +148,8 @@ if (!function_exists('url')) {
      */
     function url(string $path = ''): string
     {
-        $base = (string) config('app.url', '');
+        $base = config('app.url', '');
+        $base = is_string($base) ? $base : '';
         $base = rtrim($base, '/');
         $path = ltrim($path, '/');
         return $path === '' ? $base : $base . '/' . $path;
@@ -163,7 +164,8 @@ if (!function_exists('asset')) {
     {
         $full = url($path);
         if ($withVersion) {
-            $ver = (string) config('app.version', '');
+            $ver = config('app.version', '');
+            $ver = is_string($ver) ? $ver : '';
             if ($ver !== '') {
                 $separator = str_contains($full, '?') ? '&' : '?';
                 $full .= $separator . 'ver=' . rawurlencode($ver);
@@ -175,26 +177,17 @@ if (!function_exists('asset')) {
 
 if (!function_exists('env')) {
     /**
-     * Resolve environment values using the application's EnvironmentManager
-     * with safe fallback when container isn't available.
-     *
-     * @param mixed $default
+     * Read an environment variable through the application's Environment, so
+     * config files and services cast values the same way.
      */
-    function env(string $key, $default = null): mixed
+    function env(string $key, mixed $default = null): mixed
     {
-        $value = $_ENV[$key] ?? getenv($key);
-
-        if ($value === null || $value === false) {
-            return $default;
+        static $fallback = null;
+        if (!$fallback instanceof \Denosys\Config\Environment) {
+            $fallback = new \Denosys\Config\Environment();
         }
 
-        return match (strtolower((string) $value)) {
-            'true', '(true)' => true,
-            'false', '(false)' => false,
-            'empty', '(empty)' => '',
-            'null', '(null)' => null,
-            default => $value,
-        };
+        return (Application::getInstance()?->getEnvironment() ?? $fallback)->get($key, $default);
     }
 }
 

@@ -9,7 +9,7 @@ use Denosys\Encryption\EncrypterInterface;
 use RuntimeException;
 use Denosys\Container\ContainerInterface;
 use Denosys\Framework\Provider;
-use Denosys\Config\ConfigurationInterface;
+use Denosys\Config\Repository;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class EncryptionServiceProvider implements Provider
@@ -35,8 +35,8 @@ class EncryptionServiceProvider implements Provider
 
     protected function getEncryptionKey(ContainerInterface $container): string
     {
-        /** @var ConfigurationInterface $config */
-        $config = $container->get(ConfigurationInterface::class);
+        /** @var Repository $config */
+        $config = $container->get(Repository::class);
 
         $key = $config->get('app.key');
 

@@ -8,7 +8,7 @@ use Denosys\Database\Database;
 use Denosys\Database\Model;
 use Denosys\Container\ContainerInterface;
 use Denosys\Framework\Provider;
-use Denosys\Config\ConfigurationInterface;
+use Denosys\Config\Repository;
 use Denosys\Database\Connection\Connection;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Denosys\Database\Connection\ConnectionFactory;
@@ -32,7 +32,7 @@ class DatabaseServiceProvider implements Provider
             $manager = new ConnectionManager($factory);
 
             // Load database configuration
-            $config = $container->get(ConfigurationInterface::class);
+            $config = $container->get(Repository::class);
             $databaseConfig = $config->get('database', []);
 
             // Set default connection

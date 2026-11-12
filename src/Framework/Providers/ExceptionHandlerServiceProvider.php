@@ -11,7 +11,7 @@ use Denosys\Container\Exceptions\NotFoundException;
 use Denosys\Framework\Provider;
 use Denosys\Bootstrap\Configuration\ExceptionConfiguration;
 use Psr\Log\LoggerInterface;
-use Denosys\Environment\EnvironmentManager;
+use Denosys\Config\Repository;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class ExceptionHandlerServiceProvider implements Provider
@@ -24,10 +24,13 @@ class ExceptionHandlerServiceProvider implements Provider
     {
         $logger = $container->get(LoggerInterface::class);
 
-        /** @var EnvironmentManager $environmentManager */
-        $environmentManager = $container->get(EnvironmentManager::class);
-        $debug = $environmentManager->get('APP_DEBUG') ?? false;
-        $environment = $environmentManager->get('APP_ENV') ?? 'production';
+        $config = $container->get(Repository::class);
+        if (!$config instanceof Repository) {
+            throw new \LogicException('The configuration repository is not bound.');
+        }
+        $debug = $config->get('app.debug') === true;
+        $environment = $config->get('app.env');
+        $environment = is_string($environment) && $environment !== '' ? $environment : 'production';
 
         $exceptionHandler = new ExceptionHandler(
             $container->get('path.base'),

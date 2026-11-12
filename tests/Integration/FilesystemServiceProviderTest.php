@@ -3,8 +3,7 @@
 declare(strict_types=1);
 
 use Denosys\Application;
-use Denosys\Config\Configuration;
-use Denosys\Config\ConfigurationInterface;
+use Denosys\Config\Repository;
 use Denosys\Container\Container;
 use Denosys\Contracts\Config\ConfigReader;
 use Denosys\Filesystem\FilesystemInterface;
@@ -43,7 +42,7 @@ it('binds framework configuration for the filesystem provider and keeps local fi
         $container = Application::getContainer();
 
         expect($container->get(ConfigReader::class))
-            ->toBe($container->get(ConfigurationInterface::class));
+            ->toBe($container->get(Repository::class));
 
         (new FilesystemServiceProvider())->register($container);
         $disk = $container->get(FilesystemInterface::class);
@@ -55,17 +54,17 @@ it('binds framework configuration for the filesystem provider and keeps local fi
 it('resolves the current configuration after its framework binding is replaced', function (): void {
     withFilesystemApplication(function (): void {
         $container = Application::getContainer();
-        $replacement = new Configuration();
-        $container->instance(ConfigurationInterface::class, $replacement);
+        $replacement = new Repository();
+        $container->instance(Repository::class, $replacement);
         expect($container->get(ConfigReader::class))->toBe($replacement);
     });
 });
 
 it('binds the filesystem reader when a prepared container replaces the application container', function (): void {
     withFilesystemApplication(function (Application $app, string $base): void {
-        $config = Application::getContainer()->get(ConfigurationInterface::class);
+        $config = Application::getContainer()->get(Repository::class);
         $replacement = new Container();
-        $replacement->instance(ConfigurationInterface::class, $config);
+        $replacement->instance(Repository::class, $config);
         $replacement->instance('path.storage', $base . '/storage');
         $app->setContainer($replacement);
 

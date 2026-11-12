@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Denosys\Config\ConfigurationInterface;
+use Denosys\Config\Repository;
 use Denosys\Container\Container;
 use Denosys\Container\Exceptions\ContainerResolutionException;
 use Denosys\Application;
@@ -17,10 +17,12 @@ use Symfony\Component\Mailer\Transport\TransportInterface;
 
 function mailContainer(array $settings): Container
 {
-    $config = Mockery::mock(ConfigurationInterface::class);
-    $config->shouldReceive('get')->andReturnUsing(static fn(string $key, mixed $default = null): mixed => $settings[$key] ?? $default);
+    $config = new Repository();
+    foreach ($settings as $key => $value) {
+        $config->set($key, $value);
+    }
     $container = new Container();
-    $container->instance(ConfigurationInterface::class, $config);
+    $container->instance(Repository::class, $config);
     new MailServiceProvider()->register($container);
 
     return $container;

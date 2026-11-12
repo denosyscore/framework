@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.12.0 – 2026-11-12
+
+Configuration (finding F04): one correct way to read settings and one way to
+read the environment.
+
+### Added
+
+- `denosyscore/config`, a standalone package in the foundation tier:
+  `Repository` (dot paths where a stored `null` is a value, `has()` that sees
+  it, typed `string()`/`int()`/`bool()`/`array()` and `section()`),
+  `ConfigSection`, `ConfigLoader` (directory loading and an atomic cache file)
+  and `Environment`.
+
+### Changed (breaking)
+
+| Before | After |
+|---|---|
+| `Denosys\Config\Configuration`, `Denosys\Config\ConfigurationInterface` | `Denosys\Config\Repository` (or the `ConfigReader` contract where only `get()` is needed); the container binds `Repository`, `ConfigReader` and the `config` alias to one instance |
+| `Denosys\Environment\EnvironmentManager` | `Denosys\Config\Environment` |
+| `Configuration::saveToCache()` / `clearCache()` | `ConfigLoader::writeCache()` / `clearCache()` |
+| `ValidationExceptionHandler` read `APP_DEBUG` from the process | it takes `bool $debug` in its constructor |
+
+- `env()` reads through the application's `Environment`, so it casts exactly
+  like config files: `(int)42` and `(float)1.5` now become numbers in both.
+- `Application::isLocal()` reads `app.env` from configuration.
+- The logger reads `app.env` and `logging.path` from configuration (map
+  `LOG_PATH` in `config/logging.php`), and the exception handler reads
+  `app.debug` and `app.env`, instead of the process environment.
+- The `migrate` and `migrate:rollback` commands decide whether they run in
+  production from `app.env`; without configuration they assume production.
+
+### Fixed
+
+- `get()` returned a default that had been cached for an earlier call with a
+  different default.
+
 ## 0.11.1 – 2026-11-12
 
 ### Fixed

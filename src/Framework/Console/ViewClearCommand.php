@@ -8,7 +8,7 @@ use Denosys\Console\CommandDefinition;
 use Denosys\Console\CommandInterface;
 use Denosys\Console\InputInterface;
 use Denosys\Console\OutputInterface;
-use Denosys\Config\ConfigurationInterface;
+use Denosys\Config\Repository;
 
 /**
  * Clear compiled view cache files.
@@ -16,7 +16,7 @@ use Denosys\Config\ConfigurationInterface;
 class ViewClearCommand implements CommandInterface
 {
     public function __construct(
-        private readonly ConfigurationInterface $config,
+        private readonly Repository $config,
     ) {}
 
     public function getName(): string

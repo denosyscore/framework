@@ -33,6 +33,22 @@ public component APIs are still available under their `Denosys\` namespaces.
 If an application imports a third-party library directly, declare that library
 in the application's own Composer requirements. PHP 8.4.1 or newer is required.
 
+## Configuration
+
+The framework loads `config/*.php` into a `Denosys\Config\Repository`
+(from `denosyscore/config`), or from the cache written by `config:cache`. A
+stored `null` is a value: `get()` returns it and `has()` reports it. Typed
+readers name the path when a value is missing or has the wrong type:
+
+```php
+$config->string('mail.from.address');
+$config->section(MailSettings::class); // a ConfigSection built once
+```
+
+Environment variables are read only through `Denosys\Config\Environment`,
+which config files reach with `env()`. Services read configuration, never the
+process environment.
+
 ## Environment files
 
 `EnvironmentManager::load($directory, $files)` treats missing files in the

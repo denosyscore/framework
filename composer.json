@@ -49,6 +49,7 @@
   "replace": {
     "denosyscore/auth": "self.version",
     "denosyscore/cache": "self.version",
+    "denosyscore/config": "self.version",
     "denosyscore/console": "self.version",
     "denosyscore/container": "self.version",
     "denosyscore/contracts": "self.version",
@@ -74,10 +75,9 @@
   "autoload": {
     "psr-4": {
       "Denosys\\Bootstrap\\": "src/Bootstrap/",
-      "Denosys\\Config\\": "src/Config/",
-      "Denosys\\Environment\\": "src/Environment/",
       "Denosys\\Framework\\": "src/Framework/",
       "Denosys\\Mail\\": "src/Mail/",
+      "Denosys\\Config\\": "packages/config/src/",
       "Denosys\\Auth\\": "packages/auth/src/Auth/",
       "Denosys\\Cache\\": "packages/cache/src/Cache/",
       "Denosys\\Console\\": "packages/console/src/Console/",
@@ -120,12 +120,13 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-main": "0.11.x-dev"
+      "dev-main": "0.12.x-dev"
     },
     "denosys": {
       "tiers": {
         "foundation": [
           "contracts",
+          "config",
           "container",
           "events"
         ],
