@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.17.0 – 2026-11-12
+
+Phase 3, step 1: the query builder (finding F24).
+
+### Changed (breaking)
+
+- `denosyscore/database` queries are immutable; see that package's changelog.
+  Code that calls a builder method as a statement (`$query->where(...);`) must
+  use the result, and nested `where()` callbacks must return the query.
+
+### Release tooling
+
+- `bin/package-ci versions` also checks projects nested inside packages
+  (such as the HTTP session integration check), which must require the
+  current line too.
+
 ## 0.16.0 – 2026-11-12
 
 Console (finding F20). This completes Phase 2.

@@ -91,12 +91,6 @@ parameters:
 			path: src/Validation/Rules/Enum.php
 
 		-
-			message: '#^Parameter \#1 \$column of method Denosys\\Database\\Query\\Builder\:\:where\(\) expects Closure\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Validation/Rules/Exists.php
-
-		-
 			message: '#^Parameter \#1 \$table of method Denosys\\Database\\Connection\\Connection\:\:table\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -179,12 +173,6 @@ parameters:
 			identifier: encapsedStringPart.nonString
 			count: 1
 			path: src/Validation/Rules/Size.php
-
-		-
-			message: '#^Parameter \#1 \$column of method Denosys\\Database\\Query\\Builder\:\:where\(\) expects Closure\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Validation/Rules/Unique.php
 
 		-
 			message: '#^Parameter \#1 \$table of method Denosys\\Database\\Connection\\Connection\:\:table\(\) expects string, mixed given\.$#'

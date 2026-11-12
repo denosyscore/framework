@@ -37,13 +37,16 @@ class Unique implements RuleInterface
 
         $table = $parameters['table'];
         $column = $parameters['column'] ?? $field;
+        if (!is_string($column) || $column === '') {
+            throw new InvalidArgumentException('Unique rule column must be a column name');
+        }
         $ignoreId = $parameters['ignore_id'] ?? null;
 
         $query = $this->connection->table($table)
             ->where($column, '=', $value);
 
         if ($ignoreId !== null) {
-            $query->where('id', '!=', $ignoreId);
+            $query = $query->where('id', '!=', $ignoreId);
         }
 
         return $query->doesntExist();
