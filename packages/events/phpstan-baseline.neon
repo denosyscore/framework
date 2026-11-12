@@ -1,0 +1,79 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to method alias\(\) on an unknown class Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Events/EventServiceProvider.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Events/EventServiceProvider.php
+
+		-
+			message: '#^Call to method has\(\) on an unknown class Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Events/EventServiceProvider.php
+
+		-
+			message: '#^Call to method singleton\(\) on an unknown class Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Events/EventServiceProvider.php
+
+		-
+			message: '#^PHPDoc tag @throws with type Denosys\\Container\\Exceptions\\NotFoundException is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 1
+			path: src/Events/EventServiceProvider.php
+
+		-
+			message: '#^Parameter \$container of anonymous function has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Events/EventServiceProvider.php
+
+		-
+			message: '#^Parameter \$container of method Denosys\\Events\\EventServiceProvider\:\:boot\(\) has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Events/EventServiceProvider.php
+
+		-
+			message: '#^Parameter \$container of method Denosys\\Events\\EventServiceProvider\:\:register\(\) has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Events/EventServiceProvider.php
+
+		-
+			message: '#^Parameter \#2 \$offset of function array_splice expects int, int\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Events/ListenerProvider.php
+
+		-
+			message: '#^Parameter \$request of method Denosys\\Events\\RequestHandling\:\:__construct\(\) has invalid type Psr\\Http\\Message\\ServerRequestInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Events/RequestHandling.php
+
+		-
+			message: '#^Property Denosys\\Events\\RequestHandling\:\:\$request has unknown class Psr\\Http\\Message\\ServerRequestInterface as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Events/RequestHandling.php
+
+		-
+			message: '#^Parameter \$response of method Denosys\\Events\\ResponseReady\:\:__construct\(\) has invalid type Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Events/ResponseReady.php
+
+		-
+			message: '#^Property Denosys\\Events\\ResponseReady\:\:\$response has unknown class Psr\\Http\\Message\\ResponseInterface as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Events/ResponseReady.php
