@@ -7,18 +7,6 @@ parameters:
 			path: src/Application.php
 
 		-
-			message: '#^Cannot access offset ''autoload'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Application.php
-
-		-
-			message: '#^Cannot access offset ''psr\-4'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/Application.php
-
-		-
 			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
@@ -26,12 +14,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$configurator of method Denosys\\Bootstrap\\Configuration\\RoutesConfiguration\:\:using\(\) expects Closure\(Denosys\\Routing\\Router\)\: void, Closure\|string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Application.php
-
-		-
-			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Application.php

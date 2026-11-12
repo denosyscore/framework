@@ -551,9 +551,11 @@ class Application
             return $this->namespace;
         }
 
-        $composer = json_decode(file_get_contents($this->basePath('composer.json')), true);
+        $contents = is_file($this->basePath('composer.json')) ? file_get_contents($this->basePath('composer.json')) : false;
+        $composer = is_string($contents) ? json_decode($contents, true) : null;
+        $psr4 = is_array($composer) && is_array($composer['autoload'] ?? null) ? ($composer['autoload']['psr-4'] ?? []) : [];
 
-        foreach ((array) $composer['autoload']['psr-4'] as $namespace => $path) {
+        foreach ((array) $psr4 as $namespace => $path) {
             foreach ((array) $path as $pathChoice) {
                 if (realpath($this->path()) === realpath($this->basePath($pathChoice))) {
                     return $this->namespace = $namespace;
@@ -635,13 +637,10 @@ class Application
      */
     private function consoleCommandNamespace(): string
     {
-        $namespace = 'App\\';
-        if (is_file($this->basePath('composer.json'))) {
-            try {
-                $namespace = $this->getNamespace();
-            } catch (RuntimeException) {
-                // app/ is not mapped in composer.json: keep App\.
-            }
+        try {
+            $namespace = $this->getNamespace();
+        } catch (RuntimeException) {
+            $namespace = 'App\\'; // composer.json does not map app/
         }
 
         return rtrim($namespace, '\\') . '\\Console\\Commands';
