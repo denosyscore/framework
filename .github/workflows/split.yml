@@ -44,7 +44,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          ref: ${{ inputs.tag || github.ref }}
+          ref: ${{ inputs.tag && format('refs/tags/{0}', inputs.tag) || github.ref }}
           persist-credentials: false
 
       - name: Setup PHP
@@ -73,7 +73,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          ref: ${{ inputs.tag || github.ref }}
+          ref: ${{ inputs.tag && format('refs/tags/{0}', inputs.tag) || github.ref }}
           fetch-depth: 0
           # Otherwise checkout's URL-specific GITHUB_TOKEN header takes
           # precedence over SPLIT_TOKEN, and pushes are refused.
@@ -100,7 +100,7 @@ jobs:
 
           previous=""
           if [ "$REF_TYPE" = tag ]; then
-            previous=$(git describe --tags --abbrev=0 --match 'v*.*.*' "$REF_NAME^" 2>/dev/null || true)
+            previous=$(git describe --tags --abbrev=0 --match 'v*.*.*' "refs/tags/$REF_NAME^" 2>/dev/null || true)
           fi
 
           for dir in packages/*/; do
@@ -122,7 +122,7 @@ jobs:
 
             # Patch releases skip packages with no changes since the previous tag.
             if [[ "$REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[1-9][0-9]*$ ]] && [ -n "$previous" ] \
-              && git diff --quiet "$previous" "$REF_NAME" -- "packages/$package"; then
+              && git diff --quiet "refs/tags/$previous" "refs/tags/$REF_NAME" -- "packages/$package"; then
               echo "$package: unchanged since $previous, not tagged"
               continue
             fi
