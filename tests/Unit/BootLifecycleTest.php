@@ -150,3 +150,42 @@ it('accepts an empty bootstrap/providers.php', function (): void {
         },
     );
 });
+
+it('keeps reporting a failed boot instead of treating the application as booted', function (): void {
+    withBootableApplication(
+        static fn (Application $app): Application => $app->withProviders(['App\\Providers\\Misspelled']),
+        function (Application $app): void {
+            expect(fn () => $app->boot())->toThrow(InvalidArgumentException::class)
+                ->and(fn () => $app->boot())->toThrow(InvalidArgumentException::class, 'App\\Providers\\Misspelled')
+                ->and(fn () => $app->handleRequest(new ServerRequest([], [], 'https://example.test/', 'GET')))
+                    ->toThrow(InvalidArgumentException::class);
+        },
+    );
+});
+
+it('rejects excluding a provider that is not a default', function (): void {
+    withBootableApplication(static fn (Application $app): Application => $app, function (Application $app): void {
+        expect(fn () => $app->without('Denosys\\Framework\\Providers\\ViewServiceProvidre'))
+            ->toThrow(InvalidArgumentException::class, 'ViewServiceProvidre');
+    });
+});
+
+it('treats differently cased names of one provider class as one provider', function (): void {
+    withBootableApplication(
+        static fn (Application $app): Application => $app->withProviders([CountingProvider::class, strtolower(CountingProvider::class)]),
+        function (Application $app): void {
+            $app->boot();
+
+            expect(CountingProvider::$registered)->toBe(1)
+                ->and(array_count_values($app->providers())[CountingProvider::class])->toBe(1);
+        },
+    );
+});
+
+it('refuses to replace the container after boot', function (): void {
+    withBootableApplication(static fn (Application $app): Application => $app, function (Application $app): void {
+        $app->boot();
+
+        expect(fn () => $app->setContainer(new Denosys\Container\Container()))->toThrow(LogicException::class, 'boot');
+    });
+});
