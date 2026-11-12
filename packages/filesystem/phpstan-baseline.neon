@@ -1,0 +1,61 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Filesystem/FilesystemManager.php
+
+		-
+			message: '#^Method Denosys\\Filesystem\\FilesystemManager\:\:getDiskConfig\(\) should return array\<string, mixed\>\|null but returns array\<mixed, mixed\>\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Filesystem/FilesystemManager.php
+
+		-
+			message: '#^Parameter \#1 \$location of class League\\Flysystem\\Local\\LocalFilesystemAdapter constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Filesystem/FilesystemManager.php
+
+		-
+			message: '#^Parameter \#2 \$bucket of class League\\Flysystem\\AwsS3V3\\AwsS3V3Adapter constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Filesystem/FilesystemManager.php
+
+		-
+			message: '#^Parameter \#2 \$root of class Denosys\\Filesystem\\Filesystem constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Filesystem/FilesystemManager.php
+
+		-
+			message: '#^Parameter \#3 \$prefix of class League\\Flysystem\\AwsS3V3\\AwsS3V3Adapter constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Filesystem/FilesystemManager.php
+
+		-
+			message: '#^Parameter \#3 \$url of class Denosys\\Filesystem\\Filesystem constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Filesystem/FilesystemManager.php
+
+		-
+			message: '#^Part \$bucket \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: src/Filesystem/FilesystemManager.php
+
+		-
+			message: '#^Cannot call method disk\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Filesystem/FilesystemServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$config of class Denosys\\Filesystem\\FilesystemManager constructor expects Denosys\\Contracts\\Config\\ConfigurationReaderInterface, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Filesystem/FilesystemServiceProvider.php
