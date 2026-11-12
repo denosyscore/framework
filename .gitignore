@@ -7,3 +7,10 @@ composer.lock
 /storage/core/cache/*.php
 /storage/framework/sessions/*
 !/storage/framework/sessions/.gitkeep
+
+# Per-package installs made by bin/package-ci
+/packages/*/vendor/
+/packages/*/composer.monorepo.*
+/packages/*/composer.lock
+/packages/http/integration/session/vendor/
+/packages/http/integration/session/composer.monorepo.*

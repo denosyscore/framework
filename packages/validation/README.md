@@ -1,5 +1,7 @@
 # denosyscore/validation
 
+> **Read-only split.** This package is developed in [denosyscore/framework](https://github.com/denosyscore/framework) under `packages/validation`. Open issues and pull requests there.
+
 Validation engine and rules
 
 ## Installation
@@ -111,13 +113,6 @@ validator. Parameter values may include numbers, null, or lists; rules that
 support direct positional calls may also receive integer keys. The static
 analysis fixture checks this public parameter contract.
 
-## CI Workflows
-
-- CI: Composer validation, isolated installation, PHP 8.2/8.5 tests against
-  Carbon 2/3 and database 0.2/0.3/0.4, static analysis of rule parameter consumers,
-  and syntax lint on push and pull requests.
-- Release: GitHub release publication on semantic version tags.
-- Dependabot: weekly Composer dependency update checks.
 
 ## Releases
 

@@ -1,5 +1,7 @@
 # denosyscore/filesystem
 
+> **Read-only split.** This package is developed in [denosyscore/framework](https://github.com/denosyscore/framework) under `packages/filesystem`. Open issues and pull requests there.
+
 Filesystem management and disk abstractions
 
 ## Installation
@@ -89,9 +91,3 @@ contract starting with 0.3.
 composer validate --strict
 find src -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 composer test
-
-## CI Workflows
-
-- CI: composer validation, PHP syntax lint, standalone integration, and a locked dependency audit with highest dependencies on PHP 8.2 and 8.5 and lowest dependencies on PHP 8.2.
-- Release: GitHub release publication on semantic version tags.
-- Dependabot: weekly Composer dependency update checks.

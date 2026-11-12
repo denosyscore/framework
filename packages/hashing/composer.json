@@ -5,7 +5,7 @@
   "license": "MIT",
   "require": {
     "php": "^8.2",
-    "denosyscore/contracts": "^0.2"
+    "denosyscore/contracts": "^0.10"
   },
   "autoload": {
     "psr-4": {
@@ -20,5 +20,10 @@
   },
   "scripts": {
     "analyse": "phpstan analyse --no-progress --memory-limit=1G"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "0.10.x-dev"
+    }
   }
 }

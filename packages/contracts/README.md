@@ -1,5 +1,7 @@
 # denosyscore/contracts
 
+> **Read-only split.** This package is developed in [denosyscore/framework](https://github.com/denosyscore/framework) under `packages/contracts`. Open issues and pull requests there.
+
 Core framework contracts and interfaces
 
 ## Installation
@@ -64,9 +66,3 @@ implementation through its container.
 
 composer validate --strict
 find src -type f -name '*.php' -print0 | xargs -0 -n1 php -l
-
-## CI Workflows
-
-- CI: composer validation + PHP syntax lint on push and pull requests.
-- Release: GitHub release publication on semantic version tags.
-- Dependabot: weekly Composer dependency update checks.

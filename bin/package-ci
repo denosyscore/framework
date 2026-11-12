@@ -1,0 +1,137 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/*
+ * Runs one package's checks the way a user would install it: alone, with only
+ * the dependencies it declares. Sibling DenoSys packages resolve from this
+ * repository (path repositories), so a change is tested against the other
+ * packages at the same commit instead of their last Packagist release.
+ *
+ *   bin/package-ci install <dir> [--lowest]   install a package (or any composer project) in place
+ *   bin/package-ci check <package> [--skip-analyse]  composer test, analyse and analyse:types when defined
+ *   bin/package-ci quickstart <package>       install into an empty project and run the README quick start
+ *   bin/package-ci list                       print package names as a JSON array (for CI matrices)
+ *
+ * Generated manifests are named composer.monorepo.json and are git-ignored.
+ */
+
+const MANIFEST = 'composer.monorepo.json';
+
+$root = dirname(__DIR__);
+$packages = $root . '/packages';
+
+function fail(string $message): never
+{
+    fwrite(STDERR, $message . "\n");
+    exit(1);
+}
+
+function run(string $command, string $cwd, array $env = []): void
+{
+    fwrite(STDERR, "\n> ({$cwd}) {$command}\n");
+    $process = proc_open($command, [STDIN, STDOUT, STDERR], $pipes, $cwd, array_merge(getenv(), $env));
+    if (!is_resource($process) || proc_close($process) !== 0) {
+        fail("Command failed: {$command}");
+    }
+}
+
+/** @return array<string, mixed> */
+function readJson(string $file): array
+{
+    return json_decode((string) file_get_contents($file), true, flags: JSON_THROW_ON_ERROR);
+}
+
+function line(string $root): string
+{
+    $alias = readJson($root . '/composer.json')['extra']['branch-alias']['dev-main'] ?? null;
+    if (!is_string($alias)) {
+        fail('The root composer.json needs extra.branch-alias.dev-main.');
+    }
+
+    return $alias;
+}
+
+/** @return array<string, mixed> */
+function siblingRepository(string $packages, string $line): array
+{
+    $versions = [];
+    foreach (glob($packages . '/*/composer.json') ?: [] as $manifest) {
+        $versions[readJson($manifest)['name']] = $line;
+    }
+
+    return ['type' => 'path', 'url' => $packages . '/*', 'options' => ['symlink' => true, 'versions' => $versions]];
+}
+
+/** Write composer.monorepo.json beside a manifest so siblings come from this checkout. */
+function writeManifest(string $dir, string $packages, string $line): void
+{
+    $manifest = readJson($dir . '/composer.json');
+    // Integration projects may declare their own path repositories to the old layout.
+    $manifest['repositories'] = [siblingRepository($packages, $line)];
+    $manifest['minimum-stability'] = 'dev';
+    $manifest['prefer-stable'] = true;
+    unset($manifest['config']['platform']);
+    file_put_contents($dir . '/' . MANIFEST, json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+}
+
+function packageDir(string $packages, ?string $name): string
+{
+    if ($name === null || !is_file("{$packages}/{$name}/composer.json")) {
+        fail("Unknown package [{$name}].");
+    }
+
+    return "{$packages}/{$name}";
+}
+
+$command = $argv[1] ?? '';
+$line = line($root);
+
+switch ($command) {
+    case 'list':
+        $names = array_map(static fn (string $path): string => basename(dirname($path)), glob($packages . '/*/composer.json') ?: []);
+        echo json_encode(array_values($names)), "\n";
+        break;
+
+    case 'install':
+        $dir = realpath($argv[2] ?? '') ?: fail('Usage: bin/package-ci install <dir> [--lowest]');
+        writeManifest($dir, $packages, $line);
+        $lowest = in_array('--lowest', $argv, true) ? ' --prefer-lowest' : '';
+        run("composer update --no-interaction --no-progress --prefer-dist{$lowest}", $dir, ['COMPOSER' => MANIFEST]);
+        break;
+
+    case 'check':
+        $dir = packageDir($packages, $argv[2] ?? null);
+        $scripts = readJson($dir . '/composer.json')['scripts'] ?? [];
+        $wanted = in_array('--skip-analyse', $argv, true) ? ['test'] : ['test', 'analyse', 'analyse:types'];
+        foreach ($wanted as $script) {
+            if (isset($scripts[$script])) {
+                run("composer run-script --no-interaction {$script}", $dir, ['COMPOSER' => MANIFEST]);
+            }
+        }
+        break;
+
+    case 'quickstart':
+        $dir = packageDir($packages, $argv[2] ?? null);
+        $readme = (string) file_get_contents($dir . '/README.md');
+        if (!preg_match('/<!-- quickstart(?: requires: ([^>]*?))? -->\s*```php\n(.*?)```/s', $readme, $match)) {
+            fail("{$dir}/README.md has no quickstart block.");
+        }
+        $project = sys_get_temp_dir() . '/denosys-quickstart-' . basename($dir) . '-' . bin2hex(random_bytes(4));
+        mkdir($project, 0700, true);
+        file_put_contents($project . '/quickstart.php', $match[2]);
+        file_put_contents($project . '/composer.json', json_encode([
+            'repositories' => [siblingRepository($packages, $line)],
+            'minimum-stability' => 'dev',
+            'prefer-stable' => true,
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+        $name = readJson($dir . '/composer.json')['name'];
+        $extra = trim($match[1] ?? '');
+        run('composer require --no-interaction --no-progress ' . escapeshellarg("{$name}:{$line}") . ($extra === '' ? '' : ' ' . $extra), $project);
+        run('php quickstart.php', $project);
+        break;
+
+    default:
+        fail("Usage: bin/package-ci install|check|quickstart|list\n");
+}

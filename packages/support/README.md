@@ -1,5 +1,7 @@
 # DenoSys Support
 
+> **Read-only split.** This package is developed in [denosyscore/framework](https://github.com/denosyscore/framework) under `packages/support`. Open issues and pull requests there.
+
 Reusable support types for DenoSysCore packages.
 
 ## Collection

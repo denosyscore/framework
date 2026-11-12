@@ -21,5 +21,10 @@
   },
   "scripts": {
     "analyse": "phpstan analyse --no-progress --memory-limit=1G"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "0.10.x-dev"
+    }
   }
 }
