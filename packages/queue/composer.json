@@ -1,0 +1,29 @@
+{
+  "name": "denosyscore/queue",
+  "description": "Queue manager, drivers, and job contracts",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "denosyscore/container": "^0.2",
+    "denosyscore/contracts": "^0.2",
+    "denosyscore/database": "^0.2 || ^0.3 || ^0.4 || ^0.5",
+    "ramsey/uuid": "^4.7"
+  },
+  "autoload": {
+    "psr-4": {
+      "Denosys\\Queue\\": "src/Queue/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit --bootstrap vendor/autoload.php tests",
+    "analyse": "phpstan analyse --no-progress --memory-limit=1G"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5",
+    "phpstan/phpstan": "^2.1"
+  }
+}
