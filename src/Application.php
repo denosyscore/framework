@@ -9,6 +9,7 @@ use Closure;
 use RuntimeException;
 use Throwable;
 use Denosys\Framework\Http\Kernel;
+use Denosys\Framework\Provider;
 use Denosys\Console\Kernel as ConsoleKernel;
 use Denosys\Container\Container;
 use Denosys\Config\ConfigLoader;
@@ -36,6 +37,11 @@ class Application
     protected Container $container;
     protected Environment $environment;
     protected ?Kernel $httpKernel = null;
+
+    private bool $booted = false;
+
+    /** @var list<class-string<Provider>> */
+    private array $withoutProviders = [];
 
     /**
      * The app public path.
@@ -121,6 +127,128 @@ class Application
     private function createContainer(): Container
     {
         return new Container();
+    }
+
+    /**
+     * Start configuring an application. Chain the with*() methods, then call
+     * create(); nothing is booted until the first request or command.
+     */
+    public static function configure(string $basePath): self
+    {
+        return new self($basePath);
+    }
+
+    /**
+     * Finish configuration. The application boots lazily on first use.
+     */
+    public function create(): self
+    {
+        return $this;
+    }
+
+    /**
+     * The framework's providers, in dependency order. Applications get all of
+     * them unless they remove some with without().
+     *
+     * @return list<class-string<Provider>>
+     */
+    public static function defaultProviders(): array
+    {
+        return [
+            \Denosys\Framework\Providers\LoggerServiceProvider::class,
+            \Denosys\Framework\Providers\ExceptionHandlerServiceProvider::class,
+            \Denosys\Framework\Providers\DatabaseServiceProvider::class,
+            \Denosys\Framework\Providers\MigrationServiceProvider::class,
+            \Denosys\Framework\Providers\EventServiceProvider::class,
+            \Denosys\Framework\Providers\EncryptionServiceProvider::class,
+            \Denosys\Framework\Providers\HashingServiceProvider::class,
+            \Denosys\Framework\Providers\SessionServiceProvider::class,
+            \Denosys\Framework\Providers\CacheServiceProvider::class,
+            \Denosys\Framework\Providers\RateLimiterServiceProvider::class,
+            \Denosys\Framework\Providers\FilesystemServiceProvider::class,
+            \Denosys\Framework\Providers\QueueServiceProvider::class,
+            \Denosys\Framework\Providers\MailServiceProvider::class,
+            \Denosys\Framework\Providers\AuthServiceProvider::class,
+            \Denosys\Framework\Providers\ValidationServiceProvider::class,
+            \Denosys\Framework\Providers\ViewServiceProvider::class,
+            \Denosys\Framework\Providers\HttpServiceProvider::class,
+            \Denosys\Framework\Providers\RouterServiceProvider::class,
+            \Denosys\Framework\Providers\SecurityHeadersServiceProvider::class,
+        ];
+    }
+
+    /**
+     * Leave default providers out, for example a view engine the application
+     * does not use.
+     *
+     * @param class-string<Provider> ...$providers
+     */
+    public function without(string ...$providers): static
+    {
+        $this->withoutProviders = array_values(array_unique([...$this->withoutProviders, ...$providers]));
+
+        return $this;
+    }
+
+    /**
+     * Every provider this application registers: the defaults it keeps, then
+     * its own, each once.
+     *
+     * @return list<class-string<Provider>>
+     */
+    public function providers(): array
+    {
+        $own = $this->pendingProviders instanceof Closure ? ($this->pendingProviders)() : ($this->pendingProviders ?? []);
+        if (!is_array($own)) {
+            throw new \LogicException('withProviders() must be given, or its closure must return, a list of provider classes.');
+        }
+
+        $providers = array_values(array_diff(self::defaultProviders(), $this->withoutProviders));
+        foreach ($own as $provider) {
+            if (!is_string($provider) || !is_subclass_of($provider, Provider::class)) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Service provider [%s] does not exist or does not implement %s.',
+                    is_string($provider) ? $provider : get_debug_type($provider),
+                    Provider::class,
+                ));
+            }
+            if (!in_array($provider, $providers, true)) {
+                $providers[] = $provider;
+            }
+        }
+
+        return $providers;
+    }
+
+    /**
+     * Register and boot every provider, once, with one event dispatcher.
+     * HTTP requests and console commands both start here.
+     */
+    public function boot(): void
+    {
+        if ($this->booted) {
+            return;
+        }
+        $this->booted = true;
+
+        $legacyProviders = $this->basePath('bootstrap/providers.php');
+        if (is_file($legacyProviders) && (require $legacyProviders) !== []) {
+            throw new \LogicException(
+                'bootstrap/providers.php is no longer read. Move its providers to Application::configure()->withProviders() in bootstrap/app.php and delete the file.'
+            );
+        }
+
+        $this->bindPendingConfigurations();
+
+        $dispatcher = new Events\Dispatcher(new Events\ListenerProvider());
+        $this->container->instance(Events\Dispatcher::class, $dispatcher);
+        $this->container->instance(\Psr\EventDispatcher\EventDispatcherInterface::class, $dispatcher);
+        $this->container->alias('events', \Psr\EventDispatcher\EventDispatcherInterface::class);
+
+        $bootstrapper = new ServiceProviderBootstrapper($this->container);
+        $bootstrapper->setProviders($this->providers());
+        $this->container->instance(ServiceProviderBootstrapper::class, $bootstrapper);
+        $bootstrapper->bootstrap($dispatcher);
     }
 
     /**
@@ -219,33 +347,6 @@ class Application
     }
 
     /**
-     * Bootstrap the application
-     *
-     * @throws ContainerException
-     */
-    public function bootstrap(): void
-    {
-        if (null !== $this->httpKernel) {
-            return;
-        }
-
-        // Bind pending configurations to container so providers can access them
-        $this->bindPendingConfigurations();
-
-        $bootstrapper = new ServiceProviderBootstrapper($this->container);
-
-        // Set additional providers if configured via fluent API
-        if ($this->pendingProviders !== null) {
-            $providers = $this->pendingProviders instanceof Closure
-                ? ($this->pendingProviders)()
-                : $this->pendingProviders;
-            $bootstrapper->setAdditionalProviders($providers);
-        }
-
-        $this->httpKernel = new Kernel($this->container, $bootstrapper);
-    }
-
-    /**
      * Bind pending configurations to the container using typed objects.
      *
      * @throws ContainerException
@@ -303,8 +404,14 @@ class Application
      */
     public function handleRequest(?ServerRequestInterface $request = null): ResponseInterface
     {
-        $this->bootstrap();
-        return $this->httpKernel->handle($request);
+        return $this->httpKernel()->handle($request);
+    }
+
+    private function httpKernel(): Kernel
+    {
+        $this->boot();
+
+        return $this->httpKernel ??= new Kernel($this->container);
     }
 
     /**
@@ -453,8 +560,7 @@ class Application
      */
     public function runHttp(?ServerRequestInterface $request = null): void
     {
-        $this->bootstrap();
-        $this->httpKernel->run($request);
+        $this->httpKernel()->run($request);
     }
 
     /**
@@ -468,8 +574,7 @@ class Application
      */
     public function runConsole(): int
     {
-        // Bootstrap services exactly like the web path does
-        $this->bootstrapServices();
+        $this->boot();
         
         // Resolve console kernel class from config to avoid hard App coupling.
         $kernelClass = $this->resolveConsoleKernelClass();
@@ -517,51 +622,6 @@ class Application
         }
 
         return \App\Console\Kernel::class;
-    }
-
-    /**
-     * Bootstrap application services without creating HTTP kernel.
-     *
-     * This is shared between web and console entry points to ensure
-     * consistent service registration.
-     *
-     * @throws ContainerException
-     */
-    protected function bootstrapServices(): void
-    {
-        // Bind pending configurations to container so providers can access them
-        $this->bindPendingConfigurations();
-
-        // Create event dispatcher
-        $listenerProvider = new Events\ListenerProvider();
-        $dispatcher = new Events\Dispatcher($listenerProvider);
-        
-        $this->container->instance(Events\Dispatcher::class, $dispatcher);
-        $this->container->instance(\Psr\EventDispatcher\EventDispatcherInterface::class, $dispatcher);
-        $this->container->alias('events', \Psr\EventDispatcher\EventDispatcherInterface::class);
-
-        // Create bootstrapper and set providers
-        $bootstrapper = new ServiceProviderBootstrapper($this->container);
-
-        if ($this->pendingProviders !== null) {
-            $providers = $this->pendingProviders instanceof Closure
-                ? ($this->pendingProviders)()
-                : $this->pendingProviders;
-            $bootstrapper->setAdditionalProviders($providers);
-        }
-
-        // Bootstrap all services
-        $bootstrapper->bootstrap($dispatcher);
-    }
-
-
-    /**
-     * Get the HTTP kernel (creates if needed)
-     */
-    public function getHttpKernel(): Kernel
-    {
-        $this->bootstrap();
-        return $this->httpKernel;
     }
 
     /**

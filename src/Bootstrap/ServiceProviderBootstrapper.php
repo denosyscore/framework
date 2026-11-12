@@ -25,7 +25,8 @@ class ServiceProviderBootstrapper
     /** @var string[] Additional providers set via fluent API */
     /** @var array<string, mixed> */
 
-    private array $additionalProviders = [];
+    /** @var list<class-string<Provider>> */
+    private array $providers = [];
 
     /** @var array<string, string> Map of service => deferred provider class */
     /** @var array<string, mixed> */
@@ -35,16 +36,14 @@ class ServiceProviderBootstrapper
     private ?EventDispatcherInterface $dispatcher = null;
 
     public function __construct(protected readonly ContainerInterface $container) {}
-
     /**
-     * Set additional service providers to be loaded after file-based providers.
+     * The complete, ordered provider list. Duplicates are registered once.
      *
-     * @param string[] $providers Array of provider class names
-      * @param array<class-string> $providers
+     * @param list<class-string<Provider>> $providers
      */
-    public function setAdditionalProviders(array $providers): void
+    public function setProviders(array $providers): void
     {
-        $this->additionalProviders = $providers;
+        $this->providers = array_values(array_unique($providers));
     }
 
     /**
@@ -57,7 +56,7 @@ class ServiceProviderBootstrapper
         $this->dispatcher = $dispatcher;
 
         // Collect all providers
-        $allProviders = $this->collectAllProviders();
+        $allProviders = $this->providers;
 
         // Separate deferred from eager providers
         [$eagerProviders, $deferredProviders] = $this->partitionProviders($allProviders);
@@ -79,21 +78,17 @@ class ServiceProviderBootstrapper
     /**
      * Partition providers into eager and deferred.
      *
-     * @param string[] $providers
-     * @return array{0: string[], 1: string[]}
+     * @param list<class-string<Provider>> $providers
+     * @return array{list<class-string<Provider>>, list<class-string<Provider>>}
      */
-    /**
-     * @return array<string, mixed>
-      * @param array<class-string> $providers
-     */
-private function partitionProviders(array $providers): array
+    private function partitionProviders(array $providers): array
     {
         $eager = [];
         $deferred = [];
 
         foreach ($providers as $providerClass) {
-            if (!class_exists($providerClass)) {
-                continue;
+            if (!class_exists($providerClass) || !is_subclass_of($providerClass, Provider::class)) {
+                throw new \InvalidArgumentException("Service provider [{$providerClass}] does not exist or does not implement " . Provider::class . '.');
             }
 
             if (is_subclass_of($providerClass, DeferrableProvider::class)) {
@@ -157,52 +152,7 @@ private function partitionProviders(array $providers): array
         }
     }
 
-    /**
-     * Collect all provider classes in correct order.
-     *
-     * @return string[]
-     */
-    private function collectAllProviders(): array
-    {
-        $providers = [];
 
-        // Core framework providers (in dependency order)
-        $providers = array_merge($providers, $this->getCoreProviders());
-
-        // Application providers from bootstrap/providers.php
-        $providers = array_merge($providers, $this->loadAppProviders());
-
-        // Additional providers set via fluent API
-        $providers = array_merge($providers, $this->additionalProviders);
-
-        return $providers;
-    }
-
-    /**
-     * Get core framework providers in dependency order.
-     *
-     * @return string[]
-     */
-    private function getCoreProviders(): array
-    {
-        return [
-            \Denosys\Framework\Providers\LoggerServiceProvider::class,
-            \Denosys\Framework\Providers\ExceptionHandlerServiceProvider::class,
-            \Denosys\Framework\Providers\DatabaseServiceProvider::class,
-            \Denosys\Framework\Providers\MigrationServiceProvider::class,
-            \Denosys\Framework\Providers\EventServiceProvider::class,
-            \Denosys\Framework\Providers\EncryptionServiceProvider::class,
-            \Denosys\Framework\Providers\SessionServiceProvider::class,
-            \Denosys\Framework\Providers\CacheServiceProvider::class,
-            \Denosys\Framework\Providers\RateLimiterServiceProvider::class,
-            \Denosys\Framework\Providers\AuthServiceProvider::class,
-            \Denosys\Framework\Providers\ValidationServiceProvider::class,
-            \Denosys\Framework\Providers\ViewServiceProvider::class,
-            \Denosys\Framework\Providers\HttpServiceProvider::class,
-            \Denosys\Framework\Providers\RouterServiceProvider::class,
-            \Denosys\Framework\Providers\SecurityHeadersServiceProvider::class,
-        ];
-    }
 
     /**
      * Register a single provider (Phase 1).
@@ -211,10 +161,6 @@ private function partitionProviders(array $providers): array
      */
     private function registerProvider(string $providerClass): void
     {
-        if (!class_exists($providerClass)) {
-            return;
-        }
-
         if (in_array($providerClass, $this->loadedProviders, true)) {
             return;
         }
@@ -230,28 +176,6 @@ private function partitionProviders(array $providers): array
         $this->loadedProviders[] = $providerClass;
     }
 
-    /**
-     * Load providers configuration from file.
-     *
-     * @return string[]
-     * @throws ContainerResolutionException
-     */
-    private function loadAppProviders(): array
-    {
-        $providersFile = $this->container->get('path.bootstrap') . '/providers.php';
-
-        if (!file_exists($providersFile)) {
-            return [];
-        }
-
-        $providers = require $providersFile;
-
-        if (!is_array($providers)) {
-            return [];
-        }
-
-        return $providers;
-    }
 
     /**
      * Get list of loaded providers for debugging.
