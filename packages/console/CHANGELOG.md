@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.17.0 – 2026-11-12
+
+- Released with the framework's 0.17 line; no changes to this package.
+
 ## 0.16.0 – 2026-11-12
 
 - **Breaking:** `Kernel` is final. Configure it with `commands:`,

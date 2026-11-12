@@ -37,6 +37,9 @@ class Exists implements RuleInterface
 
         $table = $parameters['table'];
         $column = $parameters['column'] ?? $field;
+        if (!is_string($column) || $column === '') {
+            throw new InvalidArgumentException('Exists rule column must be a column name');
+        }
 
         return $this->connection->table($table)
             ->where($column, '=', $value)

@@ -238,6 +238,24 @@ switch ($command) {
                 }
             }
         }
+        // Projects nested inside a package (integration checks) install the
+        // siblings from this checkout, so they must require the same line.
+        $nested = new RecursiveIteratorIterator(new RecursiveCallbackFilterIterator(
+            new RecursiveDirectoryIterator($packages, FilesystemIterator::SKIP_DOTS),
+            static fn (SplFileInfo $file): bool => $file->getFilename() !== 'vendor',
+        ));
+        foreach ($nested as $file) {
+            $manifestPath = $file->getPathname();
+            if ($file->getFilename() !== 'composer.json' || dirname($manifestPath, 2) === $packages) {
+                continue;
+            }
+            $relative = substr($manifestPath, strlen($packages) + 1);
+            foreach ((readJson($manifestPath)['require'] ?? []) as $dependency => $constraint) {
+                if (str_starts_with($dependency, 'denosyscore/') && $constraint !== $expected) {
+                    $problems[] = "{$relative}: require {$dependency} is {$constraint}, expected {$expected}.";
+                }
+            }
+        }
         $tagIndex = array_search('--tag', $argv, true);
         if ($tagIndex !== false) {
             $tag = (string) ($argv[$tagIndex + 1] ?? '');
