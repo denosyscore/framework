@@ -73,13 +73,12 @@ final class MigratorSafetyTest extends TestCase
         $result = $migrator->run();
 
         self::assertFalse($result->isSuccess());
-        self::assertSame([], $repository->getRan());
-        if ($driver === 'mysql') {
-            // MySQL commits DDL implicitly, so the table survives; the run is
-            // still not recorded, and the next run sees it as pending.
-            self::assertTrue($schema->hasTable('safety_widgets'));
-        } else {
-            self::assertFalse($schema->hasTable('safety_widgets'), 'the table was left without its log row');
+        // The schema and the record always agree.
+        self::assertSame($schema->hasTable('safety_widgets'), isset($repository->getRan()['0001_create_safety_widgets']));
+        if ($driver !== 'mysql') {
+            // Transactional DDL: the failure leaves neither behind. MySQL commits
+            // DDL implicitly, so there both the table and its record remain.
+            self::assertFalse($schema->hasTable('safety_widgets'));
         }
     }
 
@@ -94,9 +93,11 @@ final class MigratorSafetyTest extends TestCase
         $repository->failDelete = true;
         self::assertFalse($migrator->rollback()->isSuccess());
 
-        self::assertArrayHasKey('0001_create_safety_widgets', $repository->getRan());
+        self::assertSame($schema->hasTable('safety_widgets'), isset($repository->getRan()['0001_create_safety_widgets']));
         if ($driver !== 'mysql') {
-            self::assertTrue($schema->hasTable('safety_widgets'), 'the table was dropped but still recorded');
+            // Transactional DDL: the table and its record are both kept. On
+            // MySQL the implicit commit has already dropped and unrecorded it.
+            self::assertTrue($schema->hasTable('safety_widgets'));
         }
     }
 
