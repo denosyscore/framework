@@ -1,0 +1,47 @@
+{
+  "name": "denosyscore/http",
+  "description": "HTTP kernel, middleware, and exception handling",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "laminas/laminas-diactoros": "^3.6",
+    "laminas/laminas-httphandlerrunner": "^2.12",
+    "nyholm/psr7": "^1.8",
+    "psr/event-dispatcher": "^1.0",
+    "psr/http-message": "^2.0",
+    "psr/http-server-handler": "^1.0",
+    "psr/http-server-middleware": "^1.0",
+    "denosyscore/contracts": "^0.2",
+    "denosyscore/container": "^0.2",
+    "denosyscore/events": "^0.2",
+    "denosyscore/validation": "^0.2 || ^0.3"
+  },
+  "require-dev": {
+    "denosyscore/routing": "0.6.0-alpha.1",
+    "filp/whoops": "^2.18",
+    "phpunit/phpunit": "^10.5",
+    "phpstan/phpstan": "^2.1"
+  },
+  "suggest": {
+    "denosyscore/routing": "Provides typed routing HTTP exceptions for HttpExceptionMiddleware",
+    "denosyscore/session": "Provides the session contract for session-aware HTTP middleware"
+  },
+  "autoload": {
+    "files": [
+      "src/legacy-validation-handler.php"
+    ],
+    "psr-4": {
+      "Denosys\\Http\\": "src/Http/",
+      "Denosys\\Http\\Exceptions\\": "src/Exceptions/",
+      "Denosys\\Http\\Security\\": "src/Security/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "analyse": "phpstan analyse --no-progress --memory-limit=1G"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
