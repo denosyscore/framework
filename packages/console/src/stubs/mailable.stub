@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Symfony\Component\Mime\Email;
+
+/** {{ subject }} message. */
+final class {{ class }} extends Email
+{
+    public function __construct(string $sender, string $recipient, string $body)
+    {
+        parent::__construct();
+
+        $this->from($sender)
+            ->to($recipient)
+            ->subject('{{ subject }}')
+            ->{{ body_method }}($body);
+    }
+}
