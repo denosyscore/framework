@@ -1,0 +1,355 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Denosys\\Validation\\ErrorBag\:\:get\(\) should return array\<string, mixed\> but returns array\<string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Validation/ErrorBag.php
+
+		-
+			message: '#^Offset 0 on array\<string, mixed\> on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/Validation/ErrorBag.php
+
+		-
+			message: '#^Parameter \#1 \$ruleName of static method Denosys\\Validation\\Validator\:\:extend\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/RuleRegistrar.php
+
+		-
+			message: '#^Parameter \#2 \$factory of static method Denosys\\Validation\\Validator\:\:extend\(\) expects \(callable\(\)\: Denosys\\Validation\\Rules\\RuleInterface\)\|class\-string\<Denosys\\Validation\\Rules\\RuleInterface\>, class\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/RuleRegistrar.php
+
+		-
+			message: '#^Parameter \#2 \$factory of static method Denosys\\Validation\\Validator\:\:extend\(\) expects \(callable\(\)\: Denosys\\Validation\\Rules\\RuleInterface\)\|class\-string\<Denosys\\Validation\\Rules\\RuleInterface\>, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/RuleRegistrar.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: src/Validation/RuleRegistrar.php
+
+		-
+			message: '#^Static property Denosys\\Validation\\RuleRegistrar\:\:\$cachedRules \(array\<string, object\>\) does not accept array\<class\-string\|object\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Validation/RuleRegistrar.php
+
+		-
+			message: '#^Parameter \#1 \$key of function array_key_exists expects int\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Confirmed.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 2
+			path: src/Validation/Rules/Different.php
+
+		-
+			message: '#^Parameter \#1 \$haystack of function str_contains expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Dimensions.php
+
+		-
+			message: '#^Parameter \#1 \$parameters of method Denosys\\Validation\\Rules\\Dimensions\:\:parseParameters\(\) expects array\<int, mixed\>, array\<int\|string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Dimensions.php
+
+		-
+			message: '#^Parameter \#1 \$ratio of method Denosys\\Validation\\Rules\\Dimensions\:\:parseRatio\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Dimensions.php
+
+		-
+			message: '#^Parameter \#2 \$string of function explode expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Dimensions.php
+
+		-
+			message: '#^Parameter \#1 \$class of function class_exists expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Enum.php
+
+		-
+			message: '#^Parameter \#1 \$enum of function enum_exists expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Enum.php
+
+		-
+			message: '#^Parameter \#1 \$column of method Denosys\\Database\\Query\\Builder\:\:where\(\) expects Closure\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Exists.php
+
+		-
+			message: '#^Parameter \#1 \$table of method Denosys\\Database\\Connection\\Connection\:\:table\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Exists.php
+
+		-
+			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/In.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 1
+			path: src/Validation/Rules/Max.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of function in_array expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Max.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Mimes.php
+
+		-
+			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Mimes.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 1
+			path: src/Validation/Rules/Min.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of function in_array expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Min.php
+
+		-
+			message: '#^Binary operation "\." between ''/'' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Validation/Rules/Regex.php
+
+		-
+			message: '#^Parameter \#1 \$pattern of function preg_match expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Regex.php
+
+		-
+			message: '#^Parameter \#2 \$subject of function preg_match expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Regex.php
+
+		-
+			message: '#^Part \$otherField \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: src/Validation/Rules/Same.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 2
+			path: src/Validation/Rules/Same.php
+
+		-
+			message: '#^Part \$size \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: src/Validation/Rules/Size.php
+
+		-
+			message: '#^Parameter \#1 \$column of method Denosys\\Database\\Query\\Builder\:\:where\(\) expects Closure\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Unique.php
+
+		-
+			message: '#^Parameter \#1 \$table of method Denosys\\Database\\Connection\\Connection\:\:table\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Rules/Unique.php
+
+		-
+			message: '#^Call to function array_is_list\(\) with list\<string\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Validation/ValidationException.php
+
+		-
+			message: '#^Call to function is_array\(\) with list\<string\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Validation/ValidationException.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 3
+			path: src/Validation/ValidationException.php
+
+		-
+			message: '#^Result of \|\| is always false\.$#'
+			identifier: booleanOr.alwaysFalse
+			count: 1
+			path: src/Validation/ValidationException.php
+
+		-
+			message: '#^Method Denosys\\Validation\\ValidationServiceProvider\:\:registerCustomRules\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: src/Validation/ValidationServiceProvider.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Method Denosys\\Validation\\Validator\:\:bindNamedParameters\(\) should return array\<string, mixed\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Method Denosys\\Validation\\Validator\:\:parseRule\(\) should return array\<string, mixed\> but returns array\<int, array\|string\|null\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Method Denosys\\Validation\\Validator\:\:parseRule\(\) should return array\<string, mixed\> but returns array\<int, list\<bool\|float\|int\|string\|null\>\|string\|null\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Method Denosys\\Validation\\Validator\:\:parseRule\(\) should return array\<string, mixed\> but returns array\<int, list\<string\>\|string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Offset 0 does not exist on array\<string, mixed\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Offset 1 does not exist on array\<string, mixed\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, ''strval'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Parameter \#1 \$data of class Denosys\\Validation\\Validator constructor expects array\<string, mixed\>, T of array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Parameter \#1 \$ruleName of method Denosys\\Validation\\Validator\:\:getRuleInstance\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Parameter \#2 \$positional of method Denosys\\Validation\\Validator\:\:bindNamedParameters\(\) expects array\<int, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Parameter \#2 \$ruleName of method Denosys\\Validation\\Validator\:\:getErrorMessage\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Parameter \#2 \$rules of method Denosys\\Validation\\Validator\:\:validateField\(\) expects array\<Denosys\\Validation\\Rules\\RuleInterface\|string\>\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Parameter \#3 \$parameters of method Denosys\\Validation\\Validator\:\:getErrorMessage\(\) expects array\<int, mixed\>, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: array.invalidKey
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 4
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Property Denosys\\Validation\\Validator\:\:\$customAttributes \(array\<string, string\>\) does not accept array\<string, mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Validation/Validator.php
+
+		-
+			message: '#^Property Denosys\\Validation\\Validator\:\:\$failedRules \(array\<string, array\<string\>\>\) does not accept array\<string, array\<mixed\>\>\.$#'
+			identifier: assign.propertyType
+			count: 2
+			path: src/Validation/Validator.php
