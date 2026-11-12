@@ -1,0 +1,193 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to method process\(\) on an unknown class Denosys\\Http\\Middleware\\ThrottleRequestsMiddleware\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RateLimiter/Middleware/ThrottleLoginMiddleware.php
+
+		-
+			message: '#^Instantiated class Denosys\\Http\\Middleware\\ThrottleRequestsMiddleware not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RateLimiter/Middleware/ThrottleLoginMiddleware.php
+
+		-
+			message: '#^Method Denosys\\RateLimiter\\Middleware\\ThrottleLoginMiddleware\:\:process\(\) should return Psr\\Http\\Message\\ResponseInterface but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/RateLimiter/Middleware/ThrottleLoginMiddleware.php
+
+		-
+			message: '#^Property Denosys\\RateLimiter\\Middleware\\ThrottleLoginMiddleware\:\:\$throttle has unknown class Denosys\\Http\\Middleware\\ThrottleRequestsMiddleware as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RateLimiter/Middleware/ThrottleLoginMiddleware.php
+
+		-
+			message: '#^Call to method process\(\) on an unknown class Denosys\\Http\\Middleware\\ThrottleRequestsMiddleware\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RateLimiter/Middleware/ThrottlePasswordResetMiddleware.php
+
+		-
+			message: '#^Instantiated class Denosys\\Http\\Middleware\\ThrottleRequestsMiddleware not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RateLimiter/Middleware/ThrottlePasswordResetMiddleware.php
+
+		-
+			message: '#^Method Denosys\\RateLimiter\\Middleware\\ThrottlePasswordResetMiddleware\:\:process\(\) should return Psr\\Http\\Message\\ResponseInterface but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/RateLimiter/Middleware/ThrottlePasswordResetMiddleware.php
+
+		-
+			message: '#^Property Denosys\\RateLimiter\\Middleware\\ThrottlePasswordResetMiddleware\:\:\$throttle has unknown class Denosys\\Http\\Middleware\\ThrottleRequestsMiddleware as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RateLimiter/Middleware/ThrottlePasswordResetMiddleware.php
+
+		-
+			message: '#^Call to method process\(\) on an unknown class Denosys\\Http\\Middleware\\ThrottleRequestsMiddleware\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RateLimiter/Middleware/ThrottleRegisterMiddleware.php
+
+		-
+			message: '#^Instantiated class Denosys\\Http\\Middleware\\ThrottleRequestsMiddleware not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RateLimiter/Middleware/ThrottleRegisterMiddleware.php
+
+		-
+			message: '#^Method Denosys\\RateLimiter\\Middleware\\ThrottleRegisterMiddleware\:\:process\(\) should return Psr\\Http\\Message\\ResponseInterface but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/RateLimiter/Middleware/ThrottleRegisterMiddleware.php
+
+		-
+			message: '#^Property Denosys\\RateLimiter\\Middleware\\ThrottleRegisterMiddleware\:\:\$throttle has unknown class Denosys\\Http\\Middleware\\ThrottleRequestsMiddleware as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RateLimiter/Middleware/ThrottleRegisterMiddleware.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 3
+			path: src/RateLimiter/RateLimiter.php
+
+		-
+			message: '#^Call to method alias\(\) on an unknown class Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 9
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Call to method singleton\(\) on an unknown class Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 5
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 8
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Class Denosys\\Http\\Middleware\\ThrottleRequestsMiddleware not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Instantiated class Denosys\\Http\\Middleware\\ThrottleRequestsMiddleware not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$cache of class Denosys\\RateLimiter\\RateLimiter constructor expects Denosys\\Cache\\CacheInterface, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$rateLimiter of class Denosys\\RateLimiter\\Middleware\\ThrottleLoginMiddleware constructor expects Denosys\\RateLimiter\\RateLimiter, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$rateLimiter of class Denosys\\RateLimiter\\Middleware\\ThrottlePasswordResetMiddleware constructor expects Denosys\\RateLimiter\\RateLimiter, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$rateLimiter of class Denosys\\RateLimiter\\Middleware\\ThrottleRegisterMiddleware constructor expects Denosys\\RateLimiter\\RateLimiter, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Parameter \#2 \$maxAttempts of class Denosys\\RateLimiter\\Middleware\\ThrottleLoginMiddleware constructor expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Parameter \#2 \$maxAttempts of class Denosys\\RateLimiter\\Middleware\\ThrottlePasswordResetMiddleware constructor expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Parameter \#2 \$maxAttempts of class Denosys\\RateLimiter\\Middleware\\ThrottleRegisterMiddleware constructor expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Parameter \#3 \$decayMinutes of class Denosys\\RateLimiter\\Middleware\\ThrottleLoginMiddleware constructor expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Parameter \#3 \$decayMinutes of class Denosys\\RateLimiter\\Middleware\\ThrottlePasswordResetMiddleware constructor expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Parameter \#3 \$decayMinutes of class Denosys\\RateLimiter\\Middleware\\ThrottleRegisterMiddleware constructor expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Parameter \$container of anonymous function has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 5
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Parameter \$container of method Denosys\\RateLimiter\\RateLimiterServiceProvider\:\:boot\(\) has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/RateLimiter/RateLimiterServiceProvider.php
+
+		-
+			message: '#^Parameter \$container of method Denosys\\RateLimiter\\RateLimiterServiceProvider\:\:register\(\) has invalid type Denosys\\Container\\ContainerInterface\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RateLimiter/RateLimiterServiceProvider.php
