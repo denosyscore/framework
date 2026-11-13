@@ -46,7 +46,7 @@ it('binds framework configuration for the filesystem provider and keeps local fi
 
         (new FilesystemServiceProvider())->register($container);
         $disk = $container->get(FilesystemInterface::class);
-        expect($disk->put('probe.txt', 'private'))->toBeTrue();
+        $disk->put('probe.txt', 'private');
         expect(file_get_contents($base . '/storage/app/probe.txt'))->toBe('private');
     });
 });
@@ -70,7 +70,7 @@ it('binds the filesystem reader when a prepared container replaces the applicati
 
         (new FilesystemServiceProvider())->register($replacement);
         expect($replacement->get(ConfigReader::class))->toBe($config);
-        expect($replacement->get(FilesystemInterface::class)->put('probe.txt', 'replaced'))->toBeTrue();
+        $replacement->get(FilesystemInterface::class)->put('probe.txt', 'replaced');
         expect(file_get_contents($base . '/storage/app/probe.txt'))->toBe('replaced');
     });
 });
@@ -86,8 +86,8 @@ it('falls back to storage/app under the working directory when no storage path i
         $container->instance(ConfigReader::class, localDiskConfig());
         (new FilesystemServiceProvider())->register($container);
 
-        expect($container->get(FilesystemInterface::class)->put('probe.txt', 'fallback'))->toBeTrue()
-            ->and(file_get_contents($directory . '/storage/app/probe.txt'))->toBe('fallback');
+        $container->get(FilesystemInterface::class)->put('probe.txt', 'fallback');
+        expect(file_get_contents($directory . '/storage/app/probe.txt'))->toBe('fallback');
     } finally {
         chdir((string) $previous);
         @unlink($directory . '/storage/app/probe.txt');

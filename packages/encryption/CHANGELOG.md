@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.22.0 – 2026-11-13
+
+### Added
+
+- `Key` and `KeyRing`. Payloads are `v1.<key id>.<data>`; previous keys in
+  the ring still decrypt, and `needsReEncryption()` and `reEncrypt()` move
+  data to the current key. Payloads from 0.21 and earlier are tried with
+  every key.
+
+### Changed (breaking)
+
+- `Encrypter` takes a `KeyRing`. `encrypt()` and `decrypt()` take and return
+  strings; nothing is serialized or unserialized.
+
+### Upgrading
+
+- 0.21 serialized values by default (`encrypt($value)` and the `encrypt()`
+  helper). Those payloads still decrypt, but now return the serialized text.
+  Re-encrypt such data once while upgrading:
+  `$encrypter->encrypt(json_encode(unserialize($encrypter->decrypt($old), ['allowed_classes' => false])))`,
+  and decode it as JSON afterwards. Payloads 0.21 made from strings
+  (`encryptString()`, sessions, remember cookies) need no change.
+
+### Removed (breaking)
+
+- The serialize flags, `encryptString()`, `decryptString()`, `getKey()`,
+  `withNewKey()` and `reEncrypt($payload, $oldKey)`.
+
 ## 0.21.0 – 2026-11-13
 
 - Released with the framework's 0.21 line. This package has no DenoSys

@@ -4,44 +4,28 @@ declare(strict_types=1);
 
 namespace Denosys\RateLimiter;
 
-use Denosys\Cache\CacheInterface;
+use Denosys\Cache\AtomicCounter;
 
-class RateLimiter
+/**
+ * Counts attempts per key in a fixed window that starts at the first hit.
+ * Hits are counted atomically, so concurrent requests are never lost.
+ */
+final class RateLimiter
 {
     public function __construct(
-        private readonly CacheInterface $cache,
+        private readonly AtomicCounter $cache,
     ) {}
 
     /**
      * Record a hit (attempt) for the given key.
      *
      * @param string $key The throttle key (e.g., IP + action)
-     * @param int $decaySeconds How long until attempts reset
+     * @param int $decaySeconds How long the window lasts from the first hit
      * @return int The total number of attempts after this hit
      */
     public function hit(string $key, int $decaySeconds = 60): int
     {
-        $attemptsKey = $this->attemptsKey($key);
-        $timerKey = $this->timerKey($key);
-
-        // If first attempt, set the timer
-        if (!$this->cache->has($timerKey)) {
-            $this->cache->set($timerKey, time() + $decaySeconds, $decaySeconds);
-        }
-
-        // Increment attempts with same TTL as timer
-        $ttl = $this->availableIn($key);
-        if ($ttl <= 0) {
-            $ttl = $decaySeconds;
-        }
-
-        // Initialize or increment
-        if (!$this->cache->has($attemptsKey)) {
-            $this->cache->set($attemptsKey, 1, $ttl);
-            return 1;
-        }
-
-        return $this->cache->increment($attemptsKey);
+        return $this->cache->increment($this->attemptsKey($key), 1, $decaySeconds);
     }
 
     /**
@@ -64,7 +48,7 @@ class RateLimiter
      */
     public function attempts(string $key): int
     {
-        return (int) $this->cache->get($this->attemptsKey($key), 0);
+        return $this->cache->current($this->attemptsKey($key));
     }
 
     /**
@@ -87,58 +71,26 @@ class RateLimiter
      */
     public function clear(string $key): void
     {
-        $this->cache->delete($this->attemptsKey($key));
-        $this->cache->delete($this->timerKey($key));
+        $this->cache->reset($this->attemptsKey($key));
     }
 
-    /**
-     * Get the number of seconds until attempts reset.
-     *
-     * @param string $key The throttle key
-     * @return int Seconds until reset (0 if not set)
-     */
+    /** Seconds until the window ends (0 when there is none). */
     public function availableIn(string $key): int
     {
-        $expiresAt = $this->cache->get($this->timerKey($key));
-        
-        if ($expiresAt === null) {
-            return 0;
-        }
+        $expiresAt = $this->availableAt($key);
 
-        return max(0, (int) $expiresAt - time());
+        return $expiresAt === null ? 0 : max(0, $expiresAt - time());
     }
 
-    /**
-     * Get the UNIX timestamp when attempts will reset.
-     *
-     * @param string $key The throttle key
-     * @return int|null Timestamp or null if not set
-     */
+    /** When the window ends (a Unix time), or null when there is none. */
     public function availableAt(string $key): ?int
     {
-        $expiresAt = $this->cache->get($this->timerKey($key));
-        
-        if ($expiresAt === null) {
-            return null;
-        }
-
-        return (int) $expiresAt;
+        return $this->cache->expiresAt($this->attemptsKey($key));
     }
 
-    /**
-     * Get the cache key for attempts count.
-     */
     private function attemptsKey(string $key): string
     {
         return 'rate_limiter_' . $this->cacheSafe($key) . '_attempts';
-    }
-
-    /**
-     * Get the cache key for the decay timer.
-     */
-    private function timerKey(string $key): string
-    {
-        return 'rate_limiter_' . $this->cacheSafe($key) . '_timer';
     }
 
     /**

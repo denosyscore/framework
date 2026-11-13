@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.22.0 – 2026-11-13
+
+Phase 3, step 6: counters, keys and files (findings F05 and F32).
+
+### Changed (breaking)
+
+- `denosyscore/cache`: `AtomicCounter` replaces `CacheInterface`'s
+  increment and decrement; `FileCache` implements PSR-16 and
+  `AtomicCounter`. `denosyscore/rate-limiter` counts hits through it.
+- `denosyscore/encryption`: `Encrypter` takes a `KeyRing`, encrypts and
+  decrypts strings only, and names the key in each payload. The framework
+  reads `app.key` and `app.previous_keys`; the `encrypt()` and `decrypt()`
+  helpers take and return strings.
+- `denosyscore/filesystem`: operations throw instead of returning `false`,
+  uploads are named by detected content type and unsafe types are refused,
+  `temporaryUrl()` throws on disks that cannot sign, local disks apply
+  visibility permissions, and the manager no longer forwards calls.
+- Upgrading: values that 0.21 encrypted with its default serialization now
+  decrypt to serialized text; see the encryption changelog.
+- The framework binds `Psr\SimpleCache\CacheInterface`, `AtomicCounter` and
+  `cache` to one `FileCache`, and `storage()` always returns a disk.
+
 ## 0.21.1 – 2026-11-13
 
 ### Fixed

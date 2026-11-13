@@ -42,7 +42,7 @@ mkdir($directory, 0700);
 
 try {
     $direct = new FilesystemManager($config, $directory . '/direct');
-    check($direct->disk()->put('probe.txt', 'direct'), 'Direct manager write failed');
+    $direct->disk()->put('probe.txt', 'direct');
     check(file_get_contents($directory . '/direct/probe.txt') === 'direct', 'Direct manager used the wrong root');
     if (class_exists(\League\Flysystem\AwsS3V3\AwsS3V3Adapter::class)) {
         check($direct->disk('s3') instanceof FilesystemInterface, 'S3 adapter construction failed');

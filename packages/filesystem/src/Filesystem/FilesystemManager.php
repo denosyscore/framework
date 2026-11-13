@@ -6,6 +6,8 @@ namespace Denosys\Filesystem;
 
 use League\Flysystem\Filesystem as FlysystemFilesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
+use League\Flysystem\Visibility;
 use Denosys\Contracts\Config\ConfigReader;
 use Denosys\Filesystem\Exceptions\InvalidDiskException;
 
@@ -82,10 +84,23 @@ class FilesystemManager
         $root = $config['root'] ?? $this->defaultLocalRoot ?? getcwd() . '/storage/app';
         $url = $config['url'] ?? null;
         
-        $adapter = new LocalFilesystemAdapter($root);
-        $flysystem = new FlysystemFilesystem($adapter);
+        // Private files and directories are readable only by their owner unless
+        // the disk's `permissions` say otherwise.
+        $permissions = is_array($config['permissions'] ?? null) ? $config['permissions'] : [];
+        $fileVisibility = is_string($config['visibility'] ?? null) ? $config['visibility'] : Visibility::PRIVATE;
+        $directoryVisibility = is_string($config['directory_visibility'] ?? null) ? $config['directory_visibility'] : $fileVisibility;
+        $visibility = PortableVisibilityConverter::fromArray([
+            'file' => ['public' => 0644, 'private' => 0600, ...(is_array($permissions['file'] ?? null) ? $permissions['file'] : [])],
+            'dir' => ['public' => 0755, 'private' => 0700, ...(is_array($permissions['dir'] ?? null) ? $permissions['dir'] : [])],
+        ], $directoryVisibility);
+        $adapter = new LocalFilesystemAdapter($root, $visibility);
 
-        return new Filesystem($flysystem, $root, $url);
+        // The wrapper passes these with every write, so they apply whatever
+        // version of Flysystem merges disk defaults.
+        return new Filesystem(new FlysystemFilesystem($adapter), $root, $url, [
+            'visibility' => $fileVisibility,
+            'directory_visibility' => $directoryVisibility,
+        ]);
     }
 
     /**
@@ -102,14 +117,7 @@ class FilesystemManager
             );
         }
 
-        $client = new \Aws\S3\S3Client([
-            'credentials' => [
-                'key' => $config['key'] ?? '',
-                'secret' => $config['secret'] ?? '',
-            ],
-            'region' => $config['region'] ?? 'us-east-1',
-            'version' => 'latest',
-        ]);
+        $client = new \Aws\S3\S3Client(self::s3ClientOptions($config));
 
         $bucket = $config['bucket'] ?? '';
         $prefix = $config['prefix'] ?? '';
@@ -123,12 +131,37 @@ class FilesystemManager
     }
 
     /**
-     * Dynamically call the default disk instance.
+     * The S3 client options for a disk: credentials and region, `endpoint`
+     * and `use_path_style_endpoint` for S3-compatible stores, and any client
+     * options under `options`.
      *
-     * @param array<mixed> $parameters
+     * @internal
+     * @param array<string, mixed> $config
+     * @return array<string, mixed>
      */
-    public function __call(string $method, array $parameters): mixed
+    public static function s3ClientOptions(array $config): array
     {
-        return $this->disk()->$method(...$parameters);
+        $options = [
+            'credentials' => [
+                'key' => $config['key'] ?? '',
+                'secret' => $config['secret'] ?? '',
+            ],
+            'region' => $config['region'] ?? 'us-east-1',
+            'version' => 'latest',
+        ];
+        if (isset($config['endpoint'])) {
+            $options['endpoint'] = $config['endpoint'];
+        }
+        if (isset($config['use_path_style_endpoint'])) {
+            $options['use_path_style_endpoint'] = (bool) $config['use_path_style_endpoint'];
+        }
+
+        foreach (is_array($config['options'] ?? null) ? $config['options'] : [] as $name => $value) {
+            if (is_string($name)) {
+                $options[$name] = $value;
+            }
+        }
+
+        return $options;
     }
 }

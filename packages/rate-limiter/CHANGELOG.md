@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.22.0 – 2026-11-13
+
+### Changed (breaking)
+
+- `RateLimiter` takes an `AtomicCounter` (such as `FileCache`); the window
+  is the counter's own, so there is no separate timer entry. Hits are counted atomically, so concurrent requests
+  are never lost, and the window starts at the first hit.
+
 ## 0.21.0 – 2026-11-13
 
 - Released with the framework's 0.21 line. Requires its DenoSys dependencies

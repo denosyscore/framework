@@ -70,4 +70,46 @@ final class RateLimiterTest extends TestCase
         self::assertLessThanOrEqual(60, $this->limiter->availableIn('api'));
         self::assertGreaterThan(time(), $this->limiter->availableAt('api'));
     }
+
+    public function testConcurrentHitsAreAllCounted(): void
+    {
+        $script = sprintf(
+            'require %s; $l = new Denosys\\RateLimiter\\RateLimiter(new Denosys\\Cache\\FileCache(%s)); for ($i = 0; $i < 50; $i++) { $l->hit("login:203.0.113.7", 60); }',
+            var_export(dirname(__DIR__) . '/vendor/autoload.php', true),
+            var_export($this->directory, true),
+        );
+        $processes = [];
+        for ($p = 0; $p < 4; $p++) {
+            $processes[] = proc_open([PHP_BINARY, '-r', $script], [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
+        }
+        foreach ($processes as $process) {
+            self::assertIsResource($process);
+            self::assertSame(0, proc_close($process));
+        }
+
+        self::assertSame(200, $this->limiter->attempts('login:203.0.113.7'));
+    }
+
+    public function testTheWindowStartsAtTheFirstHit(): void
+    {
+        $this->limiter->hit('login:203.0.113.7', 2);
+        $first = $this->limiter->availableAt('login:203.0.113.7');
+        sleep(1);
+        $this->limiter->hit('login:203.0.113.7', 2);
+
+        self::assertSame($first, $this->limiter->availableAt('login:203.0.113.7'));
+        self::assertNotNull($first);
+        sleep(2);
+        self::assertSame(0, $this->limiter->attempts('login:203.0.113.7'));
+    }
+
+    public function testTheWindowIsTheCountersOwn(): void
+    {
+        $cache = new FileCache($this->directory);
+        $limiter = new RateLimiter($cache);
+
+        $limiter->hit('login:203.0.113.7', 60);
+
+        self::assertSame($cache->expiresAt('rate_limiter_' . hash('sha256', 'login:203.0.113.7') . '_attempts'), $limiter->availableAt('login:203.0.113.7'));
+    }
 }

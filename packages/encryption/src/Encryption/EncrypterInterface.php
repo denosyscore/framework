@@ -4,52 +4,26 @@ declare(strict_types=1);
 
 namespace Denosys\Encryption;
 
+/**
+ * Authenticated encryption of strings. Encode structured data yourself
+ * (json_encode) before encrypting; nothing is serialized or unserialized.
+ */
 interface EncrypterInterface
 {
-    /**
-     * Encrypt the given value.
-     *
-     * @param  mixed  $value
-     * @param bool $serialize
-     * @return string
-     *
-     * @throws EncryptException
-     */
-    public function encrypt(mixed $value, bool $serialize = true): string;
+    /** @throws EncryptException */
+    public function encrypt(string $plaintext): string;
+
+    /** @throws DecryptException when the payload is malformed, tampered with or from an unknown key */
+    public function decrypt(string $payload): string;
+
+    /** Whether the payload was encrypted with a key other than the current one. */
+    public function needsReEncryption(string $payload): bool;
 
     /**
-     * Decrypt the given payload.
+     * Decrypts with whichever key made the payload and encrypts again with
+     * the current key.
      *
-     * @param  string  $payload
-     * @param  bool  $unserialize
-     * @return mixed
-     *
-     * @throws DecryptException
+     * @throws DecryptException|EncryptException
      */
-    public function decrypt(string $payload, bool $unserialize = true): mixed;
-
-    /**
-     * Encrypt a string without serialization.
-     *
-     * @param string $value
-     * @return string
-     * @throws EncryptException
-     */
-    public function encryptString(string $value): string;
-
-    /**
-     * Decrypt a string without unserialization.
-     *
-     * @param string $payload
-     * @return string
-     * @throws DecryptException
-     */
-    public function decryptString(string $payload): string;
-
-    /**
-     * Get the encryption key that the encrypter is currently using.
-     *
-     * @return string
-     */
-    public function getKey(): string;
+    public function reEncrypt(string $payload): string;
 }

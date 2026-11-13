@@ -229,21 +229,14 @@ if (!function_exists('public_path')) {
 
 if (!function_exists('storage')) {
     /**
-     * Get a filesystem disk instance.
-     *
-     * @param string|null $disk The disk name, or null for default
-     * @return \Denosys\Filesystem\FilesystemInterface|\Denosys\Filesystem\FilesystemManager
+     * A filesystem disk: the named one, or the default disk.
      */
-    function storage(?string $disk = null): \Denosys\Filesystem\FilesystemInterface|\Denosys\Filesystem\FilesystemManager
+    function storage(?string $disk = null): \Denosys\Filesystem\FilesystemInterface
     {
         /** @var \Denosys\Filesystem\FilesystemManager $manager */
         $manager = container(\Denosys\Filesystem\FilesystemManager::class);
 
-        if ($disk !== null) {
-            return $manager->disk($disk);
-        }
-
-        return $manager;
+        return $manager->disk($disk);
     }
 }
 
@@ -421,41 +414,25 @@ if (!function_exists('flash')) {
 
 if (!function_exists('encrypt')) {
     /**
-     * Encrypt the given value.
-     *
-     * @param mixed $value The value to encrypt
-     * @param bool $serialize Whether to serialize the value (default: true)
-     *
-     * @return string The encrypted string
+     * Encrypt a string with the application's current key.
      *
      * @throws \Denosys\Encryption\EncryptException
      */
-    function encrypt(mixed $value, bool $serialize = true): string
+    function encrypt(string $plaintext): string
     {
-        /** @var \Denosys\Encryption\EncrypterInterface $encrypter */
-        $encrypter = container(\Denosys\Encryption\EncrypterInterface::class);
-
-        return $encrypter->encrypt($value, $serialize);
+        return encrypter()->encrypt($plaintext);
     }
 }
 
 if (!function_exists('decrypt')) {
     /**
-     * Decrypt the given payload.
-     *
-     * @param string $payload The encrypted payload to decrypt
-     * @param bool $unserialize Whether to unserialize the decrypted value (default: true)
-     *
-     * @return mixed The decrypted value
+     * Decrypt a payload made with a key in the application's key ring.
      *
      * @throws \Denosys\Encryption\DecryptException
      */
-    function decrypt(string $payload, bool $unserialize = true): mixed
+    function decrypt(string $payload): string
     {
-        /** @var \Denosys\Encryption\EncrypterInterface $encrypter */
-        $encrypter = container(\Denosys\Encryption\EncrypterInterface::class);
-
-        return $encrypter->decrypt($payload, $unserialize);
+        return encrypter()->decrypt($payload);
     }
 }
 
