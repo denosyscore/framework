@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.20.0 – 2026-11-13
+
+Phase 3, step 4: drivers and bindings (finding F41).
+
+### Changed (breaking)
+
+- `denosyscore/database` refuses servers older than MySQL 8.4, MariaDB
+  10.11, PostgreSQL 15 and SQLite 3.35 at connect time, refuses unknown
+  drivers, and binds dates, enums and `Stringable` values. See that
+  package's changelog.
+- The framework's migration provider throws for a connection whose driver it
+  does not know instead of using the MySQL schema grammar.
+
 ## 0.19.0 – 2026-11-13
 
 Phase 3, step 3: schema changes (findings F27 and F35).
