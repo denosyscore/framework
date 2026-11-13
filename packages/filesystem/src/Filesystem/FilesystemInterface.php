@@ -4,144 +4,130 @@ declare(strict_types=1);
 
 namespace Denosys\Filesystem;
 
+use DateTimeInterface;
+use Denosys\Filesystem\Exceptions\FileNotFoundException;
+use Denosys\Filesystem\Exceptions\FilesystemException;
+use Denosys\Filesystem\Exceptions\UnsafeFileType;
+use Denosys\Filesystem\Exceptions\UnsupportedOperation;
 use Psr\Http\Message\UploadedFileInterface;
 
 /**
- * Filesystem abstraction interface.
- * 
- * Provides a clean API for file operations across different storage backends.
+ * One disk. Every operation that cannot complete throws a
+ * FilesystemException, with the adapter's error as getPrevious().
  */
 interface FilesystemInterface
 {
-    /**
-     * Check if a file exists.
-     */
+    /** @throws FilesystemException */
     public function exists(string $path): bool;
 
-    /**
-     * Get the contents of a file.
-     *
-     * @throws Exceptions\FileNotFoundException
-     */
+    /** @throws FileNotFoundException */
     public function get(string $path): string;
 
     /**
-     * Get a resource to read a file.
-     *
      * @return resource
-     * @throws Exceptions\FileNotFoundException
+     *
+     * @throws FileNotFoundException
      */
     public function readStream(string $path);
 
     /**
-     * Write contents to a file.
+     * @param array<string, mixed> $options Flysystem write options, such as visibility.
      *
-     * @param array<string, mixed> $options
-     * @throws Exceptions\FileWriteException
+     * @throws FilesystemException
      */
-    public function put(string $path, string $contents, array $options = []): bool;
+    public function put(string $path, string $contents, array $options = []): void;
 
     /**
-     * Write a stream to a file.
-     *
      * @param resource $resource
      * @param array<string, mixed> $options
-     * @throws Exceptions\FileWriteException
+     *
+     * @throws FilesystemException
      */
-    public function putStream(string $path, $resource, array $options = []): bool;
+    public function putStream(string $path, $resource, array $options = []): void;
 
     /**
-     * Store an uploaded file.
+     * Stores an upload under $path with a random name whose extension comes
+     * from the detected content type, never from the client's file name.
      *
      * @param array<string, mixed> $options
+     * @return string the stored path
+     *
+     * @throws UnsafeFileType when the content is a type a web server could run or render
+     * @throws FilesystemException
      */
-    public function putFile(string $path, UploadedFileInterface $file, array $options = []): string|false;
+    public function putFile(string $path, UploadedFileInterface $file, array $options = []): string;
 
     /**
-     * Store an uploaded file with a specific name.
+     * Stores an upload under $path with the given name.
      *
      * @param array<string, mixed> $options
-     */
-    public function putFileAs(string $path, UploadedFileInterface $file, string $name, array $options = []): string|false;
-
-    /**
-     * Prepend to a file.
-     */
-    public function prepend(string $path, string $data): bool;
-
-    /**
-     * Append to a file.
-     */
-    public function append(string $path, string $data): bool;
-
-    /**
-     * Delete a file.
+     * @return string the stored path
      *
-     * @param string|array<string> $paths
+     * @throws UnsafeFileType when the name or the content is a type a web server could run or render
+     * @throws FilesystemException
      */
-    public function delete(string|array $paths): bool;
+    public function putFileAs(string $path, UploadedFileInterface $file, string $name, array $options = []): string;
+
+    /** @throws FilesystemException */
+    public function prepend(string $path, string $data): void;
+
+    /** @throws FilesystemException */
+    public function append(string $path, string $data): void;
 
     /**
-     * Copy a file.
+     * Deletes files; a file that is already gone is not an error.
+     *
+     * @param string|list<string> $paths
+     *
+     * @throws FilesystemException
      */
-    public function copy(string $from, string $to): bool;
+    public function delete(string|array $paths): void;
 
-    /**
-     * Move a file.
-     */
-    public function move(string $from, string $to): bool;
+    /** @throws FilesystemException */
+    public function copy(string $from, string $to): void;
 
-    /**
-     * Get the file size.
-     */
+    /** @throws FilesystemException */
+    public function move(string $from, string $to): void;
+
+    /** @throws FilesystemException */
     public function size(string $path): int;
 
-    /**
-     * Get the file's last modification time.
-     */
+    /** @throws FilesystemException */
     public function lastModified(string $path): int;
 
-    /**
-     * Get the MIME type of a file.
-     */
-    public function mimeType(string $path): string|false;
+    /** @throws FilesystemException */
+    public function mimeType(string $path): string;
 
     /**
-     * Get all files in a directory.
+     * @return list<string>
      *
-     * @return array<string>
+     * @throws FilesystemException
      */
     public function files(string $directory = '', bool $recursive = false): array;
 
     /**
-     * Get all directories in a directory.
+     * @return list<string>
      *
-     * @return array<string>
+     * @throws FilesystemException
      */
     public function directories(string $directory = '', bool $recursive = false): array;
 
-    /**
-     * Create a directory.
-     */
-    public function makeDirectory(string $path): bool;
+    /** @throws FilesystemException */
+    public function makeDirectory(string $path): void;
 
-    /**
-     * Delete a directory.
-     */
-    public function deleteDirectory(string $directory): bool;
+    /** @throws FilesystemException */
+    public function deleteDirectory(string $directory): void;
 
-    /**
-     * Get the URL for a file.
-     */
+    /** The public URL of a file on a disk with a `url`. */
     public function url(string $path): string;
 
     /**
-     * Get a temporary URL for a file.
+     * A signed URL that stops working at $expiration.
+     *
+     * @throws UnsupportedOperation when the disk cannot sign URLs
      */
-    public function temporaryUrl(string $path, \DateTimeInterface $expiration): string;
+    public function temporaryUrl(string $path, DateTimeInterface $expiration): string;
 
-    /**
-     * Get the full path for a file.
-     */
+    /** The path on a local disk. */
     public function path(string $path): string;
 }

@@ -65,9 +65,39 @@ In a DenoSys application the framework's `FilesystemServiceProvider` builds the
 manager from the application configuration, using the `app` directory under
 `path.storage` as the default local root.
 
-## Included Modules
+## Errors
 
-- src/Filesystem/*
+Every operation that cannot complete throws an exception implementing
+`Denosys\Filesystem\Exceptions\FilesystemException`, with the adapter's
+error as `getPrevious()`: `FileNotFoundException` for reads,
+`FileWriteException` for writes and `FileOperationFailed` for deletes, copies,
+moves, directories and metadata. Writes return nothing; a missing file is not
+an error for `delete()`.
+
+## Uploads
+
+`putFile($path, $upload)` stores an upload under a random name whose
+extension comes from the detected content type, never from the client's file
+name. `putFile()` and `putFileAs()` refuse, with `UnsafeFileType`, content or
+names a web server could run or render as a page: PHP and other scripts,
+HTML, SVG and JavaScript.
+
+## Temporary URLs
+
+`temporaryUrl()` returns a signed URL from disks that can sign one (S3) and
+throws `UnsupportedOperation` on disks that cannot, rather than returning a
+permanent URL.
+
+## Disk options
+
+- Local disks: `visibility` sets the default (`public` or `private`), and
+  `permissions` overrides the modes (private files 0600 and directories
+  0700, public 0644 and 0755 by default).
+- S3 disks: `endpoint` and `use_path_style_endpoint` reach S3-compatible
+  stores, and an `options` array is passed to the S3 client.
+
+Use `$manager->disk($name)`; the manager does not forward calls to the
+default disk.
 
 ## Development
 

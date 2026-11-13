@@ -9,7 +9,7 @@ use RuntimeException;
 /**
  * Thrown when a file cannot be written.
  */
-class FileWriteException extends RuntimeException
+final class FileWriteException extends RuntimeException implements FilesystemException
 {
     public function __construct(string $path, ?\Throwable $previous = null)
     {

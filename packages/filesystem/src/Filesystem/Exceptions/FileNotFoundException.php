@@ -9,7 +9,7 @@ use RuntimeException;
 /**
  * Thrown when a file cannot be found.
  */
-class FileNotFoundException extends RuntimeException
+final class FileNotFoundException extends RuntimeException implements FilesystemException
 {
     public function __construct(string $path, ?\Throwable $previous = null)
     {
