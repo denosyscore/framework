@@ -87,17 +87,20 @@ class FilesystemManager
         // Private files and directories are readable only by their owner unless
         // the disk's `permissions` say otherwise.
         $permissions = is_array($config['permissions'] ?? null) ? $config['permissions'] : [];
+        $fileVisibility = is_string($config['visibility'] ?? null) ? $config['visibility'] : Visibility::PRIVATE;
+        $directoryVisibility = is_string($config['directory_visibility'] ?? null) ? $config['directory_visibility'] : $fileVisibility;
         $visibility = PortableVisibilityConverter::fromArray([
             'file' => ['public' => 0644, 'private' => 0600, ...(is_array($permissions['file'] ?? null) ? $permissions['file'] : [])],
             'dir' => ['public' => 0755, 'private' => 0700, ...(is_array($permissions['dir'] ?? null) ? $permissions['dir'] : [])],
-        ], is_string($config['directory_visibility'] ?? null)
-            ? $config['directory_visibility']
-            : (is_string($config['visibility'] ?? null) ? $config['visibility'] : Visibility::PRIVATE));
+        ], $directoryVisibility);
         $adapter = new LocalFilesystemAdapter($root, $visibility);
-        $default = is_string($config['visibility'] ?? null) ? ['visibility' => $config['visibility']] : [];
-        $flysystem = new FlysystemFilesystem($adapter, $default);
 
-        return new Filesystem($flysystem, $root, $url);
+        // The wrapper passes these with every write, so they apply whatever
+        // version of Flysystem merges disk defaults.
+        return new Filesystem(new FlysystemFilesystem($adapter), $root, $url, [
+            'visibility' => $fileVisibility,
+            'directory_visibility' => $directoryVisibility,
+        ]);
     }
 
     /**

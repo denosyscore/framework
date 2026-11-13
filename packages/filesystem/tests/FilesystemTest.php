@@ -164,6 +164,10 @@ final class FilesystemTest extends TestCase
         yield 'double extension' => ['a.php.jpg'];
         yield 'user ini' => ['.user.ini'];
         yield 'xml' => ['a.xhtml'];
+        yield 'dot component' => ['.htaccess/.'];
+        yield 'path separator' => ['sub/a.txt'];
+        yield 'backslash' => ['..\\a.txt'];
+        yield 'parent' => ['..'];
     }
 
     #[PHPUnit\Framework\Attributes\DataProvider('unsafeNames')]
@@ -182,5 +186,29 @@ final class FilesystemTest extends TestCase
 
         self::assertSame('0755', substr(sprintf('%o', fileperms($this->root . '/nested')), -4));
         self::assertSame('0644', substr(sprintf('%o', fileperms($this->root . '/nested/file.txt')), -4));
+    }
+
+    public function testANonSeekableUploadIsStoredWhole(): void
+    {
+        $contents = str_repeat('a', 20000);
+        $pipe = popen(escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg('echo str_repeat("a", 20000);'), 'r');
+        self::assertIsResource($pipe);
+        $stream = Utils::streamFor($pipe);
+        self::assertFalse($stream->isSeekable());
+        $upload = new UploadedFile($stream, null, UPLOAD_ERR_OK, 'a.txt', 'text/plain');
+        $disk = $this->disk();
+
+        $stored = $disk->putFile('uploads', $upload);
+
+        self::assertSame($contents, $disk->get($stored));
+    }
+
+    public function testPrivateDirectoriesOnAPublicDiskStayPrivate(): void
+    {
+        $disk = $this->disk(['visibility' => 'public', 'directory_visibility' => 'private']);
+
+        $disk->makeDirectory('restricted');
+
+        self::assertSame('0700', substr(sprintf('%o', fileperms($this->root . '/restricted')), -4));
     }
 }

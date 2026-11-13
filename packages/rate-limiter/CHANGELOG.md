@@ -4,8 +4,8 @@
 
 ### Changed (breaking)
 
-- `RateLimiter` takes a cache that is a PSR-16 cache and an `AtomicCounter`
-  (such as `FileCache`). Hits are counted atomically, so concurrent requests
+- `RateLimiter` takes an `AtomicCounter` (such as `FileCache`); the window
+  is the counter's own, so there is no separate timer entry. Hits are counted atomically, so concurrent requests
   are never lost, and the window starts at the first hit.
 
 ## 0.21.0 – 2026-11-13

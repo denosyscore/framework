@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Denosys\RateLimiter;
 
 use Denosys\Cache\AtomicCounter;
-use Psr\SimpleCache\CacheInterface;
 
 /**
  * Counts attempts per key in a fixed window that starts at the first hit.
@@ -14,7 +13,7 @@ use Psr\SimpleCache\CacheInterface;
 final class RateLimiter
 {
     public function __construct(
-        private readonly AtomicCounter&CacheInterface $cache,
+        private readonly AtomicCounter $cache,
     ) {}
 
     /**
@@ -26,12 +25,7 @@ final class RateLimiter
      */
     public function hit(string $key, int $decaySeconds = 60): int
     {
-        $attempts = $this->cache->increment($this->attemptsKey($key), 1, $decaySeconds);
-        if ($attempts === 1) {
-            $this->cache->set($this->timerKey($key), time() + $decaySeconds, $decaySeconds);
-        }
-
-        return $attempts;
+        return $this->cache->increment($this->attemptsKey($key), 1, $decaySeconds);
     }
 
     /**
@@ -78,57 +72,25 @@ final class RateLimiter
     public function clear(string $key): void
     {
         $this->cache->reset($this->attemptsKey($key));
-        $this->cache->delete($this->timerKey($key));
     }
 
-    /**
-     * Get the number of seconds until attempts reset.
-     *
-     * @param string $key The throttle key
-     * @return int Seconds until reset (0 if not set)
-     */
+    /** Seconds until the window ends (0 when there is none). */
     public function availableIn(string $key): int
     {
-        $expiresAt = $this->cache->get($this->timerKey($key));
-        
-        if ($expiresAt === null) {
-            return 0;
-        }
+        $expiresAt = $this->availableAt($key);
 
-        return max(0, (int) $expiresAt - time());
+        return $expiresAt === null ? 0 : max(0, $expiresAt - time());
     }
 
-    /**
-     * Get the UNIX timestamp when attempts will reset.
-     *
-     * @param string $key The throttle key
-     * @return int|null Timestamp or null if not set
-     */
+    /** When the window ends (a Unix time), or null when there is none. */
     public function availableAt(string $key): ?int
     {
-        $expiresAt = $this->cache->get($this->timerKey($key));
-        
-        if ($expiresAt === null) {
-            return null;
-        }
-
-        return (int) $expiresAt;
+        return $this->cache->expiresAt($this->attemptsKey($key));
     }
 
-    /**
-     * Get the cache key for attempts count.
-     */
     private function attemptsKey(string $key): string
     {
         return 'rate_limiter_' . $this->cacheSafe($key) . '_attempts';
-    }
-
-    /**
-     * Get the cache key for the decay timer.
-     */
-    private function timerKey(string $key): string
-    {
-        return 'rate_limiter_' . $this->cacheSafe($key) . '_timer';
     }
 
     /**

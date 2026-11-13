@@ -29,10 +29,15 @@ final class Filesystem implements FilesystemInterface
 
     private FinfoMimeTypeDetector $mimeTypes;
 
+    /**
+     * @param array{visibility?: string, directory_visibility?: string} $defaults
+     *        visibility for files and directories this disk creates
+     */
     public function __construct(
         private readonly FilesystemOperator $driver,
         private readonly string $root = '',
         private readonly ?string $url = null,
+        private readonly array $defaults = [],
     ) {
         $this->mimeTypes = new FinfoMimeTypeDetector();
     }
@@ -67,7 +72,7 @@ final class Filesystem implements FilesystemInterface
     public function put(string $path, string $contents, array $options = []): void
     {
         try {
-            $this->driver->write($path, $contents, $options);
+            $this->driver->write($path, $contents, $options + $this->defaults);
         } catch (FlysystemException $e) {
             throw new FileWriteException($path, $e);
         }
@@ -76,7 +81,7 @@ final class Filesystem implements FilesystemInterface
     public function putStream(string $path, $resource, array $options = []): void
     {
         try {
-            $this->driver->writeStream($path, $resource, $options);
+            $this->driver->writeStream($path, $resource, $options + $this->defaults);
         } catch (FlysystemException $e) {
             throw new FileWriteException($path, $e);
         }
@@ -84,17 +89,19 @@ final class Filesystem implements FilesystemInterface
 
     public function putFile(string $path, UploadedFileInterface $file, array $options = []): string
     {
-        $extension = $this->safeExtension($file);
+        $stream = $this->seekableStream($file);
+        $extension = $this->safeExtension($stream);
 
-        return $this->store($path, $file, bin2hex(random_bytes(20)) . ($extension === null ? '' : '.' . $extension), $options);
+        return $this->store($path, $stream, bin2hex(random_bytes(20)) . ($extension === null ? '' : '.' . $extension), $options);
     }
 
     public function putFileAs(string $path, UploadedFileInterface $file, string $name, array $options = []): string
     {
         self::assertSafeName($name);
-        $this->safeExtension($file);
+        $stream = $this->seekableStream($file);
+        $this->safeExtension($stream);
 
-        return $this->store($path, $file, $name, $options);
+        return $this->store($path, $stream, $name, $options);
     }
 
     public function prepend(string $path, string $data): void
@@ -176,7 +183,8 @@ final class Filesystem implements FilesystemInterface
     public function makeDirectory(string $path): void
     {
         try {
-            $this->driver->createDirectory($path);
+            $visibility = $this->defaults['directory_visibility'] ?? null;
+            $this->driver->createDirectory($path, $visibility === null ? [] : ['visibility' => $visibility]);
         } catch (FlysystemException $e) {
             throw new FileOperationFailed('create the directory', $path, $e);
         }
@@ -213,21 +221,49 @@ final class Filesystem implements FilesystemInterface
     }
 
     /**
-     * The extension of the upload's detected content type, or null when the
+     * The upload as a seekable stream, copying it to a temporary stream when
+     * it cannot seek, so detection and storage both see every byte.
+     *
+     * @return resource
+     *
+     * @throws FileWriteException
+     */
+    private function seekableStream(UploadedFileInterface $file)
+    {
+        $upload = $file->getStream();
+        $resource = $upload->detach();
+        if ($resource === null) {
+            throw new FileWriteException((string) $file->getClientFilename());
+        }
+
+        if (stream_get_meta_data($resource)['seekable']) {
+            rewind($resource);
+
+            return $resource;
+        }
+
+        $copy = fopen('php://temp', 'w+b');
+        if ($copy === false || stream_copy_to_stream($resource, $copy) === false) {
+            throw new FileWriteException((string) $file->getClientFilename());
+        }
+        fclose($resource);
+        rewind($copy);
+
+        return $copy;
+    }
+
+    /**
+     * The extension of the stream's detected content type, or null when the
      * type has none. Refuses types a web server could run or render.
+     *
+     * @param resource $stream
      *
      * @throws UnsafeFileType
      */
-    private function safeExtension(UploadedFileInterface $file): ?string
+    private function safeExtension($stream): ?string
     {
-        $stream = $file->getStream();
-        if ($stream->isSeekable()) {
-            $stream->rewind();
-        }
-        $sample = $stream->read(8192);
-        if ($stream->isSeekable()) {
-            $stream->rewind();
-        }
+        $sample = (string) fread($stream, 8192);
+        rewind($stream);
 
         $type = $this->mimeTypes->detectMimeTypeFromBuffer($sample) ?? 'application/octet-stream';
         $extension = $this->mimeTypes->lookupExtension($type);
@@ -250,8 +286,12 @@ final class Filesystem implements FilesystemInterface
      */
     private static function assertSafeName(string $name): void
     {
-        $base = strtolower(rtrim(basename($name), ". \t"));
-        if (str_starts_with($base, '.ht') || $base === '.user.ini') {
+        if (preg_match('#[/\\\\\0]#', $name) === 1) {
+            throw new UnsafeFileType('a name with a path');
+        }
+
+        $base = strtolower(rtrim($name, ". \t"));
+        if ($base === '' || str_starts_with($base, '.ht') || $base === '.user.ini') {
             throw new UnsafeFileType($base);
         }
 
@@ -263,21 +303,16 @@ final class Filesystem implements FilesystemInterface
     }
 
     /**
+     * @param resource $stream
      * @param array<string, mixed> $options
      *
      * @throws FilesystemException
      */
-    private function store(string $path, UploadedFileInterface $file, string $name, array $options): string
+    private function store(string $path, $stream, string $name, array $options): string
     {
-        $stream = $file->getStream()->detach();
-        if ($stream === null) {
-            throw new FileWriteException($name);
-        }
-
-        $target = ltrim(rtrim($path, '/') . '/' . ltrim($name, '/'), '/');
+        $target = ltrim(rtrim($path, '/') . '/' . $name, '/');
         try {
-            rewind($stream);
-            $this->driver->writeStream($target, $stream, $options);
+            $this->driver->writeStream($target, $stream, $options + $this->defaults);
 
             return $target;
         } catch (FlysystemException $e) {

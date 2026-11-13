@@ -98,7 +98,18 @@ final class RateLimiterTest extends TestCase
         $this->limiter->hit('login:203.0.113.7', 2);
 
         self::assertSame($first, $this->limiter->availableAt('login:203.0.113.7'));
+        self::assertNotNull($first);
         sleep(2);
         self::assertSame(0, $this->limiter->attempts('login:203.0.113.7'));
+    }
+
+    public function testTheWindowIsTheCountersOwn(): void
+    {
+        $cache = new FileCache($this->directory);
+        $limiter = new RateLimiter($cache);
+
+        $limiter->hit('login:203.0.113.7', 60);
+
+        self::assertSame($cache->expiresAt('rate_limiter_' . hash('sha256', 'login:203.0.113.7') . '_attempts'), $limiter->availableAt('login:203.0.113.7'));
     }
 }

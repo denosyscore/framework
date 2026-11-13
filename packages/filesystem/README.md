@@ -92,7 +92,7 @@ permanent URL.
 
 ## Disk options
 
-- Local disks: `visibility` sets the default (`public` or `private`), and
+- Local disks: `visibility` sets the default (`private` unless set), and
   `permissions` overrides the modes (private files 0600 and directories
   0700, public 0644 and 0755 by default). Directories follow `visibility`
   unless `directory_visibility` is set.

@@ -9,8 +9,7 @@
     "denosyscore/http": "^0.22",
     "psr/http-message": "^2.0",
     "psr/http-server-handler": "^1.0",
-    "psr/http-server-middleware": "^1.0",
-    "psr/simple-cache": "^3.0"
+    "psr/http-server-middleware": "^1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^11.5",

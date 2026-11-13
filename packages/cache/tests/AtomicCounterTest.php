@@ -43,13 +43,24 @@ final class AtomicCounterTest extends TestCase
 
     public function testTheTtlIsSetWhenTheCounterStartsAndNotExtended(): void
     {
-        $this->cache->increment('hits', 1, 1);
-        sleep(1);
         $this->cache->increment('hits', 1, 60);
-        sleep(1);
+        $expiresAt = $this->cache->expiresAt('hits');
+        $this->cache->increment('hits', 1, 3600);
 
-        self::assertSame(0, $this->cache->current('hits'), 'later increments do not extend the first window');
-        self::assertSame(1, $this->cache->increment('hits', 1, 60), 'an expired counter starts again');
+        self::assertNotNull($expiresAt);
+        self::assertEqualsWithDelta(time() + 60, $expiresAt, 2);
+        self::assertSame($expiresAt, $this->cache->expiresAt('hits'), 'later increments do not extend the window');
+        self::assertNull($this->cache->expiresAt('missing'));
+    }
+
+    public function testAnExpiredCounterStartsAgain(): void
+    {
+        $this->cache->increment('hits', 1, 1);
+        sleep(2);
+
+        self::assertSame(0, $this->cache->current('hits'));
+        self::assertNull($this->cache->expiresAt('hits'));
+        self::assertSame(1, $this->cache->increment('hits', 1, 60));
     }
 
     public function testResetForgetsTheCounter(): void

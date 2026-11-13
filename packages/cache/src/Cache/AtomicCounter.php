@@ -20,6 +20,9 @@ interface AtomicCounter
      */
     public function increment(string $key, int $by = 1, int $ttlSeconds = 60): int;
 
+    /** When the counter's window ends (a Unix time), or null when it is missing or expired. */
+    public function expiresAt(string $key): ?int;
+
     /** The current value, or 0 when the counter is missing or expired. */
     public function current(string $key): int;
 

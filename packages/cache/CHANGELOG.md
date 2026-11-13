@@ -4,8 +4,8 @@
 
 ### Added
 
-- `AtomicCounter`: `increment($key, $by, $ttlSeconds)`, `current()` and
-  `reset()`. The TTL starts with the counter and later increments do not
+- `AtomicCounter`: `increment($key, $by, $ttlSeconds)`, `current()`,
+  `expiresAt()` and `reset()`. The TTL starts with the counter and later increments do not
   extend it. `FileCache` implements it with a lock per counter. An entry
   that is not a live counter starts a new one, and reading an expired entry
   no longer deletes it outside the lock.

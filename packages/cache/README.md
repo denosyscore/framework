@@ -40,7 +40,7 @@ $cache->clear();
 $ttlSeconds)` locks the counter, so concurrent processes never lose a count.
 The TTL is set when the counter starts and later increments do not extend
 it; an expired counter starts again. `current()` reads a counter (0 when
-missing) and `reset()` removes it. Type against
+missing), `expiresAt()` says when its window ends, and `reset()` removes it. Type against
 `Psr\SimpleCache\CacheInterface` for caching and `AtomicCounter` for
 counting.
 

@@ -184,6 +184,14 @@ final class FileCache implements CacheInterface, AtomicCounter
         }
     }
 
+    public function expiresAt(string $key): ?int
+    {
+        $this->validateKey($key);
+        $entry = $this->readEntry($this->getPath($key));
+
+        return $entry !== null && is_int($entry['value']) ? $entry['expires_at'] : null;
+    }
+
     public function current(string $key): int
     {
         $value = $this->get($key, 0);
