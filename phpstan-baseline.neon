@@ -7,7 +7,7 @@ parameters:
 			path: src/Application.php
 
 		-
-			message: '#^Out of 208 possible param types, only 199 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 206 possible param types, only 197 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/Application.php
@@ -85,7 +85,7 @@ parameters:
 			path: src/Bootstrap/ServiceProviderBootstrapper.php
 
 		-
-			message: '#^Out of 208 possible param types, only 199 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 206 possible param types, only 197 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/Framework/Console/RoutesCacheCommand.php
@@ -325,12 +325,6 @@ parameters:
 			path: src/Framework/Providers/DatabaseServiceProvider.php
 
 		-
-			message: '#^Method Denosys\\Framework\\Providers\\EncryptionServiceProvider\:\:getEncryptionKey\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Framework/Providers/EncryptionServiceProvider.php
-
-		-
 			message: '#^Cannot call method apply\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -553,7 +547,7 @@ parameters:
 			path: src/Framework/Providers/RouterServiceProvider.php
 
 		-
-			message: '#^Out of 208 possible param types, only 199 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 206 possible param types, only 197 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/Framework/Providers/RouterServiceProvider.php
@@ -697,7 +691,7 @@ parameters:
 			path: src/Framework/Providers/ViewServiceProvider.php
 
 		-
-			message: '#^Out of 208 possible param types, only 199 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 206 possible param types, only 197 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 4
 			path: src/Framework/Providers/ViewServiceProvider.php
@@ -781,7 +775,7 @@ parameters:
 			path: src/Framework/Routing/Strategy/RecordBindingInvocationStrategy.php
 
 		-
-			message: '#^Out of 208 possible param types, only 199 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 206 possible param types, only 197 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 2
 			path: src/Framework/Routing/Strategy/RecordBindingInvocationStrategy.php

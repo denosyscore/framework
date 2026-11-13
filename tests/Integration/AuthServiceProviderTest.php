@@ -12,6 +12,8 @@ use Denosys\Auth\Identity\Identity;
 use Denosys\Auth\Middleware\RememberCookieMiddleware;
 use Denosys\Auth\Middleware\RememberCookieOptions;
 use Denosys\Encryption\Encrypter;
+use Denosys\Encryption\Key;
+use Denosys\Encryption\KeyRing;
 use Denosys\Encryption\EncrypterInterface;
 use Denosys\Container\Container;
 use Denosys\Session\SessionInterface;
@@ -40,7 +42,7 @@ final class AuthServiceProviderTest extends TestCase
         $session = $this->session();
         $user = new ProviderTestUser();
         $container->instance(SessionInterface::class, $session);
-        $container->instance(EncrypterInterface::class, new Encrypter(base64_encode(random_bytes(32))));
+        $container->instance(EncrypterInterface::class, new Encrypter(new KeyRing(Key::generate())));
 
         (new AuthServiceProvider())->register($container);
         $container->instance(UserProviderInterface::class, new ProviderTestUserProvider($user));
@@ -72,7 +74,7 @@ final class AuthServiceProviderTest extends TestCase
             'expires' => $expires,
         ], JSON_THROW_ON_ERROR);
 
-        return rtrim(strtr($encrypter->encryptString($payload), '+/', '-_'), '=');
+        return rtrim(strtr($encrypter->encrypt($payload), '+/', '-_'), '=');
     }
 
     private function handler(): RequestHandlerInterface

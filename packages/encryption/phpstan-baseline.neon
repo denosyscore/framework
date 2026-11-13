@@ -1,13 +1,2 @@
 parameters:
-	ignoreErrors:
-		-
-			message: '#^Method Denosys\\Encryption\\Encrypter\:\:decryptString\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Encryption/Encrypter.php
-
-		-
-			message: '#^Parameter \#1 \$message of function sodium_crypto_secretbox expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Encryption/Encrypter.php
+	ignoreErrors: []
