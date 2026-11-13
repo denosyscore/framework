@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.19.0 – 2026-11-13
+
+### Changed (breaking)
+
+- `SchemaBuilder::create()` and `table()` run in one transaction on SQLite
+  and PostgreSQL, so a failed change leaves the table as it was. MySQL and
+  MariaDB commit each DDL statement implicitly and are unchanged.
+- SQLite changes a column, or adds or drops a foreign key, by rebuilding the
+  table with SQLite's documented procedure (create, copy, drop, rename,
+  recreate indexes, `PRAGMA foreign_key_check`). Rebuilding never fires
+  `ON DELETE` actions on other tables. A table that another table references
+  cannot be rebuilt inside a transaction while foreign keys are enforced, and
+  tables with triggers, `CHECK` constraints or generated columns are refused;
+  both throw `DatabaseException` and change nothing.
+- PostgreSQL changes columns in place (`ALTER COLUMN ... TYPE ... USING`,
+  `SET`/`DROP NOT NULL`, `SET`/`DROP DEFAULT`).
+- An alter drops indexes before columns, so a column and its index can be
+  dropped together.
+- PostgreSQL introspection (`hasTable()`, `getColumns()`, `getIndexes()` and
+  others) reads the connection's `current_schema()`, and accepts a qualified
+  `schema.table`. `dropAllTables()` drops only the current schema's tables,
+  in one transaction. Every schema in the `schema` setting is quoted in
+  `search_path`; the setting accepts a name or a list of names.
+- Default index and foreign key names use the table name without its schema.
+
+### Fixed
+
+- `getColumnType()` works on MySQL and MariaDB.
+- `insertGetId()`, `Model` and `Repository` inserts use `RETURNING` on
+  PostgreSQL instead of `lastval()`, which failed on tables without a
+  sequence and aborted the surrounding transaction.
+
 ## 0.18.0 – 2026-11-13
 
 ### Changed (breaking)
