@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.18.0 – 2026-11-13
+
+Phase 3, step 2: migrations (findings F28 and F36).
+
+### Changed (breaking)
+
+- `denosyscore/database`: one migration run at a time per database, a
+  migration and its record commit together, and `migrate` stops when a
+  migration that already ran has changed. `dependsOn()` is removed. See that
+  package's changelog.
+
 ## 0.17.0 – 2026-11-12
 
 Phase 3, step 1: the query builder (finding F24).
