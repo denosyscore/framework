@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.19.0 – 2026-11-13
+
+Phase 3, step 3: schema changes (findings F27 and F35).
+
+### Changed (breaking)
+
+- `denosyscore/database`: schema changes are atomic where the database
+  allows, SQLite rebuilds tables to change columns and foreign keys, and
+  PostgreSQL uses the connection's current schema. See that package's
+  changelog.
+
 ## 0.18.0 – 2026-11-13
 
 Phase 3, step 2: migrations (findings F28 and F36).
