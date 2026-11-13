@@ -6,6 +6,9 @@ namespace Denosys\Database\Record;
 
 use Closure;
 use Denosys\Database\Exceptions\RecordNotFound;
+use Denosys\Database\Pagination\Ordering;
+use Denosys\Database\Pagination\Page;
+use Denosys\Database\Pagination\Paginated;
 use Denosys\Database\Query\Builder;
 use Denosys\Database\Query\Expression;
 use Denosys\Database\Record\Relations\Relation;
@@ -301,6 +304,22 @@ final readonly class RecordQuery
         foreach ($this->builder->lazyById($chunkSize, $key) as $row) {
             yield $this->store->hydrate($this->class, self::row($row));
         }
+    }
+
+    /**
+     * One page of records, with relations from with() loaded per page.
+     *
+     * @return Paginated<T>
+     */
+    public function paginate(Page $page, ?Ordering $ordering = null): Paginated
+    {
+        $query = $ordering === null ? $this : $this->using($ordering->applyTo($this->builder));
+
+        return Paginated::of(
+            $page,
+            $this->count(),
+            static fn (int $number): array => $query->using($query->builder->forPage($number, $page->perPage))->get(),
+        );
     }
 
     /**
