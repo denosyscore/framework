@@ -57,6 +57,18 @@ final class RecordMetadata
         return ($this->properties[$property] ?? throw new InvalidRecord("{$this->class} has no column property \${$property}."))->column;
     }
 
+    /** @throws InvalidRecord */
+    public function propertyForColumn(string $column): PropertyMetadata
+    {
+        foreach ($this->properties as $property) {
+            if ($property->column === $column) {
+                return $property;
+            }
+        }
+
+        throw new InvalidRecord("{$this->class} has no property for the column {$column}.");
+    }
+
     /**
      * @param class-string $class
      *
@@ -118,7 +130,8 @@ final class RecordMetadata
         );
     }
 
-    private static function snake(string $name): string
+    /** @internal Converts a class or property name to snake case. */
+    public static function snake(string $name): string
     {
         return strtolower((string) preg_replace('/(?<=[a-z0-9])([A-Z])|(?<=[A-Z])([A-Z])(?=[a-z])/', '_$1$2', $name));
     }

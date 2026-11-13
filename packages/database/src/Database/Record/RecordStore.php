@@ -176,6 +176,60 @@ final class RecordStore
         return $this->state[$record] ?? null;
     }
 
+    /**
+     * The database value of one column of a record, for matching keys.
+     *
+     * @internal for relations
+     */
+    public function columnValue(object $record, string $column): mixed
+    {
+        $meta = RecordMetadata::of($record::class);
+        $property = $meta->propertyForColumn($column);
+
+        return self::initialized($record, $property->name)
+            ? $this->caster($meta->class)->toDatabase($property, self::get($record, $property->name))
+            : null;
+    }
+
+    /**
+     * @internal for relations
+     * @return array{bool, mixed} whether the relation is loaded, and its value
+     */
+    public function relation(object $record, string $key): array
+    {
+        $state = $this->state[$record] ?? null;
+
+        return $state !== null && array_key_exists($key, $state->relations)
+            ? [true, $state->relations[$key]]
+            : [false, null];
+    }
+
+    /** @internal for relations */
+    public function setRelation(object $record, string $key, mixed $value): void
+    {
+        $state = $this->state[$record] ?? throw new InvalidRecord($record::class . ' must be saved before a relation can be loaded on it.');
+        $state->relations[$key] = $value;
+    }
+
+    /**
+     * @internal for relations
+     * @param array<string, mixed> $values
+     */
+    public function setPivot(object $related, string $key, array $values): void
+    {
+        $state = $this->state[$related] ?? throw new InvalidRecord($related::class . ' is not loaded.');
+        $state->pivots[$key] = $values;
+    }
+
+    /**
+     * @internal for relations
+     * @return array<string, mixed>|null
+     */
+    public function pivot(object $related, string $key): ?array
+    {
+        return ($this->state[$related] ?? null)?->pivots[$key] ?? null;
+    }
+
     /** @param array<string, mixed> $row */
     private function fill(object $record, array $row): void
     {

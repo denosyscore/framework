@@ -136,3 +136,76 @@ final class Part implements \Denosys\Database\Record\Record
     public ?int $id = null;
     public string $name;
 }
+
+final class Author implements \Denosys\Database\Record\Record
+{
+    use \Denosys\Database\Record\Persists;
+
+    public ?int $id = null;
+    public string $name;
+
+    /** @return \Denosys\Database\Record\Relations\HasMany<self, Post> */
+    public function posts(): \Denosys\Database\Record\Relations\HasMany
+    {
+        return \Denosys\Database\Record\Relations\Relations::hasMany($this, Post::class);
+    }
+
+    /** @return \Denosys\Database\Record\Relations\HasOne<self, Profile> */
+    public function profile(): \Denosys\Database\Record\Relations\HasOne
+    {
+        return \Denosys\Database\Record\Relations\Relations::hasOne($this, Profile::class);
+    }
+}
+
+final class Post implements \Denosys\Database\Record\Record
+{
+    use \Denosys\Database\Record\Persists;
+
+    public ?int $id = null;
+    public int $authorId;
+    public string $title;
+
+    /** @return \Denosys\Database\Record\Relations\BelongsTo<self, Author> */
+    public function author(): \Denosys\Database\Record\Relations\BelongsTo
+    {
+        return \Denosys\Database\Record\Relations\Relations::belongsTo($this, Author::class);
+    }
+
+    /** @return \Denosys\Database\Record\Relations\HasMany<self, Comment> */
+    public function comments(): \Denosys\Database\Record\Relations\HasMany
+    {
+        return \Denosys\Database\Record\Relations\Relations::hasMany($this, Comment::class);
+    }
+
+    /** @return \Denosys\Database\Record\Relations\BelongsToMany<self, Tag> */
+    public function tags(): \Denosys\Database\Record\Relations\BelongsToMany
+    {
+        return \Denosys\Database\Record\Relations\Relations::belongsToMany($this, Tag::class, 'post_tag', 'post_id', 'tag_id', ['position']);
+    }
+}
+
+final class Comment implements \Denosys\Database\Record\Record
+{
+    use \Denosys\Database\Record\Persists;
+
+    public ?int $id = null;
+    public int $postId;
+    public string $body;
+}
+
+final class Profile implements \Denosys\Database\Record\Record
+{
+    use \Denosys\Database\Record\Persists;
+
+    public ?int $id = null;
+    public int $authorId;
+    public string $bio;
+}
+
+final class Tag implements \Denosys\Database\Record\Record
+{
+    use \Denosys\Database\Record\Persists;
+
+    public ?int $id = null;
+    public string $name;
+}
