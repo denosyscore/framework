@@ -82,10 +82,10 @@ class ConnectionFactory
             return;
         }
 
-        // MariaDB reports e.g. "10.11.9-MariaDB" or, through older clients, "5.5.5-11.4.3-MariaDB".
+        // MariaDB reports e.g. "10.11.9-MariaDB", "5.5.5-11.4.3-MariaDB" through older
+        // clients, or "10.11.13-MariaDB-0ubuntu0.24.04.1": the release precedes "-MariaDB".
         if (stripos($version, 'mariadb') !== false) {
-            preg_match_all('/\d+\.\d+\.\d+/', $version, $matches);
-            $release = end($matches[0]) ?: $version;
+            $release = preg_match('/(\d+\.\d+\.\d+)-MariaDB/i', $version, $match) === 1 ? $match[1] : $version;
             if (version_compare($release, '10.11.0', '<')) {
                 throw new DatabaseException("MariaDB {$release} is not supported; DenoSys needs MariaDB 10.11 or newer.");
             }

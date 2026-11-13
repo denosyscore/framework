@@ -23,6 +23,8 @@ final class DriverSupportTest extends TestCase
         yield 'MariaDB 10.6' => ['mysql', '10.6.17-MariaDB', false];
         yield 'MariaDB 10.11' => ['mysql', '10.11.9-MariaDB-ubu2204', true];
         yield 'MariaDB 11.4' => ['mysql', '5.5.5-11.4.3-MariaDB-log', true];
+        yield 'MariaDB 10.11 from Ubuntu' => ['mysql', '10.11.13-MariaDB-0ubuntu0.24.04.1', true];
+        yield 'MariaDB 10.6 from Ubuntu' => ['mysql', '5.5.5-10.6.18-MariaDB-0ubuntu0.22.04.1', false];
         yield 'PostgreSQL 14' => ['pgsql', '140013', false];
         yield 'PostgreSQL 15' => ['pgsql', '150008', true];
         yield 'SQLite 3.34' => ['sqlite', '3.34.1', false];

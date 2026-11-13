@@ -163,19 +163,18 @@ class Connection implements ConnectionInterface
             $this->bindValues($statement, $bindings);
             $statement->execute();
 
-            if ($this->getDriverName() !== 'pgsql') {
-                $id = $this->pdo->lastInsertId();
-            } elseif (preg_match('/\bRETURNING\b/i', $query) === 1) {
+            if ($this->getDriverName() === 'pgsql' && preg_match('/\bRETURNING\b/i', $query) === 1) {
+                // The returned column keeps its type: PDO gives an integer key as an
+                // int and a text key, even '00123', as the string it is.
                 $id = $statement->fetchColumn();
-            } else {
-                $id = $this->postgresLastInsertId();
+
+                return is_int($id) || is_string($id) ? $id : '0';
             }
 
-            // Integer keys come back as integers on every driver, so save() and find() agree.
-            if (is_int($id)) {
-                return $id;
-            }
+            $id = $this->getDriverName() === 'pgsql' ? $this->postgresLastInsertId() : $this->pdo->lastInsertId();
 
+            // lastInsertId() reports a generated integer key as a string; return it
+            // as an integer on every driver, so save() and find() agree.
             return is_string($id) && ctype_digit($id) && strlen($id) < 19 ? (int) $id : (is_string($id) ? $id : '0');
         }, pretendResult: '0');
     }

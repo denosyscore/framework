@@ -343,6 +343,21 @@ final class SchemaChangesTest extends TestCase
         });
     }
 
+    public function testPostgresReturnsATextKeyAsWrittenAndAnIntegerKeyAsAnInteger(): void
+    {
+        [$connection] = $this->connect('pgsql');
+        $connection->statement('DROP TABLE IF EXISTS change_codes');
+        $connection->statement('CREATE TABLE change_codes (code text PRIMARY KEY, name text)');
+        $connection->statement('DROP TABLE IF EXISTS change_numbers');
+        $connection->statement('CREATE TABLE change_numbers (id bigserial PRIMARY KEY, name text)');
+
+        self::assertSame('00123', $connection->table('change_codes')->insertGetId(['code' => '00123', 'name' => 'a'], 'code'));
+        self::assertSame(1, $connection->table('change_numbers')->insertGetId(['name' => 'a']));
+
+        $connection->statement('DROP TABLE change_codes');
+        $connection->statement('DROP TABLE change_numbers');
+    }
+
     /**
      * @param array<string, mixed> $extra
      * @return array{Connection, SchemaBuilder}

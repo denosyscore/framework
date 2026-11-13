@@ -18,7 +18,10 @@
   grammar's date format; a backed enum binds its value; a `Stringable` binds
   its string; a unit enum throws `InvalidArgumentException`.
 - `insert()` and `insertGetId()` return integer keys as `int` on every
-  driver (strings remain for non-numeric keys).
+  driver. A PostgreSQL `RETURNING` key keeps its column type, so a text key
+  such as `'00123'` is returned as written.
+- The MariaDB version is read from the release before `-MariaDB`, so
+  distribution builds such as `10.11.13-MariaDB-0ubuntu0.24.04.1` connect.
 
 ## 0.19.0 – 2026-11-13
 
