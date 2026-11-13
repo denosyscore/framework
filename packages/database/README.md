@@ -149,6 +149,8 @@ final class User implements Record
   only the changed columns of a loaded one; with no changes it runs no
   query. Properties left unset on insert take their column defaults, which
   are read back. `createdAt` and `updatedAt` properties are filled in.
+- **Rollbacks do not reset records.** After a transaction rolls back, the
+  records it saved still look saved; load them again before retrying.
 - **No identity map.** Loading a row twice gives two objects. What the store
   knows about a record is released with the record, so workers do not grow.
 - `find()`, `findOrFail()` (throws `RecordNotFound`), `refresh()`,
@@ -200,6 +202,9 @@ $users[0]->posts()->get();          // loaded: no query (an empty list when ther
 User::findOrFail(9)->posts()->get(); // not loaded: throws RelationNotLoaded
 User::findOrFail(9)->posts()->query()->get(); // runs a query, on purpose
 ```
+
+An eager load runs one query for every parent, so `limit()` and `offset()`
+in a `constrain()` are refused; use `query()` per record for that.
 
 A `belongsToMany()` relation keeps pivot columns off the related records;
 read them with `$post->tags()->pivot($tag)` on an eager-loaded tag.

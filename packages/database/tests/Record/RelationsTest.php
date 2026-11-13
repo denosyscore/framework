@@ -141,4 +141,29 @@ final class RelationsTest extends TestCase
 
         self::assertFalse($author->posts()->isLoaded());
     }
+
+    public function testALimitInAnEagerLoadIsRefused(): void
+    {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessageMatches('/limit/');
+
+        Author::query()->with(static fn (Author $a) => $a->posts()->constrain(static fn (RecordQuery $q) => $q->limit(1)))->get();
+    }
+
+    public function testAPivotColumnNamedParentKeepsItsValue(): void
+    {
+        $this->db->statement('CREATE TABLE post_label (post_id INTEGER NOT NULL, tag_id INTEGER NOT NULL, parent INTEGER NOT NULL)');
+        $this->db->statement('INSERT INTO post_label (post_id, tag_id, parent) VALUES (1, 1, 77)');
+        $post = Post::query()->with(static fn (Post $p) => \Denosys\Database\Record\Relations\Relations::belongsToMany($p, Tag::class, 'post_label', 'post_id', 'tag_id', ['parent']))->findOrFail(1);
+
+        $tags = \Denosys\Database\Record\Relations\Relations::belongsToMany($post, Tag::class, 'post_label', 'post_id', 'tag_id', ['parent'])->get();
+        self::assertCount(1, $tags);
+        self::assertSame(['parent' => 77], \Denosys\Database\Record\Relations\Relations::belongsToMany($post, Tag::class, 'post_label', 'post_id', 'tag_id', ['parent'])->pivot($tags[0]));
+    }
+
+    public function testNullAndEmptyKeysDoNotMatch(): void
+    {
+        self::assertSame(['x'], \Denosys\Database\Record\Relations\Matching::lookup(['' => ['x']], '', []));
+        self::assertSame([], \Denosys\Database\Record\Relations\Matching::lookup(['' => ['x']], null, []));
+    }
 }

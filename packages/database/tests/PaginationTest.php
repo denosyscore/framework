@@ -112,4 +112,21 @@ final class PaginationTest extends TestCase
     {
         self::assertInstanceOf(Paginated::class, $this->db->table('parts')->paginate(Page::of(1, 1)));
     }
+
+    public function testDistinctRowsAreCountedAsTheyArePaged(): void
+    {
+        $this->db->table('parts')->insert(['id' => 6, 'name' => 'a']);
+
+        $page = $this->db->table('parts')->select(['name'])->distinct()->paginate(Page::of(1, 10), Ordering::ascending('name'));
+
+        self::assertSame(5, $page->total);
+        self::assertCount(5, $page->items);
+    }
+
+    public function testFromInputRefusesANonPositiveMaximum(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        Page::fromInput(1, 10, max: 0);
+    }
 }

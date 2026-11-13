@@ -24,7 +24,7 @@ use Denosys\Database\Record\Records;
 final readonly class BelongsToMany implements Relation
 {
     private const PARENT_ALIAS = '__pivot_parent';
-    private const PIVOT_PREFIX = '__pivot_';
+    private const PIVOT_PREFIX = '__pivot_column_';
 
     /**
      * @param P $parent
@@ -126,7 +126,7 @@ final readonly class BelongsToMany implements Relation
                 $extra[] = $pivot . '.' . $column . ' as ' . self::PIVOT_PREFIX . $column;
             }
 
-            $query = Matching::apply(
+            $query = Matching::eager(
                 $this->joined()
                     ->tap(static fn (Builder $builder): Builder => $builder->addSelect($extra))
                     ->whereIn($pivot . '.' . $this->foreignPivotKey, $values),
@@ -135,17 +135,20 @@ final readonly class BelongsToMany implements Relation
             );
 
             foreach ($query->getWithRows() as [$record, $row]) {
-                $values = [];
+                $pivotValues = [];
                 foreach ($this->pivotColumns as $column) {
-                    $values[$column] = $row[self::PIVOT_PREFIX . $column] ?? null;
+                    $pivotValues[$column] = $row[self::PIVOT_PREFIX . $column] ?? null;
                 }
-                $store->setPivot($record, $this->key(), $values);
-                $groups[Matching::key($row[self::PARENT_ALIAS] ?? null)][] = $record;
+                $store->setPivot($record, $this->key(), $pivotValues);
+                $key = Matching::key($row[self::PARENT_ALIAS] ?? null);
+                if ($key !== null) {
+                    $groups[$key][] = $record;
+                }
             }
         }
 
         foreach ($parents as $parent) {
-            $store->setRelation($parent, $this->key(), $groups[Matching::key($store->columnValue($parent, $this->parentKey))] ?? []);
+            $store->setRelation($parent, $this->key(), Matching::lookup($groups, $store->columnValue($parent, $this->parentKey), []));
         }
     }
 

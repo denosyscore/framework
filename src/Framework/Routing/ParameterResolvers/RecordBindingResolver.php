@@ -82,7 +82,9 @@ final readonly class RecordBindingResolver implements ParameterResolverInterface
             return $value;
         }
 
-        return preg_match('/\A-?[0-9]+\z/', $value) === 1 ? (int) $value : throw new NotFoundException();
+        $key = filter_var($value, FILTER_VALIDATE_INT);
+
+        return is_int($key) ? $key : throw new NotFoundException();
     }
 
     /** @return class-string<Record>|class-string<UrlRoutable>|null */

@@ -96,4 +96,25 @@ final class CastsTest extends TestCase
         self::assertSame('10.50', $this->read('amount', '10.50'));
         self::assertSame('10.50', $this->write('amount', '10.50'));
     }
+
+    public function testIntegersOutsideTheRangeAreRefused(): void
+    {
+        foreach (['9223372036854775808', '-9223372036854775809'] as $value) {
+            try {
+                $this->read('count', $value);
+                self::fail("{$value} was read");
+            } catch (InvalidRecord) {
+                self::addToAssertionCount(1);
+            }
+        }
+        self::assertSame(PHP_INT_MAX, $this->read('count', (string) PHP_INT_MAX));
+        self::assertSame(PHP_INT_MIN, $this->read('count', (string) PHP_INT_MIN));
+    }
+
+    public function testAnImpossibleDateIsRefused(): void
+    {
+        $this->expectException(InvalidRecord::class);
+
+        $this->read('openedAt', '2000-02-30 00:00:00');
+    }
 }

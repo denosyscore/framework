@@ -88,9 +88,9 @@ final class ValueCaster
             return (int) $value;
         }
 
-        return is_string($value) && preg_match('/\A-?\d+\z/', $value) === 1
-            ? (int) $value
-            : self::refuse($record, $property, $value);
+        $int = is_string($value) ? filter_var($value, FILTER_VALIDATE_INT) : false;
+
+        return is_int($int) ? $int : self::refuse($record, $property, $value);
     }
 
     private static function date(RecordMetadata $record, PropertyMetadata $property, mixed $value): DateTimeImmutable
@@ -104,10 +104,18 @@ final class ValueCaster
         }
 
         try {
-            return (new DateTimeImmutable($value, new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('UTC'));
+            $date = new DateTimeImmutable($value, new DateTimeZone('UTC'));
         } catch (Exception) {
             self::refuse($record, $property, $value);
         }
+
+        // An impossible date such as 2000-02-30 parses with a warning and rolls over.
+        $errors = DateTimeImmutable::getLastErrors();
+        if ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) {
+            self::refuse($record, $property, $value);
+        }
+
+        return $date->setTimezone(new DateTimeZone('UTC'));
     }
 
     /** @param class-string<BackedEnum> $enum */
@@ -118,7 +126,8 @@ final class ValueCaster
         }
 
         if (is_string($value) && (string) (new \ReflectionEnum($enum))->getBackingType() === 'int') {
-            $value = preg_match('/\A-?\d+\z/', $value) === 1 ? (int) $value : self::refuse($record, $property, $value);
+            $int = filter_var($value, FILTER_VALIDATE_INT);
+            $value = is_int($int) ? $int : self::refuse($record, $property, $value);
         }
 
         try {

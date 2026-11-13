@@ -100,14 +100,17 @@ final readonly class HasOne implements Relation
         $values = Matching::values($store, $parents, $this->localKey);
         $groups = [];
         if ($values !== []) {
-            $query = Matching::apply($store->query($this->related)->whereIn($this->foreignKey, $values), $this->constraint, $this->nested);
+            $query = Matching::eager($store->query($this->related)->whereIn($this->foreignKey, $values), $this->constraint, $this->nested);
             foreach ($query->get() as $record) {
-                $groups[Matching::key($store->columnValue($record, $this->foreignKey))] ??= $record;
+                $key = Matching::key($store->columnValue($record, $this->foreignKey));
+                if ($key !== null) {
+                    $groups[$key] ??= $record;
+                }
             }
         }
 
         foreach ($parents as $parent) {
-            $store->setRelation($parent, $this->key(), $groups[Matching::key($store->columnValue($parent, $this->localKey))] ?? null);
+            $store->setRelation($parent, $this->key(), Matching::lookup($groups, $store->columnValue($parent, $this->localKey), null));
         }
     }
 }

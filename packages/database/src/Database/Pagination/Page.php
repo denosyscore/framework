@@ -28,9 +28,15 @@ final readonly class Page
     /**
      * A page from request input. Values that are not whole numbers fall back
      * to page 1 and the default size; the size is clamped to 1..$max.
+     *
+     * @throws InvalidArgumentException when $max is below 1
      */
     public static function fromInput(mixed $number, mixed $perPage, int $default = 25, int $max = 100): self
     {
+        if ($max < 1) {
+            throw new InvalidArgumentException('The largest page size must be at least 1.');
+        }
+
         return new self(
             max(1, self::integer($number) ?? 1),
             min($max, max(1, self::integer($perPage) ?? $default)),

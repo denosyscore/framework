@@ -223,7 +223,7 @@ final class RecordStoreTest extends TestCase
         $this->store->save($note);
 
         self::assertInstanceOf(DateTimeImmutable::class, $note->createdAt);
-        self::assertSame($note->createdAt, $note->updatedAt);
+        self::assertEquals($note->createdAt, $note->updatedAt);
     }
 
     public function testDeleteUsesTheLoadedKey(): void

@@ -77,4 +77,13 @@ final class RecordBindingResolverTest extends TestCase
             }
         }
     }
+
+    public function testAnArgumentOutsideTheIntegerRangeIsNotFound(): void
+    {
+        Records::store()->connectionFor(BoundWidget::class)->table('bound_widgets')->insert(['id' => PHP_INT_MAX, 'name' => 'max']);
+
+        $this->expectException(NotFoundException::class);
+
+        (new RecordBindingResolver())->resolve($this->parameter(), new ServerRequest(), ['widget' => '9223372036854775808']);
+    }
 }

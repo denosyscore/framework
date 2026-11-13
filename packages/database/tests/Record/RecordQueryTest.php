@@ -26,6 +26,8 @@ final class RecordQueryTest extends TestCase
         $this->db->statement('CREATE TABLE gadgets (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)');
         $this->db->statement('CREATE TABLE parts (id INTEGER PRIMARY KEY, gadget_id INTEGER NOT NULL, name TEXT NOT NULL)');
         $this->db->statement("INSERT INTO parts (id, gadget_id, name) VALUES (10, 1, 'p')");
+        $this->db->statement('CREATE TABLE authors (id INTEGER PRIMARY KEY, name TEXT NOT NULL)');
+        $this->db->statement("INSERT INTO authors (id, name) VALUES (1, 'ann')");
         foreach (['a', 'b', 'c'] as $name) {
             $this->db->table('gadgets')->insert(['name' => $name]);
         }
@@ -110,5 +112,36 @@ final class RecordQueryTest extends TestCase
         self::assertCount(1, $gadgets);
         self::assertSame(1, $gadgets[0]->id);
         self::assertSame('a', $gadgets[0]->name);
+    }
+
+    public function testTwoArgumentWhereMeansEquals(): void
+    {
+        self::assertSame(['b'], array_map(static fn (Gadget $g): string => $g->name, $this->store->query(Gadget::class)->where('name', 'b')->get()));
+        self::assertSame(2, $this->store->query(Gadget::class)->where('name', 'a')->orWhere('name', 'c')->count());
+    }
+
+    public function testFindKeepsEarlierOrConditionsGrouped(): void
+    {
+        $query = $this->store->query(Gadget::class)->where('name', '=', 'a')->orWhere('name', '=', 'b');
+
+        self::assertNull($query->find(3));
+        self::assertSame('b', $query->find(2)?->name);
+    }
+
+    public function testEagerLoadingNeedsTheRecordsStore(): void
+    {
+        $other = new ConnectionManager();
+        $other->addConnection('default', ['driver' => 'sqlite', 'database' => ':memory:']);
+        $other->setDefaultConnection('default');
+        \Denosys\Database\Record\Records::use(new RecordStore($other));
+
+        try {
+            $this->expectException(LogicException::class);
+            $this->expectExceptionMessageMatches('/Records::store\(\)/');
+
+            $this->store->query(\RecordFixtures\Author::class)->with(static fn (\RecordFixtures\Author $a) => $a->posts())->get();
+        } finally {
+            \Denosys\Database\Record\Records::reset();
+        }
     }
 }

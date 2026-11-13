@@ -100,14 +100,17 @@ final readonly class BelongsTo implements Relation
         $values = Matching::values($store, $parents, $this->foreignKey);
         $groups = [];
         if ($values !== []) {
-            $query = Matching::apply($store->query($this->related)->whereIn($this->ownerKey, $values), $this->constraint, $this->nested);
+            $query = Matching::eager($store->query($this->related)->whereIn($this->ownerKey, $values), $this->constraint, $this->nested);
             foreach ($query->get() as $record) {
-                $groups[Matching::key($store->columnValue($record, $this->ownerKey))] ??= $record;
+                $key = Matching::key($store->columnValue($record, $this->ownerKey));
+                if ($key !== null) {
+                    $groups[$key] ??= $record;
+                }
             }
         }
 
         foreach ($parents as $parent) {
-            $store->setRelation($parent, $this->key(), $groups[Matching::key($store->columnValue($parent, $this->foreignKey))] ?? null);
+            $store->setRelation($parent, $this->key(), Matching::lookup($groups, $store->columnValue($parent, $this->foreignKey), null));
         }
     }
 }

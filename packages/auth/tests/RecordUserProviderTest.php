@@ -111,6 +111,17 @@ final class RecordUserProviderTest extends TestCase
         self::assertTrue(password_verify('secret', $stored));
     }
 
+    public function testARehashDoesNotUndoAConcurrentPasswordChange(): void
+    {
+        $user = $this->user($this->provider->findById(1));
+        $changed = password_hash('changed', PASSWORD_DEFAULT);
+        RecordProviderUser::query()->where('id', '=', 1)->update(['password' => $changed]);
+
+        $this->provider->rehashPasswordIfRequired($user, 'secret');
+
+        self::assertSame($changed, RecordProviderUser::findOrFail(1)->password);
+    }
+
     private function user(?AuthenticatableInterface $user): RecordProviderUser
     {
         self::assertInstanceOf(RecordProviderUser::class, $user);

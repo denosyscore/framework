@@ -138,6 +138,12 @@ final class RecordBindingInvocationStrategy implements InvocationStrategyInterfa
             return new ReflectionFunction($handler);
         }
 
+        if (is_string($handler) && str_contains($handler, '::')) {
+            [$class, $method] = explode('::', $handler, 2);
+
+            return new ReflectionMethod($class, $method);
+        }
+
         if (is_string($handler)) {
             return new ReflectionFunction($handler);
         }

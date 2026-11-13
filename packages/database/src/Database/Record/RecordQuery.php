@@ -61,7 +61,7 @@ final readonly class RecordQuery
     #[\NoDiscard]
     public function where(string|Closure $column, mixed $operator = null, mixed $value = null): self
     {
-        return $this->using($this->builder->where($column, $operator, $value));
+        return $this->using(func_num_args() === 2 ? $this->builder->where($column, $operator) : $this->builder->where($column, $operator, $value));
     }
 
     /**
@@ -71,7 +71,7 @@ final readonly class RecordQuery
     #[\NoDiscard]
     public function orWhere(string|Closure $column, mixed $operator = null, mixed $value = null): self
     {
-        return $this->using($this->builder->orWhere($column, $operator, $value));
+        return $this->using(func_num_args() === 2 ? $this->builder->orWhere($column, $operator) : $this->builder->orWhere($column, $operator, $value));
     }
 
     /**
@@ -228,6 +228,10 @@ final readonly class RecordQuery
             $pairs[] = [$this->store->hydrate($this->class, $values), $values];
         }
 
+        if ($pairs !== [] && $this->eager !== [] && $this->store !== Records::store()) {
+            throw new LogicException('with() loads relations through Records::store(); run this query from that store.');
+        }
+
         if ($pairs !== []) {
             $records = [];
             foreach ($pairs as [$record]) {
@@ -266,7 +270,7 @@ final readonly class RecordQuery
     /** @return T|null */
     public function find(int|string $id): ?object
     {
-        return $this->where($this->qualifiedKey(), '=', $id)->first();
+        return $this->using($this->builder->grouped()->where($this->qualifiedKey(), '=', $id))->first();
     }
 
     /**

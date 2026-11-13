@@ -67,8 +67,11 @@ final readonly class RecordUserProvider implements UserProviderInterface
             return;
         }
 
+        // Only replace the hash that was just verified: if the password changed
+        // meanwhile, the update matches no row and the new password stands.
         ($this->userClass)::query()
             ->where($user->getAuthIdentifierName(), '=', $user->getAuthIdentifier())
+            ->where('password', '=', $user->getAuthPassword())
             ->update(['password' => $this->hashPassword($password)]);
         $user->refresh();
     }

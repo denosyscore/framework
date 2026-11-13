@@ -573,9 +573,7 @@ class Builder implements QueryBuilderInterface
         $last = null;
 
         // Group the caller's conditions, so an orWhere() cannot bypass the cursor.
-        $base = $this->wheres === []
-            ? $this
-            : $this->emptyConditions()->addWhere(['type' => 'nested', 'query' => $this->wheres, 'boolean' => 'and'], $this->bindings['where']);
+        $base = $this->grouped();
 
         do {
             $page = ($last === null ? $base : $base->where($column, '>', $last))->orderBy($column)->limit($chunkSize);
@@ -634,8 +632,8 @@ class Builder implements QueryBuilderInterface
         $query->offsetValue = null;
         $query->lock = null;
 
-        if ($query->groups !== []) {
-            // Aggregate over the grouped rows rather than returning one group's value.
+        if ($query->groups !== [] || $query->distinct) {
+            // Aggregate over the grouped or distinct rows rather than the source rows.
             $sql = "SELECT {$expression->getValue()} FROM ({$query->toSql()}) as aggregate_source";
         } else {
             $query->columns = [$expression];
@@ -890,6 +888,24 @@ class Builder implements QueryBuilderInterface
      * keeps the subclass and its state so a typed callback receives what it
      * expects.
      */
+    /**
+     * The same query with its conditions wrapped in one group, so a
+     * condition added next applies to all of them: (a OR b) AND next.
+     */
+    #[\NoDiscard('queries are immutable: use the query this returns')]
+    public function grouped(): static
+    {
+        return $this->wheres === []
+            ? $this
+            : $this->emptyConditions()->addWhere(['type' => 'nested', 'query' => $this->wheres, 'boolean' => 'and'], $this->bindings['where']);
+    }
+
+    /** Whether the query has a limit or an offset. */
+    public function isPaged(): bool
+    {
+        return $this->limitValue !== null || $this->offsetValue !== null;
+    }
+
     protected function emptyConditions(): static
     {
         $query = clone $this;
