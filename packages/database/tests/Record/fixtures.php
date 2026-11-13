@@ -20,7 +20,15 @@ final class BlogPost
     public string $nickName;
     public static int $count = 0;
     protected string $hiddenThing = '';
-    private string $secret = '';
+
+    public function __construct(private readonly string $secret = '')
+    {
+    }
+
+    public function secret(): string
+    {
+        return $this->secret;
+    }
 }
 
 final class Category
@@ -82,7 +90,7 @@ final class MoneyCast implements Cast
 {
     public function fromDatabase(mixed $value): mixed
     {
-        return new Money((int) round(((float) $value) * 100));
+        return new Money(is_numeric($value) ? (int) round(((float) $value) * 100) : 0);
     }
 
     public function toDatabase(mixed $value): mixed
@@ -117,6 +125,14 @@ final class Widget
 
 final class Gadget
 {
+    public ?int $id = null;
+    public string $name;
+}
+
+final class Part implements \Denosys\Database\Record\Record
+{
+    use \Denosys\Database\Record\Persists;
+
     public ?int $id = null;
     public string $name;
 }
