@@ -65,6 +65,12 @@ enum Status: string
     case Closed = 'closed';
 }
 
+enum Priority: int
+{
+    case Low = 1;
+    case High = 2;
+}
+
 final class Money
 {
     public function __construct(public readonly int $cents)
@@ -94,6 +100,7 @@ final class Account
     public string $amount;
     public ?DateTimeImmutable $openedAt = null;
     public Status $status;
+    public Priority $priority;
     #[CastWith(MoneyCast::class)]
     public Money $balance;
 }
