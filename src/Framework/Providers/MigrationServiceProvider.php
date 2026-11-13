@@ -37,13 +37,16 @@ class MigrationServiceProvider implements Provider
         // Register SchemaGrammar based on database driver
         $container->singleton(SchemaGrammarInterface::class, function (ContainerInterface $c) {
             $connection = $c->get(Connection::class);
+            if (!$connection instanceof Connection) {
+                throw new \LogicException('The container did not return a database connection.');
+            }
             $driver = $connection->getDriverName();
-            
+
             return match ($driver) {
                 'mysql' => new MySqlSchemaGrammar(),
                 'pgsql', 'postgres' => new PostgresSchemaGrammar(),
                 'sqlite' => new SqliteSchemaGrammar(),
-                default => new MySqlSchemaGrammar(),
+                default => throw new \LogicException("No schema grammar for the [{$driver}] driver."),
             };
         });
 

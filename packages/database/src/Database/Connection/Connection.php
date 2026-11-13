@@ -173,7 +173,10 @@ class Connection implements ConnectionInterface
                 return $this->postgresLastInsertId();
             }
 
-            return $this->pdo->lastInsertId();
+            $id = $this->pdo->lastInsertId();
+
+            // Integer keys come back as integers, so save() and find() agree.
+            return is_string($id) && ctype_digit($id) && strlen($id) < 19 ? (int) $id : ($id === false ? '0' : $id);
         }, pretendResult: '0');
     }
 
@@ -466,6 +469,7 @@ class Connection implements ConnectionInterface
     protected function bindValues(PDOStatement $statement, array $bindings): void
     {
         foreach (array_values($bindings) as $index => $value) {
+            $value = $this->bindable($value);
             $type = match (true) {
                 is_int($value) => PDO::PARAM_INT,
                 is_bool($value) => PDO::PARAM_BOOL,
@@ -475,6 +479,25 @@ class Connection implements ConnectionInterface
 
             $statement->bindValue($index + 1, $value, $type);
         }
+    }
+
+    /**
+     * The value PDO binds for $value: dates in UTC in the grammar's format,
+     * backed enums as their value, Stringable objects as text.
+     */
+    protected function bindable(mixed $value): mixed
+    {
+        return match (true) {
+            $value instanceof \DateTimeInterface => \DateTimeImmutable::createFromInterface($value)
+                ->setTimezone(new \DateTimeZone('UTC'))
+                ->format($this->grammar->getDateFormat()),
+            $value instanceof \BackedEnum => $value->value,
+            $value instanceof \UnitEnum => throw new \InvalidArgumentException(
+                'Cannot bind the enum case ' . $value::class . '::' . $value->name . '; only backed enums have a value.'
+            ),
+            $value instanceof \Stringable => (string) $value,
+            default => $value,
+        };
     }
 
     /**
