@@ -329,6 +329,12 @@ class Connection implements ConnectionInterface
      * recorded SQL. Reads still run, so code that inspects the schema sees
      * the real database. Used to preview migrations.
      *
+     * Everything issued through select(), selectOne() or cursor() is a read
+     * and runs: a write that returns rows (INSERT ... RETURNING, or a
+     * function with side effects) issued through them is executed, not
+     * recorded. Issue writes through insert(), update(), delete() or
+     * statement() so a preview records them.
+     *
      * @return list<string>
      */
     public function pretend(Closure $callback): array

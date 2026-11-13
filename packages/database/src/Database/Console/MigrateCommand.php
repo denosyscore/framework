@@ -77,14 +77,9 @@ HELP);
 
         $output->info($pretend ? 'Previewing pending migrations...' : 'Running migrations...');
 
-        $migrator = $this->migrator();
-        if ($pretend) {
-            $migrator->pretend();
-        }
-
-        if ($input->getOption('accept-changes')) {
-            $migrator->acceptChanges();
-        }
+        $migrator = $this->migrator()
+            ->pretend((bool) $pretend)
+            ->acceptChanges((bool) $input->getOption('accept-changes'));
 
         try {
             $result = $migrator->run();

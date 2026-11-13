@@ -24,7 +24,7 @@ use Throwable;
  */
 class Migrator
 {
-    /** @var array<string, MigrationInterface> */
+    /** @var array<string, array{checksum: string, migration: MigrationInterface}> */
     private array $migrations = [];
 
     /** @var list<string> */
@@ -137,13 +137,22 @@ class Migrator
 
     public function reset(): MigrationResult
     {
-        if (!$this->repository->repositoryExists()) {
-            return new MigrationResult();
+        $this->pretendLog = [];
+
+        if ($this->pretend) {
+            return $this->repository->repositoryExists()
+                ? $this->revert($this->repository->getMigrationsForSteps($this->repository->getLastBatchNumber()))
+                : new MigrationResult();
         }
 
-        $steps = count(array_unique(array_column($this->repository->getRan(), 'batch')));
+        // The batches are read under the lock, so a batch another process adds
+        // while this one waits is reverted too. Every batch up to the last is
+        // included, so a gap in the numbering leaves nothing behind.
+        return $this->lock()->hold(function (): MigrationResult {
+            $this->repository->createRepository();
 
-        return $this->rollback($steps);
+            return $this->revert($this->repository->getMigrationsForSteps($this->repository->getLastBatchNumber()));
+        });
     }
 
     /**
@@ -355,8 +364,11 @@ class Migrator
 
     private function loadMigration(string $name, string $path): MigrationInterface
     {
-        if (isset($this->migrations[$name])) {
-            return $this->migrations[$name];
+        // Reload a file that changed since it was loaded, so the code that runs
+        // is the code whose checksum is recorded.
+        $checksum = $this->getChecksum($path);
+        if (($this->migrations[$name]['checksum'] ?? null) === $checksum) {
+            return $this->migrations[$name]['migration'];
         }
 
         $migration = require $path;
@@ -364,7 +376,9 @@ class Migrator
             throw new \RuntimeException("Migration [{$name}] must return an instance of " . MigrationInterface::class . '.');
         }
 
-        return $this->migrations[$name] = $migration;
+        $this->migrations[$name] = ['checksum' => $checksum, 'migration' => $migration];
+
+        return $migration;
     }
 
     /**

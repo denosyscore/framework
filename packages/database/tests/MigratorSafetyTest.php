@@ -208,6 +208,38 @@ final class MigratorSafetyTest extends TestCase
         self::assertFalse($schema->hasTable('safety_widgets'));
     }
 
+    public function testResetRevertsEveryBatchWhenTheNumberingHasAGap(): void
+    {
+        [$connection, $schema] = $this->connect('sqlite');
+        $path = $this->migrations(['0001_create_safety_widgets' => 'safety_widgets']);
+        $repository = new MigrationRepository($connection, $schema);
+        (new Migrator($connection, $schema, $repository, $path))->run();
+        file_put_contents($path . '/0002_create_more_widgets.php', $this->migrationSource('more_widgets'));
+        (new Migrator($connection, $schema, $repository, $path))->run();
+        $connection->update('UPDATE schema_migrations SET batch = 3 WHERE batch = 2');
+
+        $result = (new Migrator($connection, $schema, $repository, $path))->reset();
+
+        self::assertSame(2, $result->count());
+        self::assertFalse($schema->hasTable('safety_widgets'));
+        self::assertFalse($schema->hasTable('more_widgets'));
+        self::assertSame([], $repository->getRan());
+    }
+
+    public function testAMigrationEditedAfterAPreviewRunsItsEditedCode(): void
+    {
+        [$connection, $schema] = $this->connect('sqlite');
+        $path = $this->migrations(['0001_create_safety_widgets' => 'safety_widgets']);
+        $migrator = new Migrator($connection, $schema, new MigrationRepository($connection, $schema), $path);
+        $migrator->pretend()->run();
+
+        file_put_contents($path . '/0001_create_safety_widgets.php', $this->migrationSource('more_widgets'));
+        $migrator->pretend(false)->run();
+
+        self::assertTrue($schema->hasTable('more_widgets'), 'the edited file ran');
+        self::assertFalse($schema->hasTable('safety_widgets'), 'the cached object ran');
+    }
+
     public function testMigrationsRunInFilenameOrderAcrossPaths(): void
     {
         [$connection, $schema] = $this->connect('sqlite');

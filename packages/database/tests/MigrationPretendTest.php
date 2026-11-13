@@ -40,6 +40,11 @@ final class RecordingMigrationRepository extends MigrationRepository
         return 1;
     }
 
+    public function getLastBatchNumber(): int
+    {
+        return max([0, ...array_column($this->records, 'batch')]);
+    }
+
     public function getMigrationsForSteps(int $steps): array
     {
         return array_reverse(array_keys($this->records));
