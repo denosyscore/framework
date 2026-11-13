@@ -146,8 +146,8 @@ errors:
 Bound values may be dates, enums or `Stringable` objects. A
 `DateTimeInterface` is converted to UTC and written in the grammar's date
 format, a backed enum binds its value, and a `Stringable` its string; an
-enum without a backing value is refused. `insertGetId()` returns integer
-keys as integers.
+enum without a backing value is refused. `insert()` and `insertGetId()`
+return integer keys as integers on every driver.
 
 ## PDO connection options
 

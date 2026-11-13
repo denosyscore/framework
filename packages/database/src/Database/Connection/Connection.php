@@ -163,20 +163,20 @@ class Connection implements ConnectionInterface
             $this->bindValues($statement, $bindings);
             $statement->execute();
 
-            if ($this->getDriverName() === 'pgsql') {
-                if (preg_match('/\bRETURNING\b/i', $query) === 1) {
-                    $value = $statement->fetchColumn();
-
-                    return is_int($value) || is_string($value) ? $value : '0';
-                }
-
-                return $this->postgresLastInsertId();
+            if ($this->getDriverName() !== 'pgsql') {
+                $id = $this->pdo->lastInsertId();
+            } elseif (preg_match('/\bRETURNING\b/i', $query) === 1) {
+                $id = $statement->fetchColumn();
+            } else {
+                $id = $this->postgresLastInsertId();
             }
 
-            $id = $this->pdo->lastInsertId();
+            // Integer keys come back as integers on every driver, so save() and find() agree.
+            if (is_int($id)) {
+                return $id;
+            }
 
-            // Integer keys come back as integers, so save() and find() agree.
-            return is_string($id) && ctype_digit($id) && strlen($id) < 19 ? (int) $id : ($id === false ? '0' : $id);
+            return is_string($id) && ctype_digit($id) && strlen($id) < 19 ? (int) $id : (is_string($id) ? $id : '0');
         }, pretendResult: '0');
     }
 

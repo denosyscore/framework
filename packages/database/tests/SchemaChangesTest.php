@@ -329,7 +329,7 @@ final class SchemaChangesTest extends TestCase
 
         $connection->transaction(function (Connection $connection): void {
             $first = $connection->table('change_rows')->insert(['name' => 'ada']);
-            self::assertSame('1', (string) $first, 'a sequence-backed insert reports its key');
+            self::assertSame(1, $first, 'a sequence-backed insert reports its key');
 
             // A fresh session has used no sequence: lastval() fails, and must not abort the transaction.
             $connection->table('change_children')->insert(['code' => 'a']);
@@ -338,7 +338,7 @@ final class SchemaChangesTest extends TestCase
 
         [$fresh] = $this->connect('pgsql', ['schema' => 'public']);
         $fresh->transaction(function (Connection $connection): void {
-            self::assertSame('0', (string) $connection->table('change_children')->insert(['code' => 'b']));
+            self::assertSame(0, $connection->table('change_children')->insert(['code' => 'b']));
             self::assertSame(2, $connection->table('change_children')->count(), 'the transaction was aborted');
         });
     }
