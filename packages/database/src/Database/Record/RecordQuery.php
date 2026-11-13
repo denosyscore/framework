@@ -360,15 +360,7 @@ final readonly class RecordQuery
     /** @return list<object> */
     private function rows(Builder $builder): array
     {
-        $result = $builder->get();
-        $rows = [];
-        foreach (is_array($result) ? $result : [] as $row) {
-            if (is_object($row)) {
-                $rows[] = $row;
-            }
-        }
-
-        return $rows;
+        return $builder->get();
     }
 
     /** @return array<string, mixed> */

@@ -7,10 +7,8 @@
     "php": "^8.4.1",
     "ext-fileinfo": "*",
     "ext-pdo": "*",
-    "doctrine/inflector": "^2.1",
     "filp/whoops": "^2.18",
     "graham-campbell/result-type": "^1.1",
-    "illuminate/collections": "^12.0 || ^13.0",
     "laminas/laminas-diactoros": "^3.6",
     "laminas/laminas-httphandlerrunner": "^2.12",
     "league/flysystem": "^3.35.3",
@@ -34,7 +32,6 @@
   },
   "require-dev": {
     "deptrac/deptrac": "^4.7",
-    "fakerphp/faker": "^1.24",
     "friendsofphp/php-cs-fixer": "^3.89",
     "mockery/mockery": "^1.6",
     "pestphp/pest": "^4.1",

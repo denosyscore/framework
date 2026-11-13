@@ -100,8 +100,16 @@ final class PaginationTest extends TestCase
         Ordering::ascending('id; drop table parts');
     }
 
+    public function testTheQueryBuilderPaginatesRows(): void
+    {
+        $page = $this->db->table('parts')->paginate(Page::of(2, 2), Ordering::descending('id'));
+
+        self::assertSame(['c', 'b'], array_map(static fn (object $row): mixed => $row->name ?? null, $page->items));
+        self::assertSame([5, 3, 3, 4], [$page->total, $page->lastPage, $page->from, $page->to]);
+    }
+
     public function testPaginatedIsGeneric(): void
     {
-        self::assertInstanceOf(Paginated::class, Part::query()->paginate(Page::of(1, 1)));
+        self::assertInstanceOf(Paginated::class, $this->db->table('parts')->paginate(Page::of(1, 1)));
     }
 }
