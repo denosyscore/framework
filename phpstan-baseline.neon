@@ -451,12 +451,6 @@ parameters:
 			path: src/Framework/Providers/RateLimiterServiceProvider.php
 
 		-
-			message: '#^Parameter \#1 \$cache of class Denosys\\RateLimiter\\RateLimiter constructor expects Denosys\\Cache\\CacheInterface, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Providers/RateLimiterServiceProvider.php
-
-		-
 			message: '#^Parameter \#1 \$limiter of class Denosys\\RateLimiter\\Middleware\\ThrottleRequestsMiddleware constructor expects Denosys\\RateLimiter\\RateLimiter, mixed given\.$#'
 			identifier: argument.type
 			count: 1

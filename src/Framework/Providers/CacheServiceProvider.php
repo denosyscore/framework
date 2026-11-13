@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Denosys\Framework\Providers;
 
-use Denosys\Cache\CacheInterface;
+use Denosys\Cache\AtomicCounter;
 use Denosys\Cache\FileCache;
 use Denosys\Container\ContainerInterface;
 use Denosys\Framework\Provider;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\SimpleCache\CacheInterface;
 
 class CacheServiceProvider implements Provider
 {
     public function register(ContainerInterface $container): void
     {
-        $container->singleton(CacheInterface::class, function (ContainerInterface $container) {
+        $container->singleton(FileCache::class, function (ContainerInterface $container) {
             $config = $container->get('config');
             
             // Default to the application's storage directory, never the package's own.
@@ -24,7 +25,10 @@ class CacheServiceProvider implements Provider
             return new FileCache($cacheDirectory);
         });
 
-        $container->alias('cache', CacheInterface::class);
+        // One file cache is the PSR-16 cache and the atomic counter.
+        $container->alias(CacheInterface::class, FileCache::class);
+        $container->alias(AtomicCounter::class, FileCache::class);
+        $container->alias('cache', FileCache::class);
     }
 
     public function boot(ContainerInterface $container, ?EventDispatcherInterface $dispatcher = null): void

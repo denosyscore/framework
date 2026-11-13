@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Denosys\Framework\Providers;
 
 use Denosys\RateLimiter\RateLimiter;
-use Denosys\Cache\CacheInterface;
+use Denosys\Cache\FileCache;
 use Denosys\Container\ContainerInterface;
 use Denosys\RateLimiter\Middleware\ThrottleRequestsMiddleware;
 use Denosys\RateLimiter\Middleware\ThrottleLoginMiddleware;
@@ -19,9 +19,12 @@ class RateLimiterServiceProvider implements Provider
     public function register(ContainerInterface $container): void
     {
         $container->singleton(RateLimiter::class, function (ContainerInterface $container) {
-            return new RateLimiter(
-                $container->get(CacheInterface::class)
-            );
+            $cache = $container->get(FileCache::class);
+            if (!$cache instanceof FileCache) {
+                throw new \LogicException('The container must provide a FileCache for rate limiting.');
+            }
+
+            return new RateLimiter($cache);
         });
 
         // Register default throttle middleware (login limits)

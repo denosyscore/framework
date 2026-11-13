@@ -29,7 +29,7 @@ final class FileCacheIncrementTest extends TestCase
         $processes = 6;
         $perProcess = 150;
         $script = sprintf(
-            'require %s; $c = new Denosys\Cache\FileCache(%s); for ($i = 0; $i < %d; $i++) { $c->increment("hits"); }',
+            'require %s; $c = new Denosys\Cache\FileCache(%s); for ($i = 0; $i < %d; $i++) { $c->increment("hits", 1, 60); }',
             var_export(dirname(__DIR__) . '/vendor/autoload.php', true),
             var_export($this->directory, true),
             $perProcess,
@@ -74,10 +74,5 @@ final class FileCacheIncrementTest extends TestCase
 
         self::assertTrue($cache->clear());
         self::assertSame([], glob($this->directory . '/*') ?: []);
-    }
-
-    public function testDecrementOfAMissingKeyStartsFromZero(): void
-    {
-        self::assertSame(-2, (new FileCache($this->directory))->decrement('missing', 2));
     }
 }

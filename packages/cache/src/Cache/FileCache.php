@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Denosys\Cache;
 
 use DateInterval;
+use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 
-class FileCache implements CacheInterface
+final class FileCache implements CacheInterface, AtomicCounter
 {
     /** Expiry for counters created by increment() or decrement(). */
-    private const DEFAULT_COUNTER_TTL = 3600;
 
     private string $directory;
 
@@ -167,11 +167,12 @@ class FileCache implements CacheInterface
         return $this->get($key) !== null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function increment(string $key, int $value = 1): int
+    public function increment(string $key, int $by = 1, int $ttlSeconds = 60): int
     {
+        if ($ttlSeconds < 1) {
+            throw new \InvalidArgumentException('A counter needs a TTL of at least 1 second.');
+        }
+
         $this->validateKey($key);
         $this->ensureDirectoryExists();
 
@@ -186,8 +187,8 @@ class FileCache implements CacheInterface
 
         try {
             $data = $this->readEntry($path);
-            $expiresAt = $data === null ? time() + self::DEFAULT_COUNTER_TTL : $data['expires_at'];
-            $newValue = (int) ($data['value'] ?? 0) + $value;
+            $expiresAt = $data === null ? time() + $ttlSeconds : $data['expires_at'];
+            $newValue = (int) ($data['value'] ?? 0) + $by;
 
             if (!$this->writeEntry($path, $newValue, $expiresAt)) {
                 throw new \RuntimeException("Unable to write cache key [{$key}].");
@@ -200,12 +201,16 @@ class FileCache implements CacheInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function decrement(string $key, int $value = 1): int
+    public function current(string $key): int
     {
-        return $this->increment($key, -$value);
+        $value = $this->get($key, 0);
+
+        return is_int($value) ? $value : 0;
+    }
+
+    public function reset(string $key): void
+    {
+        $this->delete($key);
     }
 
     /**
