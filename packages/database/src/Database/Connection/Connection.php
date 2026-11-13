@@ -130,7 +130,7 @@ class Connection implements ConnectionInterface
      */
     public function select(string $query, array $bindings = []): array
     {
-        return $this->run($query, $bindings, function ($query, $bindings) {
+        return $this->run($query, $bindings, function (string $query, array $bindings) {
             $statement = $this->prepared($query);
             $this->bindValues($statement, $bindings);
             $statement->execute();
@@ -158,10 +158,19 @@ class Connection implements ConnectionInterface
      */
     public function insert(string $query, array $bindings = []): int|string
     {
-        return $this->run($query, $bindings, function ($query, $bindings) {
+        return $this->run($query, $bindings, function (string $query, array $bindings) {
             $statement = $this->prepared($query);
             $this->bindValues($statement, $bindings);
             $statement->execute();
+
+            // PostgreSQL's lastInsertId() runs SELECT lastval(), which fails (and
+            // aborts the open transaction) when the insert used no sequence.
+            // Ask for the key with RETURNING instead: see Builder::insertGetId().
+            if ($this->getDriverName() === 'pgsql') {
+                $value = preg_match('/\bRETURNING\b/i', $query) === 1 ? $statement->fetchColumn() : false;
+
+                return is_int($value) || is_string($value) ? $value : '0';
+            }
 
             return $this->pdo->lastInsertId();
         }, pretendResult: '0');
@@ -174,7 +183,7 @@ class Connection implements ConnectionInterface
      */
     public function update(string $query, array $bindings = []): int
     {
-        return $this->run($query, $bindings, function ($query, $bindings) {
+        return $this->run($query, $bindings, function (string $query, array $bindings) {
             $statement = $this->prepared($query);
             $this->bindValues($statement, $bindings);
             $statement->execute();
@@ -190,7 +199,7 @@ class Connection implements ConnectionInterface
      */
     public function delete(string $query, array $bindings = []): int
     {
-        return $this->run($query, $bindings, function ($query, $bindings) {
+        return $this->run($query, $bindings, function (string $query, array $bindings) {
             $statement = $this->prepared($query);
             $this->bindValues($statement, $bindings);
             $statement->execute();
@@ -206,7 +215,7 @@ class Connection implements ConnectionInterface
      */
     public function statement(string $query, array $bindings = []): bool
     {
-        return $this->run($query, $bindings, function ($query, $bindings) {
+        return $this->run($query, $bindings, function (string $query, array $bindings) {
             $statement = $this->prepared($query);
             $this->bindValues($statement, $bindings);
 
@@ -219,7 +228,7 @@ class Connection implements ConnectionInterface
      */
     public function unprepared(string $query): bool
     {
-        return $this->run($query, [], function ($query) {
+        return $this->run($query, [], function (string $query) {
             return $this->pdo->exec($query) !== false;
         }, pretendResult: true);
     }
