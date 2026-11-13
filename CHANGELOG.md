@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.22.1 – 2026-11-13
+
+### Fixed
+
+- `denosyscore/cache`: reading a missing key raises no warning.
+
 ## 0.22.0 – 2026-11-13
 
 Phase 3, step 6: counters, keys and files (findings F05 and F32).
