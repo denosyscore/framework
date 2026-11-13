@@ -104,3 +104,19 @@ final class Account
     #[CastWith(MoneyCast::class)]
     public Money $balance;
 }
+
+final class Widget
+{
+    public ?int $id = null;
+    public string $name;
+    public ?string $notes = null;
+    public string $status;
+    public ?DateTimeImmutable $createdAt = null;
+    public ?DateTimeImmutable $updatedAt = null;
+}
+
+final class Gadget
+{
+    public ?int $id = null;
+    public string $name;
+}
