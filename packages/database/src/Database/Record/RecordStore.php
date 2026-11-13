@@ -125,8 +125,9 @@ final class RecordStore
             throw new InvalidRecord("The key of a saved {$meta->class} cannot change; insert a new record instead.");
         }
 
-        if (isset($meta->properties['updatedAt']) && !array_key_exists($meta->properties['updatedAt']->column, $changes)) {
-            self::set($record, 'updatedAt', self::now());
+        $updatedAt = self::timestamp($meta, 'updated_at');
+        if ($updatedAt !== null && !array_key_exists('updated_at', $changes)) {
+            self::set($record, $updatedAt, self::now());
             $changes = $this->changes($meta, $record, $state);
         }
 
@@ -257,8 +258,9 @@ final class RecordStore
     private function insert(RecordMetadata $meta, object $record): void
     {
         $now = self::now();
-        foreach (['createdAt', 'updatedAt'] as $name) {
-            if (isset($meta->properties[$name]) && (!self::initialized($record, $name) || self::get($record, $name) === null)) {
+        foreach (['created_at', 'updated_at'] as $column) {
+            $name = self::timestamp($meta, $column);
+            if ($name !== null && (!self::initialized($record, $name) || self::get($record, $name) === null)) {
                 self::set($record, $name, $now);
             }
         }
@@ -357,6 +359,21 @@ final class RecordStore
     private static function set(object $record, string $property, mixed $value): void
     {
         (new ReflectionProperty($record, $property))->setValue($record, $value);
+    }
+
+    /**
+     * The property of a timestamp column (created_at or updated_at) whose
+     * type is a date, so $createdAt and $created_at both qualify.
+     */
+    private static function timestamp(RecordMetadata $meta, string $column): ?string
+    {
+        foreach ($meta->properties as $property) {
+            if ($property->column === $column && is_a($property->type, \DateTimeInterface::class, true)) {
+                return $property->name;
+            }
+        }
+
+        return null;
     }
 
     private static function now(): DateTimeImmutable

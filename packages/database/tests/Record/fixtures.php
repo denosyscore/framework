@@ -218,3 +218,11 @@ final class Note
     public DateTimeImmutable $createdAt;
     public DateTimeImmutable $updatedAt;
 }
+
+final class Ledger
+{
+    public ?int $id = null;
+    public string $memo;
+    public ?DateTimeImmutable $created_at = null;
+    public ?DateTimeImmutable $updated_at = null;
+}
