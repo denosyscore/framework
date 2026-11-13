@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Denosys\Database\Connection\Connection;
 use Denosys\Database\Connection\ConnectionFactory;
+use Denosys\Database\Exceptions\DatabaseException;
 use Denosys\Database\Schema\Blueprint;
 use Denosys\Database\Schema\Grammar\MySqlSchemaGrammar;
 use Denosys\Database\Schema\Grammar\PostgresSchemaGrammar;
@@ -96,9 +97,10 @@ final class SchemaChangesTest extends TestCase
 
         try {
             $connection->table('change_rows')->insert(['name' => 'ada', 'visits' => 9]);
-            self::fail('the unique index was lost');
-        } catch (Throwable) {
+        } catch (DatabaseException) {
+            return;
         }
+        self::fail('the unique index was lost');
     }
 
     #[DataProvider('drivers')]
@@ -189,7 +191,7 @@ final class SchemaChangesTest extends TestCase
                 $table->string('name', 100)->change();
             }));
             self::fail('rebuilt a referenced table inside a transaction');
-        } catch (LogicException $e) {
+        } catch (DatabaseException $e) {
             self::assertStringContainsString('withinTransaction()', $e->getMessage());
         }
 
@@ -228,7 +230,7 @@ final class SchemaChangesTest extends TestCase
         });
         $connection->statement('CREATE TRIGGER change_rows_touch AFTER UPDATE ON change_rows BEGIN SELECT 1; END');
 
-        $this->expectException(LogicException::class);
+        $this->expectException(DatabaseException::class);
         $this->expectExceptionMessage('triggers');
         $schema->table('change_rows', static function (Blueprint $table): void {
             $table->string('name', 5)->change();
@@ -238,40 +240,107 @@ final class SchemaChangesTest extends TestCase
     public function testPostgresIntrospectsTheConnectionSchema(): void
     {
         [$admin] = $this->connect('pgsql');
-        foreach (['change_tenant', 'Change Reports'] as $name) {
-            $admin->statement('DROP SCHEMA IF EXISTS "' . $name . '" CASCADE');
+        // Names this test owns, so it never drops a schema it did not create.
+        $suffix = bin2hex(random_bytes(4));
+        $tenant = "change_tenant_{$suffix}";
+        $reports = "Change Reports {$suffix}";
+        $shadow = "change_rows_{$suffix}";
+        foreach ([$tenant, $reports] as $name) {
             $admin->statement('CREATE SCHEMA "' . $name . '"');
         }
-        $admin->statement('CREATE TABLE IF NOT EXISTS public.change_rows (id int, legacy int)');
+        $admin->statement('CREATE TABLE public."' . $shadow . '" (id int, legacy int)');
 
         try {
-            [$connection, $schema] = $this->connect('pgsql', ['schema' => ['change_tenant', 'public']]);
-            $schema->create('change_rows', static function (Blueprint $table): void {
+            [$connection, $schema] = $this->connect('pgsql', ['schema' => [$tenant, 'public']]);
+            $schema->create($shadow, static function (Blueprint $table): void {
                 $table->id();
                 $table->string('email');
             });
-            $schema->create('Change Reports.events', static function (Blueprint $table): void {
+            $schema->create("{$reports}.events", static function (Blueprint $table): void {
                 $table->id();
             });
 
-            self::assertSame('change_tenant', $connection->selectOne('SELECT current_schema() AS s')?->s);
-            self::assertTrue($schema->hasColumn('change_rows', 'email'));
-            self::assertFalse($schema->hasColumn('change_rows', 'legacy'));
-            self::assertTrue($schema->hasTable('Change Reports.events'));
+            self::assertSame($tenant, $connection->selectOne('SELECT current_schema() AS s')?->s);
+            self::assertTrue($schema->hasColumn($shadow, 'email'));
+            self::assertFalse($schema->hasColumn($shadow, 'legacy'));
+            self::assertTrue($schema->hasTable("{$reports}.events"));
             self::assertFalse($schema->hasTable('events'));
-            self::assertSame(['change_rows'], $schema->getTables());
+            self::assertSame([$shadow], $schema->getTables());
 
             $schema->dropAllTables();
 
             self::assertSame([], $schema->getTables());
-            self::assertTrue($schema->hasTable('public.change_rows'), 'dropAllTables() reached another schema');
-            self::assertTrue($schema->hasTable('Change Reports.events'), 'dropAllTables() reached another schema');
+            self::assertTrue($schema->hasTable("public.{$shadow}"), 'dropAllTables() reached another schema');
+            self::assertTrue($schema->hasTable("{$reports}.events"), 'dropAllTables() reached another schema');
         } finally {
-            foreach (['change_tenant', 'Change Reports'] as $name) {
+            foreach ([$tenant, $reports] as $name) {
                 $admin->statement('DROP SCHEMA IF EXISTS "' . $name . '" CASCADE');
             }
-            $admin->statement('DROP TABLE IF EXISTS public.change_rows');
+            $admin->statement('DROP TABLE IF EXISTS public."' . $shadow . '"');
         }
+    }
+
+    public function testPostgresChangesAnAutoIncrementingKeyAndKeepsItsSequence(): void
+    {
+        [$connection, $schema] = $this->connect('pgsql');
+        $schema->create('change_rows', static function (Blueprint $table): void {
+            $table->integer('id')->autoIncrement()->primary();
+            $table->string('name');
+        });
+        $connection->table('change_rows')->insert(['name' => 'ada']);
+
+        $schema->table('change_rows', static function (Blueprint $table): void {
+            $table->id()->change();
+        });
+
+        self::assertSame('bigint', $connection->selectOne("SELECT data_type FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'change_rows' AND column_name = 'id'")?->data_type);
+        self::assertSame(2, $connection->table('change_rows')->insertGetId(['name' => 'grace']), 'the sequence default was dropped');
+    }
+
+    public function testPostgresRefusesToTruncateWhenAStringShrinks(): void
+    {
+        [$connection, $schema] = $this->connect('pgsql');
+        $schema->create('change_rows', static function (Blueprint $table): void {
+            $table->id();
+            $table->string('name');
+        });
+        $connection->table('change_rows')->insert(['name' => 'abcdef']);
+
+        try {
+            $schema->table('change_rows', static function (Blueprint $table): void {
+                $table->string('name', 3)->change();
+            });
+            self::fail('the column was shortened');
+        } catch (DatabaseException) {
+        }
+
+        self::assertSame('abcdef', $connection->table('change_rows')->value('name'));
+    }
+
+    public function testPostgresInsertReportsTheKeyAndKeepsTheTransactionUsable(): void
+    {
+        [$connection, $schema] = $this->connect('pgsql');
+        $connection->statement('DROP TABLE IF EXISTS change_children');
+        $schema->create('change_rows', static function (Blueprint $table): void {
+            $table->id();
+            $table->string('name');
+        });
+        $connection->statement('CREATE TABLE change_children (code text)');
+
+        $connection->transaction(function (Connection $connection): void {
+            $first = $connection->table('change_rows')->insert(['name' => 'ada']);
+            self::assertSame('1', (string) $first, 'a sequence-backed insert reports its key');
+
+            // A fresh session has used no sequence: lastval() fails, and must not abort the transaction.
+            $connection->table('change_children')->insert(['code' => 'a']);
+            self::assertSame(1, $connection->table('change_children')->count());
+        });
+
+        [$fresh] = $this->connect('pgsql', ['schema' => 'public']);
+        $fresh->transaction(function (Connection $connection): void {
+            self::assertSame('0', (string) $connection->table('change_children')->insert(['code' => 'b']));
+            self::assertSame(2, $connection->table('change_children')->count(), 'the transaction was aborted');
+        });
     }
 
     /**

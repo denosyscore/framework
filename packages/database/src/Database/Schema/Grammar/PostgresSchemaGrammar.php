@@ -232,15 +232,30 @@ public function compileCreate(Blueprint $blueprint): array
     protected function compileChange(string $table, Column $column): array
     {
         $alter = 'ALTER TABLE ' . $this->wrapTable($table) . ' ALTER COLUMN ' . $this->wrapColumn($column->getName());
-        $type = $this->getTypeDefinition($column);
+        // SERIAL names exist only for CREATE TABLE: an auto-incrementing column
+        // changes to its storage type and keeps its sequence default.
+        $type = match ($type = $this->getTypeDefinition($column)) {
+            'BIGSERIAL' => 'BIGINT',
+            'SERIAL' => 'INTEGER',
+            'SMALLSERIAL' => 'SMALLINT',
+            default => $type,
+        };
 
-        return [
-            sprintf('%s TYPE %s USING %s::%s', $alter, $type, $this->wrapColumn($column->getName()), $type),
+        // A string target uses assignment conversion, which refuses a value too
+        // long for the new length; an explicit cast would truncate it.
+        $statements = [
+            preg_match('/^(VARCHAR|CHAR|TEXT)\b/', $type) === 1
+                ? sprintf('%s TYPE %s', $alter, $type)
+                : sprintf('%s TYPE %s USING %s::%s', $alter, $type, $this->wrapColumn($column->getName()), $type),
             $alter . ($column->isNullable() ? ' DROP NOT NULL' : ' SET NOT NULL'),
-            $column->hasDefaultValue()
-                ? $alter . ' SET DEFAULT ' . $this->compileDefaultValue($column->getDefault())
-                : $alter . ' DROP DEFAULT',
         ];
+        if ($column->hasDefaultValue()) {
+            $statements[] = $alter . ' SET DEFAULT ' . $this->compileDefaultValue($column->getDefault());
+        } elseif (!$column->isAutoIncrement()) {
+            $statements[] = $alter . ' DROP DEFAULT';
+        }
+
+        return $statements;
     }
 
     /**

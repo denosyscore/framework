@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Denosys\Database\Schema;
 
 use Denosys\Database\Connection\Connection;
+use Denosys\Database\Exceptions\DatabaseException;
 use Denosys\Database\Schema\Grammar\SqliteSchemaGrammar;
-use LogicException;
 
 /**
  * Applies an ALTER that SQLite cannot express (changing a column, adding or
@@ -26,8 +26,12 @@ use LogicException;
  *   table references is rebuilt with enforcement on; a referenced one is
  *   refused, because it cannot be rebuilt safely there.
  *
- * A table with triggers, CHECK constraints or generated columns is refused,
- * because a rebuild would not keep them.
+ * The rebuild keeps column collations, composite foreign keys and their
+ * names, index definitions (including partial and collated indexes), table
+ * options (STRICT, WITHOUT ROWID) and the AUTOINCREMENT sequence. A table
+ * with triggers, CHECK constraints or generated columns is refused, because a
+ * rebuild would not keep them. Every refusal throws DatabaseException and
+ * changes nothing.
  *
  * @internal Used by SchemaBuilder.
  */
@@ -44,11 +48,14 @@ final class SqliteTableRebuild
         $table = $blueprint->getTable();
         $definition = $this->tableSql($table);
         if (preg_match('/\b(CHECK|GENERATED\s+ALWAYS)\b|\bAS\s*\(/i', $definition) === 1) {
-            throw new LogicException("Cannot rebuild [{$table}]: it has CHECK constraints or generated columns, which a rebuild would lose.");
+            throw new DatabaseException("Cannot rebuild [{$table}]: it has CHECK constraints or generated columns, which a rebuild would lose.");
         }
         if ($this->rows("SELECT 1 FROM sqlite_master WHERE type = 'trigger' AND tbl_name = ?", [$table]) !== []) {
-            throw new LogicException("Cannot rebuild [{$table}]: it has triggers, which a rebuild would lose.");
+            throw new DatabaseException("Cannot rebuild [{$table}]: it has triggers, which a rebuild would lose.");
         }
+
+        $elements = self::elements($definition);
+        $options = self::tableOptions($definition);
 
         $renames = $blueprint->getRenameColumns();
         $dropped = $blueprint->getDropColumns();
@@ -91,10 +98,13 @@ final class SqliteTableRebuild
             if (($row['dflt_value'] ?? null) !== null) {
                 $sql .= ' DEFAULT ' . self::text($row, 'dflt_value');
             }
+            if (isset($elements['collations'][$old])) {
+                $sql .= ' COLLATE ' . $elements['collations'][$old];
+            }
             $columns[$new] = $sql;
         }
         if ($changed !== []) {
-            throw new LogicException("Cannot change missing column(s) [" . implode(', ', array_keys($changed)) . "] on [{$table}].");
+            throw new DatabaseException("Cannot change missing column(s) [" . implode(', ', array_keys($changed)) . "] on [{$table}].");
         }
         foreach ($added as $column) {
             $columns[$column->getName()] = $this->grammar->columnDefinition($column);
@@ -113,13 +123,19 @@ final class SqliteTableRebuild
             $constraints[] = 'PRIMARY KEY (' . implode(', ', array_map($this->quote(...), $primary)) . ')';
         }
         $droppedForeign = $blueprint->getDropForeignKeys();
-        foreach ($this->foreignKeys($table, $definition) as $key) {
-            if (in_array($key['name'], $droppedForeign, true) || in_array($key['from'], $dropped, true)) {
+        $foreignKeys = $this->foreignKeys($table, $elements['foreign']);
+        $missing = array_diff($droppedForeign, array_filter(array_column($foreignKeys, 'name')));
+        if ($missing !== []) {
+            throw new DatabaseException("Cannot drop foreign key(s) [" . implode(', ', $missing) . "] on [{$table}]: no such constraint.");
+        }
+        foreach ($foreignKeys as $key) {
+            if (in_array($key['name'], $droppedForeign, true) || array_intersect($key['from'], $dropped) !== []) {
                 continue;
             }
-            $from = $renames[$key['from']] ?? $key['from'];
+            $from = array_map(fn (string $column): string => $this->quote($renames[$column] ?? $column), $key['from']);
             $sql = ($key['name'] !== null ? 'CONSTRAINT ' . $this->quote($key['name']) . ' ' : '')
-                . 'FOREIGN KEY (' . $this->quote($from) . ') REFERENCES ' . $this->quote($key['table']) . ' (' . $this->quote($key['to']) . ')';
+                . 'FOREIGN KEY (' . implode(', ', $from) . ') REFERENCES ' . $this->quote($key['table'])
+                . ' (' . implode(', ', array_map($this->quote(...), $key['to'])) . ')';
             if ($key['on_delete'] !== 'NO ACTION') {
                 $sql .= ' ON DELETE ' . $key['on_delete'];
             }
@@ -139,6 +155,16 @@ final class SqliteTableRebuild
             if (in_array($index['name'], $droppedIndexes, true) || array_intersect($index['columns'], $dropped) !== []) {
                 continue;
             }
+            $renamed = array_intersect($index['columns'], array_keys($renames)) !== [];
+            // An index created with CREATE INDEX is recreated from its own
+            // definition, which keeps a WHERE clause, collations and sort order.
+            if ($index['sql'] !== null && !$renamed) {
+                $indexes[] = $index['sql'];
+                continue;
+            }
+            if ($index['sql'] !== null && preg_match('/\b(WHERE|COLLATE|DESC)\b/i', $index['sql']) === 1) {
+                throw new DatabaseException("Cannot rebuild [{$table}]: index [{$index['name']}] has a WHERE clause, collation or sort order and uses a renamed column.");
+            }
             $name = $index['automatic']
                 ? IndexDefinition::defaultName(IndexType::Unique, $table, array_map(fn (string $column): string => $renames[$column] ?? $column, $index['columns']))
                 : $index['name'];
@@ -149,6 +175,14 @@ final class SqliteTableRebuild
                 $this->quote($table),
                 implode(', ', array_map(fn (string $column): string => $this->quote($renames[$column] ?? $column), $index['columns'])),
             );
+        }
+        foreach ($blueprint->getColumns() as $column) {
+            if ($column->isUnique() && !$column->isPrimary()) {
+                $indexes[] = sprintf('CREATE UNIQUE INDEX %s ON %s (%s)', $this->quote(IndexDefinition::defaultName(IndexType::Unique, $table, [$column->getName()])), $this->quote($table), $this->quote($column->getName()));
+            }
+            if ($column->hasIndex()) {
+                $indexes[] = sprintf('CREATE INDEX %s ON %s (%s)', $this->quote(IndexDefinition::defaultName(IndexType::Index, $table, [$column->getName()])), $this->quote($table), $this->quote($column->getName()));
+            }
         }
         foreach ($blueprint->getIndexes() as $index) {
             $indexes[] = sprintf(
@@ -165,7 +199,7 @@ final class SqliteTableRebuild
         if ($enforced && $inTransaction) {
             $referencing = $this->referencing($table);
             if ($referencing !== []) {
-                throw new LogicException(sprintf(
+                throw new DatabaseException(sprintf(
                     'Cannot rebuild [%s] inside a transaction while foreign keys are enforced: [%s] reference it, and '
                     . 'SQLite can only stop enforcing them outside a transaction. Run this change outside a transaction '
                     . '(in a migration, return false from withinTransaction()).',
@@ -175,9 +209,13 @@ final class SqliteTableRebuild
             }
         }
 
+        $sequence = $autoIncrement
+            ? self::number($this->rows('SELECT seq FROM sqlite_sequence WHERE name = ?', [$table])[0] ?? [], 'seq')
+            : 0;
+
         $new = '__denosys_rebuild_' . $table;
-        $rebuild = function () use ($table, $new, $columns, $constraints, $copy, $indexes): void {
-            $this->connection->statement(sprintf('CREATE TABLE %s (%s)', $this->quote($new), implode(', ', [...array_values($columns), ...$constraints])));
+        $rebuild = function () use ($table, $new, $columns, $constraints, $copy, $indexes, $options, $sequence): void {
+            $this->connection->statement(sprintf('CREATE TABLE %s (%s)%s', $this->quote($new), implode(', ', [...array_values($columns), ...$constraints]), $options));
             $this->connection->statement(sprintf(
                 'INSERT INTO %s (%s) SELECT %s FROM %s',
                 $this->quote($new),
@@ -187,13 +225,18 @@ final class SqliteTableRebuild
             ));
             $this->connection->statement('DROP TABLE ' . $this->quote($table));
             $this->connection->statement('ALTER TABLE ' . $this->quote($new) . ' RENAME TO ' . $this->quote($table));
+            // Dropping the old table dropped its sequence; keep issued keys from being reused.
+            if ($sequence > 0) {
+                $this->connection->statement('DELETE FROM sqlite_sequence WHERE name = ?', [$table]);
+                $this->connection->statement('INSERT INTO sqlite_sequence (name, seq) VALUES (?, ?)', [$table, max($sequence, $this->maxKey($table))]);
+            }
             foreach ($indexes as $sql) {
                 $this->connection->statement($sql);
             }
 
             $violations = $this->rows('PRAGMA foreign_key_check');
             if ($violations !== []) {
-                throw new LogicException("Rebuilding [{$table}] would leave " . count($violations) . ' row(s) violating a foreign key.');
+                throw new DatabaseException("Rebuilding [{$table}] would leave " . count($violations) . ' row(s) violating a foreign key.');
             }
         };
 
@@ -235,40 +278,52 @@ final class SqliteTableRebuild
     {
         $sql = $this->rows("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = ?", [$table])[0]['sql'] ?? null;
         if (!is_string($sql)) {
-            throw new LogicException("Table [{$table}] does not exist.");
+            throw new DatabaseException("Table [{$table}] does not exist.");
         }
 
         return $sql;
     }
 
     /**
-     * The table's foreign keys, with their constraint names where the
-     * definition gives one.
+     * The table's foreign keys, one per constraint (a composite key keeps its
+     * columns together, in order), with the name the definition gives it.
      *
-     * @return list<array{name: string|null, from: string, table: string, to: string, on_update: string, on_delete: string}>
+     * @param array<string, string> $names constraint name by its comma-joined columns
+     * @return list<array{name: string|null, from: list<string>, table: string, to: list<string>, on_update: string, on_delete: string}>
      */
-    private function foreignKeys(string $table, string $definition): array
+    private function foreignKeys(string $table, array $names): array
     {
-        $names = [];
-        preg_match_all('/CONSTRAINT\s+"((?:[^"]|"")+)"\s+FOREIGN\s+KEY\s*\(\s*"((?:[^"]|"")+)"\s*\)/i', $definition, $matches, PREG_SET_ORDER);
-        foreach ($matches as $match) {
-            $names[str_replace('""', '"', $match[2])] = str_replace('""', '"', $match[1]);
-        }
-
-        $keys = [];
+        $grouped = [];
         foreach ($this->rows('PRAGMA foreign_key_list(' . $this->quote($table) . ')') as $row) {
-            $from = self::text($row, 'from');
-            $keys[] = [
-                'name' => $names[$from] ?? null,
-                'from' => $from,
+            $id = self::number($row, 'id');
+            $grouped[$id] ??= [
+                'from' => [],
                 'table' => self::text($row, 'table'),
-                'to' => (self::text($row, 'to') ?: 'id'),
+                'to' => [],
                 'on_update' => strtoupper(self::text($row, 'on_update')),
                 'on_delete' => strtoupper(self::text($row, 'on_delete')),
             ];
+            $grouped[$id]['from'][self::number($row, 'seq')] = self::text($row, 'from');
+            $grouped[$id]['to'][self::number($row, 'seq')] = self::text($row, 'to') ?: 'id';
+        }
+        ksort($grouped);
+
+        $keys = [];
+        foreach ($grouped as $key) {
+            ksort($key['from']);
+            ksort($key['to']);
+            $from = array_values($key['from']);
+            $keys[] = [
+                'name' => $names[strtolower(implode(',', $from))] ?? null,
+                'from' => $from,
+                'table' => $key['table'],
+                'to' => array_values($key['to']),
+                'on_update' => $key['on_update'],
+                'on_delete' => $key['on_delete'],
+            ];
         }
 
-        return $keys;
+        return array_reverse($keys);
     }
 
     /**
@@ -276,10 +331,15 @@ final class SqliteTableRebuild
      * UNIQUE constraint ("automatic": they cannot be dropped, and are
      * recreated as named unique indexes). Primary key indexes are left out.
      *
-     * @return list<array{name: string, unique: bool, automatic: bool, columns: list<string>}>
+     * @return list<array{name: string, unique: bool, automatic: bool, columns: list<string>, sql: string|null}>
      */
     private function indexes(string $table): array
     {
+        $definitions = [];
+        foreach ($this->rows("SELECT name, sql FROM sqlite_master WHERE type = 'index' AND tbl_name = ? AND sql IS NOT NULL", [$table]) as $row) {
+            $definitions[self::text($row, 'name')] = self::text($row, 'sql');
+        }
+
         $indexes = [];
         foreach ($this->rows('PRAGMA index_list(' . $this->quote($table) . ')') as $row) {
             if (self::text($row, 'origin') === 'pk') {
@@ -288,7 +348,7 @@ final class SqliteTableRebuild
             $columns = [];
             foreach ($this->rows('PRAGMA index_info(' . $this->quote(self::text($row, 'name')) . ')') as $column) {
                 if (($column['name'] ?? null) === null) {
-                    throw new LogicException("Cannot rebuild [{$table}]: index [" . self::text($row, 'name') . "] uses an expression.");
+                    throw new DatabaseException("Cannot rebuild [{$table}]: index [" . self::text($row, 'name') . "] uses an expression.");
                 }
                 $columns[self::number($column, 'seqno')] = self::text($column, 'name');
             }
@@ -298,10 +358,90 @@ final class SqliteTableRebuild
                 'unique' => self::number($row, 'unique') === 1,
                 'automatic' => self::text($row, 'origin') === 'u',
                 'columns' => array_values($columns),
+                'sql' => $definitions[self::text($row, 'name')] ?? null,
             ];
         }
 
         return $indexes;
+    }
+
+    /**
+     * Read what PRAGMA table_info does not report from the table definition:
+     * each column's collation, and each named foreign key constraint.
+     *
+     * @return array{collations: array<string, string>, foreign: array<string, string>}
+     */
+    private static function elements(string $definition): array
+    {
+        $open = strpos($definition, '(');
+        $close = strrpos($definition, ')');
+        $body = $open === false || $close === false ? '' : substr($definition, $open + 1, $close - $open - 1);
+
+        $parts = [];
+        $depth = 0;
+        $quote = null;
+        $current = '';
+        foreach (str_split($body) as $char) {
+            if ($quote !== null) {
+                $quote = $char === $quote ? null : $quote;
+            } elseif (in_array($char, ['"', "'", '`'], true)) {
+                $quote = $char;
+            } elseif ($char === '[') {
+                $quote = ']';
+            } elseif ($char === '(') {
+                $depth++;
+            } elseif ($char === ')') {
+                $depth--;
+            } elseif ($char === ',' && $depth === 0) {
+                $parts[] = trim($current);
+                $current = '';
+                continue;
+            }
+            $current .= $char;
+        }
+        $parts[] = trim($current);
+
+        $identifier = '("(?:[^"]|"")+"|`[^`]+`|\\[[^\\]]+\\]|[A-Za-z_][\\w$]*)';
+        $collations = [];
+        $foreign = [];
+        foreach ($parts as $part) {
+            if (preg_match('/^CONSTRAINT\s+' . $identifier . '\s+FOREIGN\s+KEY\s*\(([^)]*)\)/i', $part, $match) === 1) {
+                $columns = array_map(static fn (string $column): string => strtolower(self::unquote(trim($column))), explode(',', $match[2]));
+                $foreign[implode(',', $columns)] = self::unquote($match[1]);
+                continue;
+            }
+            if (preg_match('/^(CONSTRAINT|PRIMARY|UNIQUE|CHECK|FOREIGN)\b/i', $part) === 1 || preg_match('/^' . $identifier . '/', $part, $name) !== 1) {
+                continue;
+            }
+            if (preg_match('/\bCOLLATE\s+' . $identifier . '/i', $part, $collation) === 1) {
+                $collations[self::unquote($name[1])] = $collation[1];
+            }
+        }
+
+        return ['collations' => $collations, 'foreign' => $foreign];
+    }
+
+    /** STRICT and WITHOUT ROWID, as written after the column list. */
+    private static function tableOptions(string $definition): string
+    {
+        $close = strrpos($definition, ')');
+        $options = $close === false ? '' : trim(substr($definition, $close + 1));
+
+        return $options === '' ? '' : ' ' . $options;
+    }
+
+    private static function unquote(string $identifier): string
+    {
+        return match ($identifier[0] ?? '') {
+            '"' => str_replace('""', '"', substr($identifier, 1, -1)),
+            '`', '[' => substr($identifier, 1, -1),
+            default => $identifier,
+        };
+    }
+
+    private function maxKey(string $table): int
+    {
+        return self::number($this->rows('SELECT MAX(rowid) AS id FROM ' . $this->quote($table))[0] ?? [], 'id');
     }
 
     /**

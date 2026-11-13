@@ -10,12 +10,18 @@
 - SQLite changes a column, or adds or drops a foreign key, by rebuilding the
   table with SQLite's documented procedure (create, copy, drop, rename,
   recreate indexes, `PRAGMA foreign_key_check`). Rebuilding never fires
-  `ON DELETE` actions on other tables. A table that another table references
+  `ON DELETE` actions on other tables, and keeps column collations,
+  composite foreign keys and their names, index definitions (partial,
+  collated and descending indexes), `STRICT` and `WITHOUT ROWID`, and the
+  `AUTOINCREMENT` sequence. `dropForeign()` with a name that matches no
+  constraint throws. A table that another table references
   cannot be rebuilt inside a transaction while foreign keys are enforced, and
   tables with triggers, `CHECK` constraints or generated columns are refused;
   both throw `DatabaseException` and change nothing.
-- PostgreSQL changes columns in place (`ALTER COLUMN ... TYPE ... USING`,
-  `SET`/`DROP NOT NULL`, `SET`/`DROP DEFAULT`).
+- PostgreSQL changes columns in place (`ALTER COLUMN ... TYPE`,
+  `SET`/`DROP NOT NULL`, `SET`/`DROP DEFAULT`). Shortening a string column
+  fails on a value that is too long instead of truncating it, and an
+  auto-incrementing column keeps its sequence.
 - An alter drops indexes before columns, so a column and its index can be
   dropped together.
 - PostgreSQL introspection (`hasTable()`, `getColumns()`, `getIndexes()` and
@@ -30,7 +36,11 @@
 - `getColumnType()` works on MySQL and MariaDB.
 - `insertGetId()`, `Model` and `Repository` inserts use `RETURNING` on
   PostgreSQL instead of `lastval()`, which failed on tables without a
-  sequence and aborted the surrounding transaction.
+  sequence and aborted the surrounding transaction. `Repository` asks for
+  its own `$primaryKey`.
+- `insert()` on PostgreSQL still reports the key a sequence generated, and
+  reads it under a savepoint inside a transaction, so an insert that used
+  no sequence reports `'0'` and leaves the transaction usable.
 
 ## 0.18.0 – 2026-11-13
 
