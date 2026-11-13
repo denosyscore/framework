@@ -362,13 +362,16 @@ final class RecordStore
     }
 
     /**
-     * The property of a timestamp column (created_at or updated_at) whose
-     * type is a date, so $createdAt and $created_at both qualify.
+     * The property of a timestamp column (created_at or updated_at) typed
+     * DateTimeImmutable or DateTimeInterface without a cast, so $createdAt and
+     * $created_at both qualify.
      */
     private static function timestamp(RecordMetadata $meta, string $column): ?string
     {
         foreach ($meta->properties as $property) {
-            if ($property->column === $column && is_a($property->type, \DateTimeInterface::class, true)) {
+            // Only a property that can hold the DateTimeImmutable the store assigns.
+            if ($property->column === $column && $property->cast === null
+                && in_array($property->type, [DateTimeImmutable::class, \DateTimeInterface::class], true)) {
                 return $property->name;
             }
         }

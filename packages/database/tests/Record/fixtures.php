@@ -226,3 +226,10 @@ final class Ledger
     public ?DateTimeImmutable $created_at = null;
     public ?DateTimeImmutable $updated_at = null;
 }
+
+final class MutableStamp
+{
+    public ?int $id = null;
+    public string $memo;
+    public ?\DateTime $created_at = null;
+}
