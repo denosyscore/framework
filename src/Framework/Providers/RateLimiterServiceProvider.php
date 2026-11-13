@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Denosys\Framework\Providers;
 
 use Denosys\RateLimiter\RateLimiter;
-use Denosys\Cache\FileCache;
+use Denosys\Cache\AtomicCounter;
+use Psr\SimpleCache\CacheInterface;
 use Denosys\Container\ContainerInterface;
 use Denosys\RateLimiter\Middleware\ThrottleRequestsMiddleware;
 use Denosys\RateLimiter\Middleware\ThrottleLoginMiddleware;
@@ -19,9 +20,9 @@ class RateLimiterServiceProvider implements Provider
     public function register(ContainerInterface $container): void
     {
         $container->singleton(RateLimiter::class, function (ContainerInterface $container) {
-            $cache = $container->get(FileCache::class);
-            if (!$cache instanceof FileCache) {
-                throw new \LogicException('The container must provide a FileCache for rate limiting.');
+            $cache = $container->get(AtomicCounter::class);
+            if (!$cache instanceof AtomicCounter || !$cache instanceof CacheInterface) {
+                throw new \LogicException('Rate limiting needs an AtomicCounter that is also a PSR-16 cache.');
             }
 
             return new RateLimiter($cache);

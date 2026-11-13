@@ -148,4 +148,39 @@ final class FilesystemTest extends TestCase
     {
         self::assertFalse(method_exists(FilesystemManager::class, '__call'));
     }
+
+    public function testXmlThatCanCarryScriptIsRefused(): void
+    {
+        $this->expectException(UnsafeFileType::class);
+
+        $this->disk()->putFile('uploads', $this->upload('<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><script>alert(1)</script></html>', 'a.txt'));
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function unsafeNames(): iterable
+    {
+        yield 'trailing dot' => ['a.php.'];
+        yield 'trailing space' => ['a.php '];
+        yield 'double extension' => ['a.php.jpg'];
+        yield 'user ini' => ['.user.ini'];
+        yield 'xml' => ['a.xhtml'];
+    }
+
+    #[PHPUnit\Framework\Attributes\DataProvider('unsafeNames')]
+    public function testDisguisedExecutableNamesAreRefused(string $name): void
+    {
+        $this->expectException(UnsafeFileType::class);
+
+        $this->disk()->putFileAs('uploads', $this->upload('plain text', 'notes.txt'), $name);
+    }
+
+    public function testAPublicDiskMakesReadableDirectories(): void
+    {
+        $disk = $this->disk(['visibility' => 'public']);
+
+        $disk->put('nested/file.txt', 'x');
+
+        self::assertSame('0755', substr(sprintf('%o', fileperms($this->root . '/nested')), -4));
+        self::assertSame('0644', substr(sprintf('%o', fileperms($this->root . '/nested/file.txt')), -4));
+    }
 }

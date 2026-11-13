@@ -229,21 +229,14 @@ if (!function_exists('public_path')) {
 
 if (!function_exists('storage')) {
     /**
-     * Get a filesystem disk instance.
-     *
-     * @param string|null $disk The disk name, or null for default
-     * @return \Denosys\Filesystem\FilesystemInterface|\Denosys\Filesystem\FilesystemManager
+     * A filesystem disk: the named one, or the default disk.
      */
-    function storage(?string $disk = null): \Denosys\Filesystem\FilesystemInterface|\Denosys\Filesystem\FilesystemManager
+    function storage(?string $disk = null): \Denosys\Filesystem\FilesystemInterface
     {
         /** @var \Denosys\Filesystem\FilesystemManager $manager */
         $manager = container(\Denosys\Filesystem\FilesystemManager::class);
 
-        if ($disk !== null) {
-            return $manager->disk($disk);
-        }
-
-        return $manager;
+        return $manager->disk($disk);
     }
 }
 

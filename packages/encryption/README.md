@@ -57,6 +57,8 @@ if ($encrypter->needsReEncryption($stored)) {
 
 Remove the old key once nothing encrypted with it remains. Payloads written
 before key ids (a bare base64 string) are tried with every key in the ring.
+Values 0.21 encrypted with its default serialization decrypt to the
+serialized text; re-encrypt them once as JSON when upgrading.
 A malformed or tampered payload, or one from a key not in the ring, throws
 `DecryptException`.
 

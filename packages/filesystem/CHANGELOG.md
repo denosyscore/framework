@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.22.0 – 2026-11-13
+
+### Changed (breaking)
+
+- Every operation throws an exception implementing `FilesystemException`
+  (`FileNotFoundException`, `FileWriteException`, `FileOperationFailed`,
+  `UnsupportedOperation`, `UnsafeFileType`) with the adapter's cause.
+  `put()`, `putStream()`, `prepend()`, `append()`, `delete()`, `copy()`,
+  `move()`, `makeDirectory()` and `deleteDirectory()` return nothing;
+  `putFile()` and `putFileAs()` return the stored path; `mimeType()` returns
+  a string.
+- `putFile()` takes the extension from the detected content type. Both upload
+  methods refuse content or names a web server could run or render.
+- `temporaryUrl()` throws `UnsupportedOperation` on disks that cannot sign.
+- Local disks apply `visibility` and `permissions` (private files 0600,
+  directories 0700); directories follow `visibility` unless
+  `directory_visibility` is set.
+- `putFile()` refuses XML types, and `putFileAs()` checks every dotted
+  segment of the name and refuses `.ht*` and `.user.ini`.
+- `FilesystemManager::__call` is removed; use `disk()`.
+
+### Added
+
+- S3 disks pass `endpoint`, `use_path_style_endpoint` and `options` to the
+  client.
+
 ## 0.21.0 – 2026-11-13
 
 - Released with the framework's 0.21 line. Requires its DenoSys dependencies

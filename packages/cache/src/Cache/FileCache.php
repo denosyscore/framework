@@ -10,8 +10,6 @@ use Psr\SimpleCache\InvalidArgumentException;
 
 final class FileCache implements CacheInterface, AtomicCounter
 {
-    /** Expiry for counters created by increment() or decrement(). */
-
     private string $directory;
 
     /**
@@ -32,29 +30,11 @@ final class FileCache implements CacheInterface, AtomicCounter
     {
         $this->validateKey($key);
         
-        $path = $this->getPath($key);
+        // An expired entry is left for the next write to replace: deleting it
+        // here, outside the counter lock, could delete a newer window.
+        $entry = $this->readEntry($this->getPath($key));
 
-        if (!file_exists($path)) {
-            return $default;
-        }
-
-        $contents = file_get_contents($path);
-        if ($contents === false) {
-            return $default;
-        }
-
-        $data = json_decode($contents, true);
-        if (!is_array($data)) {
-            return $default;
-        }
-
-        // Check if expired
-        if (isset($data['expires_at']) && $data['expires_at'] < time()) {
-            $this->delete($key);
-            return $default;
-        }
-
-        return $data['value'] ?? $default;
+        return $entry === null ? $default : ($entry['value'] ?? $default);
     }
 
     /**
@@ -186,9 +166,12 @@ final class FileCache implements CacheInterface, AtomicCounter
         }
 
         try {
+            // An entry that is not a live counter (set() with another value, or no
+            // expiry) starts a new counter.
             $data = $this->readEntry($path);
-            $expiresAt = $data === null ? time() + $ttlSeconds : $data['expires_at'];
-            $newValue = (int) ($data['value'] ?? 0) + $by;
+            $counter = $data !== null && is_int($data['value']) && is_int($data['expires_at']);
+            $expiresAt = $counter ? $data['expires_at'] : time() + $ttlSeconds;
+            $newValue = ($counter ? $data['value'] : 0) + $by;
 
             if (!$this->writeEntry($path, $newValue, $expiresAt)) {
                 throw new \RuntimeException("Unable to write cache key [{$key}].");
@@ -214,16 +197,13 @@ final class FileCache implements CacheInterface, AtomicCounter
     }
 
     /**
-     * Get the full path for a cache key.
-     */
-    /**
      * Read a live entry, or null when it is missing, unreadable or expired.
      *
      * @return array{value: mixed, expires_at: int|null}|null
      */
     private function readEntry(string $path): ?array
     {
-        $contents = is_file($path) ? file_get_contents($path) : false;
+        $contents = @file_get_contents($path);
         $data = $contents === false ? null : json_decode($contents, true);
 
         if (!is_array($data) || (isset($data['expires_at']) && $data['expires_at'] < time())) {

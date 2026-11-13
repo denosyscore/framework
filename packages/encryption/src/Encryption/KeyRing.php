@@ -13,9 +13,15 @@ final readonly class KeyRing
     /** @var list<Key> */
     public array $previous;
 
+    /** @throws InvalidKeyException when two keys share an id (the same key twice) */
     public function __construct(public Key $current, Key ...$previous)
     {
         $this->previous = array_values($previous);
+
+        $ids = array_map(static fn (Key $key): string => $key->id, $this->all());
+        if (count($ids) !== count(array_unique($ids))) {
+            throw new InvalidKeyException('A key ring cannot hold two keys with the same id.');
+        }
     }
 
     public function find(string $id): ?Key

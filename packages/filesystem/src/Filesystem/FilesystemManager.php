@@ -90,7 +90,9 @@ class FilesystemManager
         $visibility = PortableVisibilityConverter::fromArray([
             'file' => ['public' => 0644, 'private' => 0600, ...(is_array($permissions['file'] ?? null) ? $permissions['file'] : [])],
             'dir' => ['public' => 0755, 'private' => 0700, ...(is_array($permissions['dir'] ?? null) ? $permissions['dir'] : [])],
-        ], is_string($config['directory_visibility'] ?? null) ? $config['directory_visibility'] : Visibility::PRIVATE);
+        ], is_string($config['directory_visibility'] ?? null)
+            ? $config['directory_visibility']
+            : (is_string($config['visibility'] ?? null) ? $config['visibility'] : Visibility::PRIVATE));
         $adapter = new LocalFilesystemAdapter($root, $visibility);
         $default = is_string($config['visibility'] ?? null) ? ['visibility' => $config['visibility']] : [];
         $flysystem = new FlysystemFilesystem($adapter, $default);

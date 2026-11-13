@@ -93,4 +93,13 @@ final class EncrypterTest extends TestCase
 
         self::assertSame('ok', $encrypter->decrypt($encrypter->encrypt('ok')));
     }
+
+    public function testARingRefusesTheSameKeyTwice(): void
+    {
+        $key = Key::generate();
+
+        $this->expectException(InvalidKeyException::class);
+
+        new KeyRing($key, Key::fromBase64($key->toBase64()));
+    }
 }

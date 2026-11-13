@@ -24,7 +24,7 @@ final class Filesystem implements FilesystemInterface
     private const UNSAFE_EXTENSIONS = [
         'php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phtml', 'phar', 'phps', 'pht',
         'cgi', 'pl', 'py', 'sh', 'asp', 'aspx', 'jsp', 'html', 'htm', 'xhtml', 'shtml',
-        'svg', 'svgz', 'js', 'mjs', 'htaccess',
+        'svg', 'svgz', 'js', 'mjs', 'htaccess', 'xml', 'xsl', 'xslt', 'xht', 'mht', 'mhtml',
     ];
 
     private FinfoMimeTypeDetector $mimeTypes;
@@ -91,10 +91,7 @@ final class Filesystem implements FilesystemInterface
 
     public function putFileAs(string $path, UploadedFileInterface $file, string $name, array $options = []): string
     {
-        $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-        if (in_array($extension, self::UNSAFE_EXTENSIONS, true) || str_starts_with(strtolower(basename($name)), '.ht')) {
-            throw new UnsafeFileType($extension === '' ? basename($name) : $extension);
-        }
+        self::assertSafeName($name);
         $this->safeExtension($file);
 
         return $this->store($path, $file, $name, $options);
@@ -237,11 +234,32 @@ final class Filesystem implements FilesystemInterface
         if ($extension !== null && in_array($extension, self::UNSAFE_EXTENSIONS, true)) {
             throw new UnsafeFileType($type);
         }
-        if (preg_match('#^(text/(x-)?php|application/(x-)?(httpd-)?php|text/html|image/svg|application/(x-)?javascript|text/javascript)#', $type) === 1) {
+        if (preg_match('#^(text/(x-)?php|application/(x-)?(httpd-)?php|text/html|image/svg|application/(x-)?javascript|text/javascript|(text|application)/([\w.+-]+\+)?xml|application/xhtml)#', $type) === 1) {
             throw new UnsafeFileType($type);
         }
 
         return $extension;
+    }
+
+    /**
+     * Refuses a name that a web server could run or treat as configuration:
+     * any dotted segment with an unsafe extension (a.php.jpg), trailing dots
+     * or spaces that some systems strip (a.php.), and .ht* or .user.ini.
+     *
+     * @throws UnsafeFileType
+     */
+    private static function assertSafeName(string $name): void
+    {
+        $base = strtolower(rtrim(basename($name), ". \t"));
+        if (str_starts_with($base, '.ht') || $base === '.user.ini') {
+            throw new UnsafeFileType($base);
+        }
+
+        foreach (array_slice(explode('.', $base), 1) as $segment) {
+            if (in_array(trim($segment), self::UNSAFE_EXTENSIONS, true)) {
+                throw new UnsafeFileType(trim($segment));
+            }
+        }
     }
 
     /**

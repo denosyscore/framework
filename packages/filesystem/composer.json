@@ -5,7 +5,7 @@
   "license": "MIT",
   "require": {
     "php": "^8.2",
-    "denosyscore/contracts": "^0.21",
+    "denosyscore/contracts": "^0.22",
     "league/flysystem": "^3.35.3",
     "league/flysystem-local": "^3.30",
     "league/mime-type-detection": "^1.15",
@@ -40,7 +40,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-main": "0.21.x-dev"
+      "dev-main": "0.22.x-dev"
     }
   }
 }

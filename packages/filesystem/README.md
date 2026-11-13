@@ -80,7 +80,9 @@ an error for `delete()`.
 extension comes from the detected content type, never from the client's file
 name. `putFile()` and `putFileAs()` refuse, with `UnsafeFileType`, content or
 names a web server could run or render as a page: PHP and other scripts,
-HTML, SVG and JavaScript.
+HTML, XML, SVG and JavaScript. A name is checked in every dotted segment
+(`a.php.jpg`), without trailing dots or spaces, and `.ht*` and `.user.ini`
+are refused.
 
 ## Temporary URLs
 
@@ -92,7 +94,8 @@ permanent URL.
 
 - Local disks: `visibility` sets the default (`public` or `private`), and
   `permissions` overrides the modes (private files 0600 and directories
-  0700, public 0644 and 0755 by default).
+  0700, public 0644 and 0755 by default). Directories follow `visibility`
+  unless `directory_visibility` is set.
 - S3 disks: `endpoint` and `use_path_style_endpoint` reach S3-compatible
   stores, and an `options` array is passed to the S3 client.
 
