@@ -8,6 +8,9 @@ use Closure;
 use Denosys\Database\Connection\Connection;
 use Denosys\Database\Contracts\GrammarInterface;
 use Denosys\Database\Contracts\QueryBuilderInterface;
+use Denosys\Database\Pagination\Ordering;
+use Denosys\Database\Pagination\Page;
+use Denosys\Database\Pagination\Paginated;
 use Generator;
 use InvalidArgumentException;
 use LogicException;
@@ -450,6 +453,23 @@ class Builder implements QueryBuilderInterface
     }
 
     /**
+     * One page of rows. Pass an Ordering, or order the query first, so pages
+     * are stable. The total ignores this query's limit, offset and order.
+     *
+     * @return Paginated<object>
+     */
+    public function paginate(Page $page, ?Ordering $ordering = null): Paginated
+    {
+        $query = $ordering === null ? $this : $ordering->applyTo($this);
+
+        return Paginated::of(
+            $page,
+            $this->count(),
+            static fn (int $number): array => $query->forPage($number, $page->perPage)->get(),
+        );
+    }
+
+    /**
      * Lock the selected rows until the transaction ends (FOR UPDATE). SQLite
      * has no row locks: it serialises writers per database, so this adds
      * nothing there.
@@ -476,7 +496,8 @@ class Builder implements QueryBuilderInterface
         return $query;
     }
 
-    public function get(): mixed
+    /** @return list<object> */
+    public function get(): array
     {
         return $this->connection->select($this->toSql(), $this->getBindings());
     }
