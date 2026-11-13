@@ -46,14 +46,21 @@ final class RecordStore
     /**
      * @template T of object
      * @param class-string<T> $class
+     * @return RecordQuery<T>
+     */
+    public function query(string $class): RecordQuery
+    {
+        return new RecordQuery($this, $class, $this->connectionFor($class)->table(RecordMetadata::of($class)->table));
+    }
+
+    /**
+     * @template T of object
+     * @param class-string<T> $class
      * @return T|null
      */
     public function find(string $class, int|string $id): ?object
     {
-        $meta = RecordMetadata::of($class);
-        $row = $this->connectionFor($class)->table($meta->table)->where($meta->id->column, '=', $id)->first();
-
-        return $row === null ? null : $this->hydrate($class, self::row($row));
+        return $this->query($class)->find($id);
     }
 
     /**
