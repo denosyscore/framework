@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.21.1 – 2026-11-13
+
+### Fixed
+
+- `denosyscore/database`: records fill `created_at` and `updated_at` by
+  column name, whatever the property is called.
+
 ## 0.21.0 – 2026-11-13
 
 Phase 3, step 5: records (findings F02, F29 and the pagination part of F08).
