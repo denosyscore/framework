@@ -9,6 +9,7 @@ use Denosys\Database\Exceptions\RecordNotFound;
 use Denosys\Database\Record\RecordStore;
 use PHPUnit\Framework\TestCase;
 use RecordFixtures\Gadget;
+use RecordFixtures\Note;
 use RecordFixtures\Widget;
 
 require_once __DIR__ . '/fixtures.php';
@@ -26,6 +27,7 @@ final class RecordStoreTest extends TestCase
         $this->db = $manager->connection();
         $this->db->statement("CREATE TABLE widgets (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, notes TEXT NULL, status TEXT NOT NULL DEFAULT 'new', extra TEXT NULL, created_at TEXT NULL, updated_at TEXT NULL)");
         $this->db->statement('CREATE TABLE gadgets (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)');
+        $this->db->statement('CREATE TABLE notes (id INTEGER PRIMARY KEY AUTOINCREMENT, body TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)');
         $this->store = new RecordStore($manager);
     }
 
@@ -175,5 +177,68 @@ final class RecordStoreTest extends TestCase
         unset($widget);
 
         self::assertSame(0, $this->store->stateCount());
+    }
+
+    public function testChangingTheKeyUpdatesTheLoadedRow(): void
+    {
+        foreach (['a', 'b'] as $name) {
+            $gadget = new Gadget();
+            $gadget->name = $name;
+            $this->store->save($gadget);
+        }
+        $first = $this->store->findOrFail(Gadget::class, 1);
+        $first->id = 2;
+        $first->name = 'changed';
+
+        $this->expectException(InvalidRecord::class);
+        $this->expectExceptionMessageMatches('/key/');
+
+        try {
+            $this->store->save($first);
+        } finally {
+            self::assertSame('b', $this->store->findOrFail(Gadget::class, 2)->name);
+        }
+    }
+
+    public function testAPartlyLoadedRecordWritesItsUnloadedProperties(): void
+    {
+        $note = new Note();
+        $note->body = 'n';
+        $note->active = false;
+        $this->store->save($note);
+
+        $partial = $this->store->query(Note::class)->tap(static fn ($b) => $b->select(['id', 'body']))->firstOrFail();
+        self::assertTrue($partial->active, 'the property default, not the column');
+        $partial->active = true;
+        $this->store->save($partial);
+
+        self::assertTrue($this->store->findOrFail(Note::class, 1)->active);
+    }
+
+    public function testNonNullableTimestampsAreFilledOnInsert(): void
+    {
+        $note = new Note();
+        $note->body = 'n';
+
+        $this->store->save($note);
+
+        self::assertInstanceOf(DateTimeImmutable::class, $note->createdAt);
+        self::assertSame($note->createdAt, $note->updatedAt);
+    }
+
+    public function testDeleteUsesTheLoadedKey(): void
+    {
+        foreach (['a', 'b'] as $name) {
+            $gadget = new Gadget();
+            $gadget->name = $name;
+            $this->store->save($gadget);
+        }
+        $first = $this->store->findOrFail(Gadget::class, 1);
+        $first->id = 2;
+
+        $this->store->delete($first);
+
+        self::assertNull($this->store->find(Gadget::class, 1));
+        self::assertSame('b', $this->store->findOrFail(Gadget::class, 2)->name);
     }
 }

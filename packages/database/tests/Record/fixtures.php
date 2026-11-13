@@ -209,3 +209,12 @@ final class Tag implements \Denosys\Database\Record\Record
     public ?int $id = null;
     public string $name;
 }
+
+final class Note
+{
+    public ?int $id = null;
+    public string $body;
+    public bool $active = true;
+    public DateTimeImmutable $createdAt;
+    public DateTimeImmutable $updatedAt;
+}

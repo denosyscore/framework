@@ -50,7 +50,10 @@ final class RecordStore
      */
     public function query(string $class): RecordQuery
     {
-        return new RecordQuery($this, $class, $this->connectionFor($class)->table(RecordMetadata::of($class)->table));
+        $table = RecordMetadata::of($class)->table;
+
+        // Select only the record's table, so a joined column never overwrites one of its own.
+        return new RecordQuery($this, $class, $this->connectionFor($class)->table($table)->select([$table . '.*']));
     }
 
     /**
@@ -117,13 +120,18 @@ final class RecordStore
             return;
         }
 
+        $key = $this->loadedKey($meta, $state);
+        if (array_key_exists($meta->id->column, $changes)) {
+            throw new InvalidRecord("The key of a saved {$meta->class} cannot change; insert a new record instead.");
+        }
+
         if (isset($meta->properties['updatedAt']) && !array_key_exists($meta->properties['updatedAt']->column, $changes)) {
             self::set($record, 'updatedAt', self::now());
             $changes = $this->changes($meta, $record, $state);
         }
 
         $this->connectionFor($record::class)->table($meta->table)
-            ->where($meta->id->column, '=', $this->key($meta, $record))
+            ->where($meta->id->column, '=', $key)
             ->update($changes);
         $state->snapshot = [...$state->snapshot, ...$changes];
     }
@@ -137,7 +145,7 @@ final class RecordStore
         }
 
         $this->connectionFor($record::class)->table($meta->table)
-            ->where($meta->id->column, '=', $this->key($meta, $record))
+            ->where($meta->id->column, '=', $this->loadedKey($meta, $this->state[$record]))
             ->delete();
         unset($this->state[$record]);
     }
@@ -155,7 +163,7 @@ final class RecordStore
             throw new InvalidRecord("{$meta->class} cannot be refreshed: it was never saved.");
         }
 
-        $id = $this->key($meta, $record);
+        $id = $this->loadedKey($meta, $this->state[$record]);
         $row = $this->connectionFor($record::class)->table($meta->table)->where($meta->id->column, '=', $id)->first();
         if ($row === null) {
             throw new RecordNotFound($meta->class, $id);
@@ -242,14 +250,15 @@ final class RecordStore
             }
         }
 
-        $this->state[$record] = new RowState($this->values($meta, $record));
+        // Only the columns the row held are known; other properties count as changed.
+        $this->state[$record] = new RowState(array_intersect_key($this->values($meta, $record), $row));
     }
 
     private function insert(RecordMetadata $meta, object $record): void
     {
         $now = self::now();
         foreach (['createdAt', 'updatedAt'] as $name) {
-            if (isset($meta->properties[$name]) && self::initialized($record, $name) && self::get($record, $name) === null) {
+            if (isset($meta->properties[$name]) && (!self::initialized($record, $name) || self::get($record, $name) === null)) {
                 self::set($record, $name, $now);
             }
         }
@@ -306,11 +315,12 @@ final class RecordStore
         return $values;
     }
 
-    private function key(RecordMetadata $meta, object $record): int|string
+    /** The key the record was loaded or last saved with. */
+    private function loadedKey(RecordMetadata $meta, RowState $state): int|string
     {
-        $id = self::initialized($record, $meta->id->name) ? self::get($record, $meta->id->name) : null;
+        $key = $state->snapshot[$meta->id->column] ?? null;
 
-        return is_int($id) || is_string($id) ? $id : throw new InvalidRecord("{$meta->class} has no key value.");
+        return is_int($key) || is_string($key) ? $key : throw new InvalidRecord("{$meta->class} has no key value.");
     }
 
     /** @param class-string $class */

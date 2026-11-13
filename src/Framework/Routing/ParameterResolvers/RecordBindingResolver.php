@@ -6,6 +6,7 @@ namespace Denosys\Framework\Routing\ParameterResolvers;
 
 use Denosys\Database\Exceptions\RecordNotFound;
 use Denosys\Database\Record\Record;
+use Denosys\Database\Record\RecordMetadata;
 use Denosys\Framework\Routing\Contracts\UrlRoutable;
 use Denosys\Routing\Exceptions\NotFoundException;
 use Denosys\Routing\ParameterResolvers\ParameterResolverInterface;
@@ -46,12 +47,12 @@ final readonly class RecordBindingResolver implements ParameterResolverInterface
             throw new NotFoundException();
         }
 
-        if (is_a($type, UrlRoutable::class, true)) {
-            return $type::resolveRouteBinding($value);
-        }
-
         try {
-            return $type::findOrFail($value);
+            if (is_a($type, UrlRoutable::class, true)) {
+                return $type::resolveRouteBinding($value);
+            }
+
+            return $type::findOrFail($this->key($type, $value));
         } catch (RecordNotFound $e) {
             throw new NotFoundException(previous: $e);
         }
@@ -65,6 +66,23 @@ final readonly class RecordBindingResolver implements ParameterResolverInterface
     public function runsAfter(): array
     {
         return [];
+    }
+
+    /**
+     * The route argument as the record's key type: an integer key accepts
+     * only whole numbers, so "1abc" is not found rather than matching 1.
+     *
+     * @param class-string<Record> $type
+     *
+     * @throws NotFoundException
+     */
+    private function key(string $type, int|string $value): int|string
+    {
+        if (RecordMetadata::of($type)->id->type !== 'int' || is_int($value)) {
+            return $value;
+        }
+
+        return preg_match('/\A-?[0-9]+\z/', $value) === 1 ? (int) $value : throw new NotFoundException();
     }
 
     /** @return class-string<Record>|class-string<UrlRoutable>|null */

@@ -63,4 +63,18 @@ final class RecordBindingResolverTest extends TestCase
 
         (new RecordBindingResolver())->resolve($this->parameter(), new ServerRequest(), ['widget' => '9']);
     }
+
+    public function testANonNumericArgumentForAnIntegerKeyIsNotFound(): void
+    {
+        $resolver = new RecordBindingResolver();
+
+        foreach (['1abc', 'abc', '1.0', ''] as $argument) {
+            try {
+                $resolver->resolve($this->parameter(), new ServerRequest(), ['widget' => $argument]);
+                self::fail("{$argument} resolved");
+            } catch (NotFoundException) {
+                self::addToAssertionCount(1);
+            }
+        }
+    }
 }

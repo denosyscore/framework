@@ -24,6 +24,8 @@ final class RecordQueryTest extends TestCase
         $manager->setDefaultConnection('default');
         $this->db = $manager->connection();
         $this->db->statement('CREATE TABLE gadgets (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)');
+        $this->db->statement('CREATE TABLE parts (id INTEGER PRIMARY KEY, gadget_id INTEGER NOT NULL, name TEXT NOT NULL)');
+        $this->db->statement("INSERT INTO parts (id, gadget_id, name) VALUES (10, 1, 'p')");
         foreach (['a', 'b', 'c'] as $name) {
             $this->db->table('gadgets')->insert(['name' => $name]);
         }
@@ -97,5 +99,16 @@ final class RecordQueryTest extends TestCase
         }
 
         self::assertSame(['a', 'b', 'c'], $names);
+    }
+
+    public function testAJoinDoesNotOverwriteTheRecordsColumns(): void
+    {
+        $gadgets = $this->store->query(Gadget::class)
+            ->tap(static fn (Builder $b): Builder => $b->join('parts', 'parts.gadget_id', '=', 'gadgets.id'))
+            ->get();
+
+        self::assertCount(1, $gadgets);
+        self::assertSame(1, $gadgets[0]->id);
+        self::assertSame('a', $gadgets[0]->name);
     }
 }
