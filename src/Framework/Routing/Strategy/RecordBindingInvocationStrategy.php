@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Denosys\Framework\Routing\Strategy;
 
-use Denosys\Framework\Routing\ParameterResolvers\RouteModelBindingResolver;
+use Denosys\Framework\Routing\ParameterResolvers\RecordBindingResolver;
 use Denosys\Framework\Routing\ParameterResolvers\FormRequestResolver;
 use Denosys\Routing\ParameterResolvers\DefaultValueResolver;
 use Denosys\Routing\ParameterResolvers\ParameterResolverInterface;
@@ -33,9 +33,9 @@ use ReflectionParameter;
 /**
  * Framework invocation strategy for model binding and HTTP form requests.
  * 
- * Model and form-request resolvers run before generic container resolution.
+ * Record and form-request resolvers run before generic container resolution.
  */
-final class ModelBindingInvocationStrategy implements InvocationStrategyInterface
+final class RecordBindingInvocationStrategy implements InvocationStrategyInterface
 {
     /** @var array<string, array<int, callable(ServerRequestInterface, array): mixed>> */
     private array $parameterResolversCache = [];
@@ -56,7 +56,7 @@ final class ModelBindingInvocationStrategy implements InvocationStrategyInterfac
     private function initializeResolvers(): void
     {
         $resolvers = [
-            new RouteModelBindingResolver(),
+            new RecordBindingResolver(),
         ];
 
         if ($this->container instanceof \Denosys\Container\ContainerInterface) {
