@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Denosys\Framework\Providers;
 
-use Denosys\Database\Database;
-use Denosys\Database\Model;
+use Denosys\Database\Record\Records;
+use Denosys\Database\Record\RecordStore;
 use Denosys\Container\ContainerInterface;
 use Denosys\Framework\Provider;
 use Denosys\Config\Repository;
@@ -27,7 +27,7 @@ class DatabaseServiceProvider implements Provider
         });
 
         // Register the connection manager
-        $container->singleton(ConnectionManager::class, function ($container) {
+        $container->singleton(ConnectionManager::class, function (ContainerInterface $container) {
             $factory = $container->get(ConnectionFactory::class);
             $manager = new ConnectionManager($factory);
 
@@ -49,12 +49,12 @@ class DatabaseServiceProvider implements Provider
         });
 
         // Register a convenient 'db' alias for the default connection
-        $container->singleton('db', function ($container) {
+        $container->singleton('db', function (ContainerInterface $container) {
             return $container->get(ConnectionManager::class)->connection();
         });
 
         // Register Connection interface binding
-        $container->singleton(Connection::class, function ($container) {
+        $container->singleton(Connection::class, function (ContainerInterface $container) {
             return $container->get(ConnectionManager::class)->connection();
         });
     }
@@ -64,11 +64,12 @@ class DatabaseServiceProvider implements Provider
      */
     public function boot(ContainerInterface $container, ?EventDispatcherInterface $dispatcher = null): void
     {
-        // Set the connection manager on the Model class for Active Record pattern
-        $manager = $container->get(ConnectionManager::class);
-        Model::setConnectionManager($manager);
+        // Records (Record + Persists) load and save through this store.
+        $connections = $container->get(ConnectionManager::class);
+        if (!$connections instanceof ConnectionManager) {
+            throw new \LogicException('The container must provide a ConnectionManager.');
+        }
 
-        // Initialize DB facade
-        Database::setConnectionManager($manager);
+        Records::use(new RecordStore($connections));
     }
 }

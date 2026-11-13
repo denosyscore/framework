@@ -236,7 +236,7 @@ protected function middlewareAliases(ContainerInterface $container): array
             $registry = $container->get(MiddlewareRegistry::class);
             
             // Create custom invocation strategy with route model binding support
-            $invocationStrategy = new \Denosys\Framework\Routing\Strategy\ModelBindingInvocationStrategy($container);
+            $invocationStrategy = new \Denosys\Framework\Routing\Strategy\RecordBindingInvocationStrategy($container);
             
             // Create dispatcher with our custom strategy
             $routeCollection = new \Denosys\Routing\RouteCollection();

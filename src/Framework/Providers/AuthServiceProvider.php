@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Denosys\Framework\Providers;
 
 use Denosys\Auth\Authentication\Authenticator;
-use Denosys\Auth\Authentication\ModelUserProvider;
+use Denosys\Auth\Authentication\RecordUserProvider;
+use Denosys\Auth\Identity\AuthenticatableInterface;
+use Denosys\Database\Record\Record;
 use Denosys\Auth\Authentication\UserProviderInterface;
 use Denosys\Auth\Authentication\Strategy\PasswordStrategy;
 use Denosys\Auth\Middleware\AuthenticateMiddleware;
@@ -27,15 +29,18 @@ class AuthServiceProvider implements Provider
     {
         $container->singleton(UserProviderInterface::class, function (ContainerInterface $container) {
             $config = $container->get('config');
-            $userModel = $config->get('auth.model', null);
-            if (!is_string($userModel) || $userModel === '') {
+            $userClass = $config->get('auth.model', null);
+            if (!is_string($userClass) || !is_a($userClass, Record::class, true) || !is_a($userClass, AuthenticatableInterface::class, true)) {
                 throw new RuntimeException(
-                    'auth.model must be configured with a valid user model class.'
+                    'auth.model must name a user class that implements Record and AuthenticatableInterface.'
                 );
             }
             $identifierField = $config->get('auth.identifier', 'email');
+            if (!is_string($identifierField) || $identifierField === '') {
+                throw new RuntimeException('auth.identifier must name the column used to log in.');
+            }
 
-            return new ModelUserProvider($userModel, $identifierField);
+            return new RecordUserProvider($userClass, $identifierField);
         });
 
         $container->singleton(PasswordStrategy::class, function (ContainerInterface $container) {

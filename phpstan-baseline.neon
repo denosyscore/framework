@@ -7,7 +7,7 @@ parameters:
 			path: src/Application.php
 
 		-
-			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 208 possible param types, only 199 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/Application.php
@@ -85,7 +85,7 @@ parameters:
 			path: src/Bootstrap/ServiceProviderBootstrapper.php
 
 		-
-			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 208 possible param types, only 199 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/Framework/Console/RoutesCacheCommand.php
@@ -133,12 +133,6 @@ parameters:
 			path: src/Framework/Providers/AuthServiceProvider.php
 
 		-
-			message: '#^Parameter \#1 \$modelClass of class Denosys\\Auth\\Authentication\\ModelUserProvider constructor expects class\-string\<Denosys\\Auth\\Identity\\AuthenticatableInterface&Denosys\\Database\\Model\>, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Providers/AuthServiceProvider.php
-
-		-
 			message: '#^Parameter \#1 \$session of class Denosys\\Auth\\Authentication\\Authenticator constructor expects Denosys\\Session\\SessionInterface, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -152,12 +146,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$userProvider of class Denosys\\Auth\\Authentication\\Strategy\\PasswordStrategy constructor expects Denosys\\Auth\\Authentication\\UserProviderInterface, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Providers/AuthServiceProvider.php
-
-		-
-			message: '#^Parameter \#2 \$identifierField of class Denosys\\Auth\\Authentication\\ModelUserProvider constructor expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Framework/Providers/AuthServiceProvider.php
@@ -309,29 +297,11 @@ parameters:
 		-
 			message: '#^Cannot call method get\(\) on mixed\.$#'
 			identifier: method.nonObject
-			count: 5
-			path: src/Framework/Providers/DatabaseServiceProvider.php
-
-		-
-			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
-			identifier: typeCoverage.paramTypeCoverage
-			count: 3
+			count: 1
 			path: src/Framework/Providers/DatabaseServiceProvider.php
 
 		-
 			message: '#^Parameter \#1 \$factory of class Denosys\\Database\\Connection\\ConnectionManager constructor expects Denosys\\Database\\Connection\\ConnectionFactory\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Providers/DatabaseServiceProvider.php
-
-		-
-			message: '#^Parameter \#1 \$manager of static method Denosys\\Database\\Database\:\:setConnectionManager\(\) expects Denosys\\Database\\Connection\\ConnectionManager, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Providers/DatabaseServiceProvider.php
-
-		-
-			message: '#^Parameter \#1 \$manager of static method Denosys\\Database\\Model\:\:setConnectionManager\(\) expects Denosys\\Database\\Connection\\ConnectionManager, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Framework/Providers/DatabaseServiceProvider.php
@@ -589,7 +559,7 @@ parameters:
 			path: src/Framework/Providers/RouterServiceProvider.php
 
 		-
-			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 208 possible param types, only 199 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/Framework/Providers/RouterServiceProvider.php
@@ -733,7 +703,7 @@ parameters:
 			path: src/Framework/Providers/ViewServiceProvider.php
 
 		-
-			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 208 possible param types, only 199 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 4
 			path: src/Framework/Providers/ViewServiceProvider.php
@@ -761,24 +731,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Framework/Routing/ParameterResolvers/FormRequestResolver.php
-
-		-
-			message: '#^Method Denosys\\Framework\\Routing\\ParameterResolvers\\RouteModelBindingResolver\:\:canResolve\(\) has parameter \$routeArguments with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Framework/Routing/ParameterResolvers/RouteModelBindingResolver.php
-
-		-
-			message: '#^Parameter \#1 \$id of static method Denosys\\Database\\Model\:\:findOrFail\(\) expects int\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Routing/ParameterResolvers/RouteModelBindingResolver.php
-
-		-
-			message: '#^Parameter \#1 \$value of static method Denosys\\Framework\\Routing\\Contracts\\UrlRoutable\:\:resolveRouteBinding\(\) expects int\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Framework/Routing/ParameterResolvers/RouteModelBindingResolver.php
 
 		-
 			message: '#^Method Denosys\\Framework\\Routing\\RouteCache\:\:assertHandlerSerializable\(\) has parameter \$handler with no value type specified in iterable type array\.$#'
@@ -811,52 +763,52 @@ parameters:
 			path: src/Framework/Routing/RouteCache.php
 
 		-
-			message: '#^Method Denosys\\Framework\\Routing\\Strategy\\ModelBindingInvocationStrategy\:\:buildParameterResolvers\(\) has parameter \$routeArguments with no value type specified in iterable type array\.$#'
+			message: '#^Method Denosys\\Framework\\Routing\\Strategy\\RecordBindingInvocationStrategy\:\:buildParameterResolvers\(\) has parameter \$routeArguments with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: src/Framework/Routing/Strategy/ModelBindingInvocationStrategy.php
+			path: src/Framework/Routing/Strategy/RecordBindingInvocationStrategy.php
 
 		-
-			message: '#^Method Denosys\\Framework\\Routing\\Strategy\\ModelBindingInvocationStrategy\:\:buildParameterResolvers\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method Denosys\\Framework\\Routing\\Strategy\\RecordBindingInvocationStrategy\:\:buildParameterResolvers\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: src/Framework/Routing/Strategy/ModelBindingInvocationStrategy.php
+			path: src/Framework/Routing/Strategy/RecordBindingInvocationStrategy.php
 
 		-
-			message: '#^Method Denosys\\Framework\\Routing\\Strategy\\ModelBindingInvocationStrategy\:\:createResolverForParameter\(\) has parameter \$placeholderOrder with no value type specified in iterable type array\.$#'
+			message: '#^Method Denosys\\Framework\\Routing\\Strategy\\RecordBindingInvocationStrategy\:\:createResolverForParameter\(\) has parameter \$placeholderOrder with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: src/Framework/Routing/Strategy/ModelBindingInvocationStrategy.php
+			path: src/Framework/Routing/Strategy/RecordBindingInvocationStrategy.php
 
 		-
-			message: '#^Method Denosys\\Framework\\Routing\\Strategy\\ModelBindingInvocationStrategy\:\:invoke\(\) has parameter \$routeArguments with no value type specified in iterable type array\.$#'
+			message: '#^Method Denosys\\Framework\\Routing\\Strategy\\RecordBindingInvocationStrategy\:\:invoke\(\) has parameter \$routeArguments with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: src/Framework/Routing/Strategy/ModelBindingInvocationStrategy.php
+			path: src/Framework/Routing/Strategy/RecordBindingInvocationStrategy.php
 
 		-
-			message: '#^Out of 207 possible param types, only 195 \- 94\.2 %% actually have it\. Add more param types to get over 99 %%$#'
+			message: '#^Out of 208 possible param types, only 199 \- 95\.6 %% actually have it\. Add more param types to get over 99 %%$#'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 2
-			path: src/Framework/Routing/Strategy/ModelBindingInvocationStrategy.php
+			path: src/Framework/Routing/Strategy/RecordBindingInvocationStrategy.php
 
 		-
 			message: '#^Parameter \#1 \$objectOrMethod of class ReflectionMethod constructor expects object\|string, callable given\.$#'
 			identifier: argument.type
 			count: 1
-			path: src/Framework/Routing/Strategy/ModelBindingInvocationStrategy.php
+			path: src/Framework/Routing/Strategy/RecordBindingInvocationStrategy.php
 
 		-
 			message: '#^Parameter \#3 \$routeArguments of method Denosys\\Routing\\ParameterResolvers\\ParameterResolverInterface\:\:resolve\(\) expects array\<string, mixed\>, array given\.$#'
 			identifier: argument.type
 			count: 1
-			path: src/Framework/Routing/Strategy/ModelBindingInvocationStrategy.php
+			path: src/Framework/Routing/Strategy/RecordBindingInvocationStrategy.php
 
 		-
-			message: '#^Property Denosys\\Framework\\Routing\\Strategy\\ModelBindingInvocationStrategy\:\:\$parameterResolversCache type has no value type specified in iterable type array\.$#'
+			message: '#^Property Denosys\\Framework\\Routing\\Strategy\\RecordBindingInvocationStrategy\:\:\$parameterResolversCache type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: src/Framework/Routing/Strategy/ModelBindingInvocationStrategy.php
+			path: src/Framework/Routing/Strategy/RecordBindingInvocationStrategy.php
 
 		-
 			message: '#^Cannot cast mixed to int\.$#'

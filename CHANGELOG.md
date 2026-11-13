@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.21.0 – 2026-11-13
+
+Phase 3, step 5: records (findings F02, F29 and the pagination part of F08).
+
+### Changed (breaking)
+
+- `denosyscore/database` replaces `Model`, `Entity`, `Repository` and the
+  `Database` facade with records: a `Record` interface and `Persists` trait
+  over an internal store, strict relations and `Page`/`Ordering`/`Paginated`.
+  See that package's changelog.
+- The database provider sets the record store (`Records::use()`) during boot
+  and no longer sets up the `Database` facade.
+- `RecordBindingResolver` replaces `RouteModelBindingResolver`, and
+  `RecordBindingInvocationStrategy` replaces `ModelBindingInvocationStrategy`:
+  a controller parameter typed as a `Record` is loaded from the route
+  argument of the same name, and a missing record is a 404.
+- `auth.model` must name a class that implements `Record` and
+  `AuthenticatableInterface`; `auth.identifier` must be a column name.
+  Wrong values fail when the user provider is built.
+
 ## 0.20.0 – 2026-11-13
 
 Phase 3, step 4: drivers and bindings (finding F41).

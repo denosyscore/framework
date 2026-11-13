@@ -6,7 +6,7 @@ use Denosys\Container\Container;
 use Denosys\Http\Exceptions\AuthorizationException;
 use Denosys\Http\FormRequest;
 use Denosys\Http\Request;
-use Denosys\Framework\Routing\Strategy\ModelBindingInvocationStrategy;
+use Denosys\Framework\Routing\Strategy\RecordBindingInvocationStrategy;
 use Denosys\Validation\Rules\Required;
 use Denosys\Validation\ValidationException;
 use Denosys\Validation\Validator;
@@ -49,7 +49,7 @@ final class RouteScopedInvocationFormRequest extends FormRequest
 }
 
 it('authorizes a typed form request before invoking its handler', function (): void {
-    $strategy = new ModelBindingInvocationStrategy(new Container());
+    $strategy = new RecordBindingInvocationStrategy(new Container());
     $called = false;
 
     try {
@@ -70,7 +70,7 @@ it('authorizes a typed form request before invoking its handler', function (): v
 
 it('validates a typed form request before invoking its handler', function (): void {
     Validator::extend('required', Required::class);
-    $strategy = new ModelBindingInvocationStrategy(new Container());
+    $strategy = new RecordBindingInvocationStrategy(new Container());
     $called = false;
 
     try {
@@ -94,7 +94,7 @@ it('validates a typed form request before invoking its handler', function (): vo
 
 it('uses the current request on repeated handler invocations', function (): void {
     Validator::extend('required', Required::class);
-    $strategy = new ModelBindingInvocationStrategy(new Container());
+    $strategy = new RecordBindingInvocationStrategy(new Container());
     $handler = static fn (RequiredInvocationFormRequest $form): HtmlResponse =>
         new HtmlResponse((string) $form->validatedInput('email'));
 
@@ -120,7 +120,7 @@ it('uses the current request on repeated handler invocations', function (): void
 });
 
 it('preserves the authenticated user and route arguments during authorization', function (): void {
-    $strategy = new ModelBindingInvocationStrategy(new Container());
+    $strategy = new RecordBindingInvocationStrategy(new Container());
     $request = Request::createFromPsr7(new ServerRequest([], [], 'https://example.test/accounts/account-7', 'POST'))
         ->withUser('account-owner');
 

@@ -31,7 +31,7 @@ interface UrlRoutable
      *
      * @param string|int $value The route parameter value
      * @return static The resolved model instance
-     * @throws \Denosys\Database\Exceptions\ModelNotFoundException When the model cannot be found
+     * @throws \Denosys\Routing\Exceptions\NotFoundException When no record matches
      */
     public static function resolveRouteBinding(string|int $value): static;
 }
