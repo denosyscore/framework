@@ -124,6 +124,8 @@ final class FilesystemTest extends TestCase
 
         $disk->put('secret.txt', 'x');
 
+        clearstatcache();
+
         self::assertSame('0600', substr(sprintf('%o', fileperms($this->root . '/secret.txt')), -4));
     }
 
@@ -184,6 +186,8 @@ final class FilesystemTest extends TestCase
 
         $disk->put('nested/file.txt', 'x');
 
+        clearstatcache();
+
         self::assertSame('0755', substr(sprintf('%o', fileperms($this->root . '/nested')), -4));
         self::assertSame('0644', substr(sprintf('%o', fileperms($this->root . '/nested/file.txt')), -4));
     }
@@ -208,6 +212,8 @@ final class FilesystemTest extends TestCase
         $disk = $this->disk(['visibility' => 'public', 'directory_visibility' => 'private']);
 
         $disk->makeDirectory('restricted');
+
+        clearstatcache();
 
         self::assertSame('0700', substr(sprintf('%o', fileperms($this->root . '/restricted')), -4));
     }
